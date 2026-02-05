@@ -5,6 +5,24 @@ import { Id } from "../../../convex/_generated/dataModel";
 import { Expense } from "../../types/expense";
 import { formatCurrency } from "../../utils/currency";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Search, 
+  ArrowUpDown, 
+  ArrowUp, 
+  ArrowDown, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  Paperclip,
+  Receipt,
+  FileText
+} from "lucide-react";
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -77,214 +95,180 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
     return sortOrder === 'desc' ? -comparison : comparison;
   });
 
-  const SortIcon = ({ field }: { field: string }) => (
-    <svg className={`w-4 h-4 ml-1 transition-colors ${sortBy === field ? 'text-blue-600' : 'text-gray-400'}`} 
-         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-            d={sortBy === field && sortOrder === 'asc' ? 
-              "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
-    </svg>
-  );
+  const SortButton = ({ field, children }: { field: 'date' | 'amount' | 'category'; children: React.ReactNode }) => {
+    const isActive = sortBy === field;
+    const Icon = isActive ? (sortOrder === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown;
+    
+    return (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleSort(field)}
+        className="h-auto p-0 font-medium text-xs hover:text-foreground"
+      >
+        {children}
+        <Icon className={`ml-1 h-3 w-3 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+      </Button>
+    );
+  };
 
   if (expenses.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <div className="text-center py-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+      <Card>
+        <CardContent className="pt-12 pb-12">
+          <div className="text-center">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary/10 to-primary/20 rounded-full flex items-center justify-center mb-4">
+              <FileText className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle className="text-lg mb-2">No expenses found</CardTitle>
+            <p className="text-muted-foreground max-w-sm mx-auto">
+              Start tracking your expenses by clicking the "Add Expense" button above.
+            </p>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No expenses found</h3>
-          <p className="text-gray-600 max-w-md mx-auto">
-            Start tracking your expenses by clicking the "Add Expense" button above.
-          </p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-      {/* Header with Search and Stats */}
-      <div className="p-6 border-b border-gray-100">
+    <Card>
+      <CardHeader>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Expense History</h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <CardTitle>Expense History</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
               {filteredExpenses.length} of {expenses.length} expenses
               {searchTerm && ` matching "${searchTerm}"`}
             </p>
           </div>
           
-          {/* Search Bar */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
               type="text"
               placeholder="Search expenses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+              className="pl-9"
             />
           </div>
         </div>
-      </div>
+      </CardHeader>
 
-      {/* Enhanced Table View */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          {/* Table Header */}
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-4 text-left">
-                <button
-                  onClick={() => handleSort('date')}
-                  className="flex items-center text-xs font-semibold text-gray-600 uppercase tracking-wide hover:text-gray-900 transition-colors"
-                >
-                  Date & Time
-                  <SortIcon field="date" />
-                </button>
-              </th>
-              <th className="px-6 py-4 text-left">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  Description
-                </span>
-              </th>
-              <th className="px-6 py-4 text-left">
-                <button
-                  onClick={() => handleSort('category')}
-                  className="flex items-center text-xs font-semibold text-gray-600 uppercase tracking-wide hover:text-gray-900 transition-colors"
-                >
-                  Category
-                  <SortIcon field="category" />
-                </button>
-              </th>
-              <th className="px-6 py-4 text-right">
-                <button
-                  onClick={() => handleSort('amount')}
-                  className="flex items-center justify-end text-xs font-semibold text-gray-600 uppercase tracking-wide hover:text-gray-900 transition-colors"
-                >
-                  Amount
-                  <SortIcon field="amount" />
-                </button>
-              </th>
-              <th className="px-6 py-4 text-right">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  Actions
-                </span>
-              </th>
-            </tr>
-          </thead>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="px-6">
+                  <SortButton field="date">Date & Time</SortButton>
+                </TableHead>
+                <TableHead className="px-6">Description</TableHead>
+                <TableHead className="px-6">
+                  <SortButton field="category">Category</SortButton>
+                </TableHead>
+                <TableHead className="text-right px-6">
+                  <SortButton field="amount">Amount</SortButton>
+                </TableHead>
+                <TableHead className="text-right px-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-          {/* Table Body */}
-          <tbody className="divide-y divide-gray-100">
-            {sortedExpenses.map((expense, index) => (
-              <tr key={expense._id} className={`hover:bg-gray-50 transition-colors ${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-              }`}>
-                {/* Date & Time */}
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900">{formatDate(expense.date)}</span>
-                    <span className="text-xs text-gray-500">{formatTime(expense.date)}</span>
-                  </div>
-                </td>
+            <TableBody>
+              {sortedExpenses.map((expense) => (
+                <TableRow key={expense._id} className="hover:bg-muted/50">
+                  <TableCell className="px-6">
+                    <div className="flex flex-col space-y-1">
+                      <span className="text-sm font-medium">{formatDate(expense.date)}</span>
+                      <span className="text-xs text-muted-foreground">{formatTime(expense.date)}</span>
+                    </div>
+                  </TableCell>
 
-                {/* Description */}
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900">{expense.name}</span>
-                    {expense.notes && (
-                      <span className="text-xs text-gray-500 mt-1 line-clamp-2">{expense.notes}</span>
-                    )}
-                    {expense.receiptUrl && (
-                      <div className="flex items-center mt-1">
-                        <svg className="w-3 h-3 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clipRule="evenodd" />
-                        </svg>
-                        <span className="text-xs text-blue-600">Receipt</span>
-                      </div>
-                    )}
-                  </div>
-                </td>
+                  <TableCell className="px-6">
+                    <div className="flex flex-col space-y-1">
+                      <span className="font-medium">{expense.name}</span>
+                      {expense.notes && (
+                        <span className="text-sm text-muted-foreground line-clamp-2">{expense.notes}</span>
+                      )}
+                      {expense.receiptUrl && (
+                        <div className="flex items-center text-xs text-primary">
+                          <Paperclip className="w-3 h-3 mr-1" />
+                          Receipt
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
 
-                {/* Category */}
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: expense.category?.color || "#6b7280" }}
-                    />
-                    <span className="text-sm text-gray-700">{expense.category?.name || 'Uncategorized'}</span>
-                  </div>
-                </td>
+                  <TableCell className="px-6">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: expense.category?.color || "#6b7280" }}
+                      />
+                      <Badge variant="secondary" className="text-xs">
+                        {expense.category?.name || 'Uncategorized'}
+                      </Badge>
+                    </div>
+                  </TableCell>
 
-                {/* Amount */}
-                <td className="px-6 py-4 text-right">
-                  <span className="text-sm font-semibold text-gray-900">
-                    {formatCurrency(expense.amount)}
-                  </span>
-                </td>
+                  <TableCell className="text-right px-6">
+                    <span className="font-semibold">
+                      {formatCurrency(expense.amount)}
+                    </span>
+                  </TableCell>
 
-                {/* Actions */}
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-1">
-                    {expense.receiptUrl && (
-                      <button
-                        onClick={() => window.open(expense.receiptUrl, '_blank')}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="View receipt"
+                  <TableCell className="text-right px-6">
+                    <div className="flex justify-end gap-1">
+                      {expense.receiptUrl && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => window.open(expense.receiptUrl, '_blank')}
+                          className="h-8 w-8"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEditExpense(expense)}
+                        className="h-8 w-8"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </button>
-                    )}
-                    <button
-                      onClick={() => onEditExpense(expense)}
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit expense"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(expense._id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Delete expense"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Info */}
-      {sortedExpenses.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
-          <div className="flex justify-between items-center text-sm text-gray-600">
-            <span>
-              Total: {formatCurrency(sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0))}
-            </span>
-            <span>
-              {sortedExpenses.length} expense{sortedExpenses.length !== 1 ? 's' : ''}
-            </span>
-          </div>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(expense._id)}
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
-      )}
-    </div>
+
+        {sortedExpenses.length > 0 && (
+          <>
+            <Separator />
+            <div className="px-6 py-4 bg-muted/30">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium">
+                  Total: {formatCurrency(sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0))}
+                </span>
+                <span className="text-muted-foreground">
+                  {sortedExpenses.length} expense{sortedExpenses.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -5,6 +5,14 @@ import { toast } from "sonner";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Category } from "../../types/expense";
 import { formatCurrencyCompact } from "../../utils/currency";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Edit, Trash2, Plus, Folder, Palette } from "lucide-react";
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -112,236 +120,226 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Manage Categories</h2>
-              <p className="text-sm text-gray-600 mt-1">Create and organize your expense categories</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden">
+        <DialogHeader>
+          <DialogTitle>Manage Categories</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Create and organize your expense categories
+          </p>
+        </DialogHeader>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div className="overflow-y-auto max-h-[calc(90vh-140px)] space-y-6">
           {/* Add/Edit Form */}
           {showForm && (
-            <div className="mb-8 p-6 border border-gray-200 rounded-xl bg-gradient-to-br from-blue-50 to-purple-50">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {editingCategory ? "Edit Category" : "Create New Category"}
-              </h3>
-              
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Category Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
-                    placeholder="e.g., Food & Dining"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Color Theme
-                  </label>
-                  
-                  {/* Toggle between preset and custom colors */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowCustomColorPicker(false)}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                        !showCustomColorPicker
-                          ? "bg-blue-100 text-blue-700 font-medium"
-                          : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-                      }`}
-                    >
-                      Preset Colors
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowCustomColorPicker(true)}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                        showCustomColorPicker
-                          ? "bg-blue-100 text-blue-700 font-medium"
-                          : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-                      }`}
-                    >
-                      Custom Color
-                    </button>
+            <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {editingCategory ? "Edit Category" : "Create New Category"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">
+                      Category Name <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g., Food & Dining"
+                      required
+                    />
                   </div>
 
-                  {showCustomColorPicker ? (
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        value={formData.color}
-                        onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                        className="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer"
-                      />
-                      <div className="flex-1">
+                  <div className="space-y-2">
+                    <Label>Color Theme</Label>
+                    
+                    {/* Toggle between preset and custom colors */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <Button
+                        type="button"
+                        onClick={() => setShowCustomColorPicker(false)}
+                        variant={!showCustomColorPicker ? "default" : "outline"}
+                        size="sm"
+                      >
+                        <Palette className="w-4 h-4 mr-1" />
+                        Preset Colors
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => setShowCustomColorPicker(true)}
+                        variant={showCustomColorPicker ? "default" : "outline"}
+                        size="sm"
+                      >
+                        Custom Color
+                      </Button>
+                    </div>
+
+                    {showCustomColorPicker ? (
+                      <div className="flex items-center gap-3">
                         <input
-                          type="text"
+                          type="color"
                           value={formData.color}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            // Basic hex color validation
-                            if (value.match(/^#[0-9A-Fa-f]{6}$/) || value.match(/^#[0-9A-Fa-f]{3}$/)) {
-                              setFormData({ ...formData, color: value });
-                            }
-                          }}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          placeholder="#000000"
-                          pattern="^#[0-9A-Fa-f]{6}$"
+                          onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                          className="w-12 h-10 rounded-lg border border-input cursor-pointer"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Enter a hex color code (e.g., #ff5733)</p>
+                        <div className="flex-1">
+                          <Input
+                            type="text"
+                            value={formData.color}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Basic hex color validation
+                              if (value.match(/^#[0-9A-Fa-f]{6}$/) || value.match(/^#[0-9A-Fa-f]{3}$/)) {
+                                setFormData({ ...formData, color: value });
+                              }
+                            }}
+                            placeholder="#000000"
+                            pattern="^#[0-9A-Fa-f]{6}$"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">Enter a hex color code (e.g., #ff5733)</p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-6 gap-3">
-                      {colorOptions.map((color) => (
-                        <button
-                          key={color}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, color })}
-                          className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-105 ${
-                            formData.color === color ? "border-gray-800 shadow-lg" : "border-gray-200"
-                          }`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="grid grid-cols-6 gap-3">
+                        {colorOptions.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            onClick={() => setFormData({ ...formData, color })}
+                            className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-105 ${
+                              formData.color === color ? "border-foreground shadow-lg" : "border-border"
+                            }`}
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Monthly Budget Limit (Rs.)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.budgetLimit}
-                    onChange={(e) => setFormData({ ...formData, budgetLimit: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
-                    placeholder="Optional budget limit"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Set a monthly spending limit for this category</p>
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="budget">Monthly Budget Limit (Rs.)</Label>
+                    <Input
+                      id="budget"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.budgetLimit}
+                      onChange={(e) => setFormData({ ...formData, budgetLimit: e.target.value })}
+                      placeholder="Optional budget limit"
+                    />
+                    <p className="text-xs text-muted-foreground">Set a monthly spending limit for this category</p>
+                  </div>
 
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100 font-medium transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg font-medium"
-                  >
-                    {editingCategory ? "Update Category" : "Create Category"}
-                  </button>
-                </div>
-              </form>
-            </div>
+                  <div className="flex gap-3 pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={resetForm}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="flex-1"
+                    >
+                      {editingCategory ? "Update Category" : "Create Category"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           )}
 
           {/* Add Category Button */}
           {!showForm && (
-            <button
+            <Button
               onClick={() => setShowForm(true)}
-              className="mb-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg font-medium"
+              className="gap-2"
             >
-              + Add New Category
-            </button>
+              <Plus className="w-4 h-4" />
+              Add New Category
+            </Button>
           )}
 
           {/* Categories List */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Your Categories ({categories.length})</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Your Categories</h3>
+              <Badge variant="secondary">{categories.length} categories</Badge>
+            </div>
             
             {categories.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white text-2xl">📂</span>
-                </div>
-                <p className="text-gray-600">No categories yet. Create your first category above.</p>
-              </div>
+              <Card>
+                <CardContent className="text-center py-12">
+                  <div className="w-16 h-16 bg-gradient-to-br from-muted-foreground/50 to-muted-foreground rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Folder className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="text-muted-foreground">No categories yet. Create your first category above.</p>
+                </CardContent>
+              </Card>
             ) : (
-              <div className="grid gap-3">
+              <div className="space-y-3">
                 {categories.map((category) => (
-                  <div
+                  <Card
                     key={category._id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all"
+                    className="hover:shadow-md transition-all"
                   >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-6 h-6 rounded-lg shadow-sm"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <div>
-                        <h4 className="font-semibold text-gray-900">{category.name}</h4>
-                        <div className="text-sm text-gray-600">
-                          {category.budgetLimit ? (
-                            <span>Monthly Budget: {formatCurrencyCompact(category.budgetLimit)}</span>
-                          ) : (
-                            <span>No budget limit set</span>
-                          )}
-                          {category.isDefault && (
-                            <span className="ml-3 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
-                              Default
-                            </span>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div
+                            className="w-6 h-6 rounded-lg shadow-sm"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          <div>
+                            <h4 className="font-semibold flex items-center gap-2">
+                              {category.name}
+                              {category.isDefault && (
+                                <Badge variant="secondary">Default</Badge>
+                              )}
+                            </h4>
+                            <div className="text-sm text-muted-foreground">
+                              {category.budgetLimit ? (
+                                <span>Monthly Budget: {formatCurrencyCompact(category.budgetLimit)}</span>
+                              ) : (
+                                <span>No budget limit set</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEdit(category)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          {!category.isDefault && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDelete(category._id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           )}
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(category)}
-                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Edit category"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      {!category.isDefault && (
-                        <button
-                          onClick={() => handleDelete(category._id)}
-                          className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete category"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

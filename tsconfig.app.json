@@ -20,7 +20,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    /* Import paths */
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -1,5 +1,8 @@
 import { Expense, CategorySpending } from "../../types/expense";
 import { formatCurrency } from "../../utils/currency";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, DollarSign, TrendingUp, FolderOpen } from "lucide-react";
 
 interface StatisticsOverviewProps {
   expenses: Expense[];
@@ -18,73 +21,71 @@ export function StatisticsOverview({ expenses, categorySpending }: StatisticsOve
     {
       label: "Total Expenses",
       value: totalExpenses.toString(),
-      icon: "📊",
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-600"
+      icon: BarChart3,
+      className: "text-blue-600"
     },
     {
       label: "Total Amount",
       value: formatCurrency(totalAmount),
-      icon: "💰",
-      bgColor: "bg-green-50",
-      textColor: "text-green-600"
+      icon: DollarSign,
+      className: "text-green-600"
     },
     {
       label: "Average per Expense",
       value: formatCurrency(averagePerExpense),
-      icon: "📈",
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-600"
+      icon: TrendingUp,
+      className: "text-purple-600"
     },
     {
       label: "Active Categories",
       value: categoriesWithSpending.toString(),
-      icon: "📋",
-      bgColor: "bg-orange-50",
-      textColor: "text-orange-600"
+      icon: FolderOpen,
+      className: "text-orange-600"
     }
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">Quick Statistics</h3>
-        <p className="text-sm text-gray-500 mt-1">Overview of your expenses</p>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Quick Statistics</CardTitle>
+        <CardDescription>Overview of your expenses</CardDescription>
+      </CardHeader>
       
-      <div className="p-6">
+      <CardContent>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {stats.map((stat, index) => (
-            <div key={index} className={`p-4 ${stat.bgColor} rounded-lg`}>
+            <Card key={index} className="p-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className={`w-8 h-8 ${stat.bgColor} rounded-lg flex items-center justify-center text-sm border ${stat.textColor} border-current`}>
-                  {stat.icon}
-                </div>
+                <stat.icon className={`h-5 w-5 ${stat.className}`} />
               </div>
-              <div className={`text-xl font-bold ${stat.textColor}`}>{stat.value}</div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
-            </div>
+              <div className={`text-xl font-bold ${stat.className}`}>{stat.value}</div>
+              <div className="text-sm text-muted-foreground">{stat.label}</div>
+            </Card>
           ))}
         </div>
 
         {topCategory && (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: topCategory.category.color }}
-              />
-              <div>
-                <div className="font-medium text-gray-900">Top Spending Category</div>
-                <div className="text-sm text-gray-600">
-                  {topCategory.category.name} - {formatCurrency(topCategory.totalSpent)} 
-                  ({topCategory.expenseCount} expenses)
+          <Card className="bg-muted/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: topCategory.category.color }}
+                />
+                <div className="flex-1">
+                  <div className="font-medium">Top Spending Category</div>
+                  <div className="text-sm text-muted-foreground">
+                    {topCategory.category.name} - {formatCurrency(topCategory.totalSpent)}
+                    <Badge variant="secondary" className="ml-2">
+                      {topCategory.expenseCount} expenses
+                    </Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

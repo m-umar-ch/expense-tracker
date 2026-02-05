@@ -1,4 +1,9 @@
-import { Authenticated, Unauthenticated, useQuery, useMutation } from "convex/react";
+import {
+  Authenticated,
+  Unauthenticated,
+  useQuery,
+  useMutation,
+} from "convex/react";
 import { api } from "../convex/_generated/api";
 import { SignInForm, SignOutButton } from "./components/auth";
 import { Toaster } from "sonner";
@@ -7,15 +12,19 @@ import { useEffect } from "react";
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="sticky top-0 z-10 bg-background border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-16 flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">₨</span>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm">
+                  ₨
+                </span>
               </div>
-              <h1 className="text-xl font-semibold text-gray-900">Expense Tracker</h1>
+              <h1 className="text-xl font-semibold text-foreground">
+                Expense Tracker
+              </h1>
             </div>
             <SignOutButton />
           </div>
@@ -31,7 +40,9 @@ export default function App() {
 
 function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
-  const initializeCategories = useMutation(api.categories.initializeDefaultCategories);
+  const initializeCategories = useMutation(
+    api.categories.initializeDefaultCategories,
+  );
 
   useEffect(() => {
     if (loggedInUser) {

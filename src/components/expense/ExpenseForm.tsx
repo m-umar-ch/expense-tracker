@@ -4,6 +4,16 @@ import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Category, Expense } from "../../types/expense";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Upload, X, Loader2, Receipt } from "lucide-react";
 
 interface ExpenseFormProps {
   categories: Category[];
@@ -11,18 +21,14 @@ interface ExpenseFormProps {
   onClose: () => void;
 }
 
-export function ExpenseForm({
-  categories,
-  editingExpense,
-  onClose,
-}: ExpenseFormProps) {
+export function ExpenseForm({ categories, editingExpense, onClose }: ExpenseFormProps) {
   const [formData, setFormData] = useState({
     name: editingExpense?.name || "",
     categoryId: editingExpense?.categoryId || "",
     amount: editingExpense?.amount || "",
-    date: editingExpense?.date
-      ? new Date(editingExpense.date).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0],
+    date: editingExpense?.date 
+      ? new Date(editingExpense.date).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0],
     notes: editingExpense?.notes || "",
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -35,7 +41,7 @@ export function ExpenseForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!formData.name || !formData.categoryId || !formData.amount) {
       toast.error("Please fill in all required fields");
       return;
@@ -54,11 +60,11 @@ export function ExpenseForm({
           headers: { "Content-Type": selectedImage.type },
           body: selectedImage,
         });
-
+        
         if (!result.ok) {
           throw new Error("Failed to upload image");
         }
-
+        
         const { storageId } = await result.json();
         receiptImageId = storageId;
       }
@@ -66,8 +72,8 @@ export function ExpenseForm({
       const expenseData = {
         name: formData.name,
         categoryId: formData.categoryId as Id<"categories">,
-        amount: parseFloat(formData.amount?.toString() || "0"),
-        date: new Date(formData.date + "T00:00:00").getTime(), // Explicit local midnight
+        amount: parseFloat(formData.amount),
+        date: new Date(formData.date + 'T00:00:00').getTime(), // Explicit local midnight
         notes: formData.notes || undefined,
         receiptImageId,
       };
@@ -92,182 +98,247 @@ export function ExpenseForm({
     }
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select an image file");
+        return;
+      }
+      setSelectedImage(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const selectedCategory = categories.find(cat => cat._id === formData.categoryId);
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {editingExpense ? "Edit Expense" : "Add New Expense"}
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl">
+            {editingExpense ? "Edit Expense" : "Add New Expense"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">
+                Expense Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g., Grocery shopping"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="amount">
+                Amount (Rs.) <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                placeholder="0.00"
+                required
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* First row - Name and Category */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expense Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="e.g., Lunch at restaurant"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category *
-                </label>
-                <select
-                  value={formData.categoryId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, categoryId: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                >
-                  <option value="">Select a category</option>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>
+                Category <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={formData.categoryId}
+                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category">
+                    {selectedCategory && (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: selectedCategory.color }}
+                        />
+                        {selectedCategory.name}
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
                   {categories.map((category) => (
-                    <option key={category._id} value={category._id}>
-                      {category.name}
-                    </option>
+                    <SelectItem key={category._id} value={category._id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        {category.name}
+                        {category.isDefault && (
+                          <Badge variant="secondary" className="text-xs">Default</Badge>
+                        )}
+                      </div>
+                    </SelectItem>
                   ))}
-                </select>
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Second row - Amount and Date */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount (₨) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.amount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, amount: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="0.00"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date *
-                </label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) =>
-                    setFormData({ ...formData, date: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Third row - Notes */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Notes
-              </label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                rows={3}
-                placeholder="Optional notes about this expense"
+            <div className="space-y-2">
+              <Label htmlFor="date">
+                Date <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                required
               />
             </div>
+          </div>
 
-            {/* Fourth row - Receipt Photo */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Receipt Photo
-              </label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              {selectedImage && (
-                <p className="text-sm text-gray-600 mt-2 bg-gray-50 p-2 rounded-md">
-                  Selected: {selectedImage.name}
-                </p>
-              )}
-              {editingExpense?.receiptUrl && !selectedImage && (
-                <div className="mt-3">
-                  <img
-                    src={editingExpense.receiptUrl}
-                    alt="Receipt"
-                    className="w-24 h-24 object-cover rounded-lg border shadow-sm"
-                  />
-                </div>
-              )}
-            </div>
-          </form>
-        </div>
+          {/* Notes Section */}
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes (Optional)</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Add any additional details about this expense..."
+              rows={3}
+            />
+          </div>
 
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
-          <div className="flex gap-3">
-            <button
+          {/* Receipt Upload Section */}
+          <div className="space-y-3">
+            <Label>Receipt (Optional)</Label>
+            
+            {!selectedImage ? (
+              <Card 
+                className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <CardContent className="flex flex-col items-center justify-center py-8">
+                  <Upload className="h-10 w-10 text-muted-foreground mb-4" />
+                  <p className="text-sm text-muted-foreground text-center">
+                    <span className="font-medium">Click to upload receipt</span>
+                    <br />
+                    or drag and drop
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    PNG, JPG up to 10MB
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Receipt className="h-8 w-8 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium">{selectedImage.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(selectedImage.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeImage}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {editingExpense?.receiptUrl && !selectedImage && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Receipt className="h-8 w-8 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium">Current Receipt</p>
+                        <p className="text-xs text-muted-foreground">
+                          Click to view existing receipt
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(editingExpense.receiptUrl, '_blank')}
+                    >
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          <Separator />
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-2">
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 font-medium transition-colors"
+              className="flex-1"
             >
               Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
+            </Button>
+            <Button
+              type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="flex-1"
             >
-              {isSubmitting
-                ? "Saving..."
-                : editingExpense
-                  ? "Update Expense"
-                  : "Add Expense"}
-            </button>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {editingExpense ? "Update Expense" : "Add Expense"}
+            </Button>
           </div>
-        </div>
-      </div>
-    </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
+
+

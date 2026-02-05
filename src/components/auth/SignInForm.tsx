@@ -2,6 +2,12 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Loader2, Mail, Lock, User, DollarSign } from "lucide-react";
 
 export function SignInForm() {
   const { signIn } = useAuthActions();
@@ -10,32 +16,27 @@ export function SignInForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 overflow-hidden relative">
-        {/* Decorative Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50"></div>
-        
-        {/* Content */}
-        <div className="relative p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+      <Card className="border-0 shadow-2xl bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center shadow-lg">
+            <DollarSign className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <div className="space-y-2">
+            <CardTitle className="text-2xl font-bold">
               {flow === "signIn" ? "Welcome Back" : "Create Account"}
-            </h1>
-            <p className="text-gray-600">
+            </CardTitle>
+            <CardDescription>
               {flow === "signIn" 
                 ? "Sign in to continue to your expense tracker" 
                 : "Join us to start tracking your expenses"
               }
-            </p>
+            </CardDescription>
           </div>
+        </CardHeader>
 
+        <CardContent className="space-y-4">
           <form
-            className="space-y-6"
+            className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
               setSubmitting(true);
@@ -56,108 +57,98 @@ export function SignInForm() {
               });
             }}
           >
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                    </svg>
-                  </div>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 backdrop-blur-sm"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Enter your password"
-                    required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 backdrop-blur-sm"
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email Address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  className="pl-10"
+                  required
+                />
               </div>
             </div>
 
-            <button 
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button 
               type="submit" 
               disabled={submitting}
-              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 disabled:hover:translate-y-0"
+              className="w-full"
+              size="lg"
             >
+              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {submitting 
-                ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Please wait...
-                  </div>
-                ) 
+                ? "Please wait..." 
                 : flow === "signIn" 
                   ? "Sign In" 
                   : "Create Account"
               }
-            </button>
+            </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
               {flow === "signIn"
                 ? "Don't have an account? "
                 : "Already have an account? "}
-              <button
-                type="button"
-                className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
+              <Button
+                variant="link"
+                size="sm"
+                className="p-0 h-auto text-primary hover:text-primary/80"
                 onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
               >
                 {flow === "signIn" ? "Sign up here" : "Sign in here"}
-              </button>
+              </Button>
             </p>
           </div>
 
-          <div className="flex items-center my-6">
-            <hr className="flex-1 border-gray-200" />
-            <span className="mx-4 text-gray-500 text-sm font-medium">OR</span>
-            <hr className="flex-1 border-gray-200" />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground font-medium">OR</span>
+            </div>
           </div>
 
-          <button 
+          <Button 
+            variant="outline"
+            size="lg"
             onClick={() => void signIn("anonymous")}
-            className="w-full py-3 px-4 border-2 border-gray-200 hover:border-gray-300 text-gray-700 hover:text-gray-800 font-semibold rounded-xl transition-all hover:bg-gray-50 bg-white/70 backdrop-blur-sm transform hover:-translate-y-0.5"
+            className="w-full"
           >
-            <div className="flex items-center justify-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Continue as Guest
-            </div>
-          </button>
+            <User className="mr-2 h-4 w-4" />
+            Continue as Guest
+          </Button>
           
-          {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-gray-200/50 text-center">
-            <p className="text-xs text-gray-500">
+          <div className="text-center pt-2 border-t">
+            <p className="text-xs text-muted-foreground">
               By continuing, you agree to our terms of service and privacy policy.
             </p>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

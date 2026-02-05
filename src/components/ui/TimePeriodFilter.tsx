@@ -1,4 +1,6 @@
 import { TimePeriod } from "../../types/expense";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface TimePeriodFilterProps {
   selectedPeriod: TimePeriod;
@@ -16,23 +18,24 @@ const PERIODS: { value: TimePeriod; label: string }[] = [
 
 export function TimePeriodFilter({ selectedPeriod, onPeriodChange }: TimePeriodFilterProps) {
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Time Period</h3>
-      <div className="flex flex-wrap gap-2">
-        {PERIODS.map((period) => (
-          <button
-            key={period.value}
-            onClick={() => onPeriodChange(period.value)}
-            className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              selectedPeriod === period.value
-                ? "bg-blue-600 text-white shadow-sm"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            {period.label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Time Period</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2">
+          {PERIODS.map((period) => (
+            <Button
+              key={period.value}
+              onClick={() => onPeriodChange(period.value)}
+              variant={selectedPeriod === period.value ? "default" : "outline"}
+              size="sm"
+            >
+              {period.label}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
