@@ -26,8 +26,14 @@ export interface CategorySpending {
   category: Category;
   totalSpent: number;
   expenseCount: number;
-  budgetLimit: number;
-  budgetUsed: number;
+  percentageOfTotal: number;
+  budgetUtilization: number | null;
 }
 
-export type TimePeriod = "weekly" | "monthly" | "3months" | "6months" | "yearly" | "all";
+export type TimePeriod =
+  | "weekly"
+  | "monthly"
+  | "3months"
+  | "6months"
+  | "yearly"
+  | "all";

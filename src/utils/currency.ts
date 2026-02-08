@@ -1,17 +1,17 @@
 /**
- * Format currency in Pakistani Rupee format: Rs. 72,000/-
+ * Format currency in US Dollar format: $72,000
  */
 export function formatCurrency(amount: number): string {
-  if (amount === 0) return "Rs. 0/-";
-  
-  const formatted = amount.toLocaleString('en-PK');
-  return `Rs. ${formatted}/-`;
+  if (amount === 0) return "$0";
+
+  const formatted = amount.toLocaleString("en-US");
+  return `$${formatted}`;
 }
 
 /**
- * Format currency for compact display (without /-)
+ * Format currency for compact display
  */
 export function formatCurrencyCompact(amount: number): string {
-  const formatted = amount.toLocaleString('en-PK');
-  return `Rs. ${formatted}`;
+  const formatted = amount.toLocaleString("en-US");
+  return `$${formatted}`;
 }

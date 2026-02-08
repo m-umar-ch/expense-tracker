@@ -7,21 +7,18 @@ import { formatCurrency } from "../../utils/currency";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { 
-  Search, 
-  ArrowUpDown, 
-  ArrowUp, 
-  ArrowDown, 
-  Edit, 
-  Trash2, 
-  Eye, 
+import {
+  Search,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Edit,
+  Trash2,
+  Eye,
   Paperclip,
-  Receipt,
-  FileText
+  Database,
+  AlertTriangle,
+  FileText,
 } from "lucide-react";
 
 interface ExpenseListProps {
@@ -31,244 +28,320 @@ interface ExpenseListProps {
 
 export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
   const deleteExpense = useMutation(api.expenses.deleteExpense);
-  const [sortBy, setSortBy] = useState<'date' | 'amount' | 'category'>('date');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<"date" | "amount" | "category">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleDelete = async (expenseId: Id<"expenses">) => {
-    if (!confirm("Are you sure you want to delete this expense?")) return;
+    if (
+      !confirm(
+        "CONFIRM DELETION: ARE YOU SURE YOU WANT TO PERMANENTLY DELETE THIS EXPENSE RECORD?",
+      )
+    )
+      return;
 
     try {
       await deleteExpense({ id: expenseId });
-      toast.success("Expense deleted successfully");
+      toast.success("EXPENSE RECORD DELETED FROM DATABASE");
     } catch (error) {
-      toast.error("Failed to delete expense");
+      toast.error("DELETION FAILED - SYSTEM ERROR");
     }
   };
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-PK', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    return new Date(timestamp).toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString('en-PK', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+    return new Date(timestamp).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
-  const handleSort = (field: 'date' | 'amount' | 'category') => {
+  const handleSort = (field: "date" | "amount" | "category") => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
-      setSortOrder('desc');
+      setSortOrder("desc");
     }
   };
 
-  const filteredExpenses = expenses.filter(expense =>
-    expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.category?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.notes?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredExpenses = expenses.filter(
+    (expense) =>
+      expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      expense.category?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      expense.notes?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const sortedExpenses = [...filteredExpenses].sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
-      case 'date':
+      case "date":
         comparison = a.date - b.date;
         break;
-      case 'amount':
+      case "amount":
         comparison = a.amount - b.amount;
         break;
-      case 'category':
-        comparison = (a.category?.name || '').localeCompare(b.category?.name || '');
+      case "category":
+        comparison = (a.category?.name || "").localeCompare(
+          b.category?.name || "",
+        );
         break;
     }
-    
-    return sortOrder === 'desc' ? -comparison : comparison;
+
+    return sortOrder === "desc" ? -comparison : comparison;
   });
 
-  const SortButton = ({ field, children }: { field: 'date' | 'amount' | 'category'; children: React.ReactNode }) => {
+  const SortButton = ({
+    field,
+    children,
+  }: {
+    field: "date" | "amount" | "category";
+    children: React.ReactNode;
+  }) => {
     const isActive = sortBy === field;
-    const Icon = isActive ? (sortOrder === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown;
-    
+    const Icon = isActive
+      ? sortOrder === "asc"
+        ? ArrowUp
+        : ArrowDown
+      : ArrowUpDown;
+
     return (
-      <Button
-        variant="ghost"
-        size="sm"
+      <button
         onClick={() => handleSort(field)}
-        className="h-auto p-0 font-medium text-xs hover:text-foreground"
+        className="flex items-center gap-2 font-black uppercase tracking-wider text-xs text-white hover:text-red-500 transition-colors"
       >
         {children}
-        <Icon className={`ml-1 h-3 w-3 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-      </Button>
+        <Icon
+          className={`w-3 h-3 ${isActive ? "text-red-500" : "text-white"}`}
+        />
+      </button>
     );
   };
 
   if (expenses.length === 0) {
     return (
-      <Card>
-        <CardContent className="pt-12 pb-12">
-          <div className="text-center">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary/10 to-primary/20 rounded-full flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">No expenses found</CardTitle>
-            <p className="text-muted-foreground max-w-sm mx-auto">
-              Start tracking your expenses by clicking the "Add Expense" button above.
-            </p>
+      <div className="bg-black border-4 border-red-500 text-white font-mono p-12">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-red-500 flex items-center justify-center mx-auto mb-6">
+            <FileText className="w-10 h-10 text-black" />
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-2xl font-black uppercase tracking-wider text-red-500 mb-4">
+            NO EXPENSE RECORDS FOUND
+          </div>
+          <div className="text-white max-w-sm mx-auto uppercase text-sm tracking-wide">
+            DATABASE EMPTY. INITIATE EXPENSE TRACKING BY ADDING YOUR FIRST
+            FINANCIAL RECORD.
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+    <div className="bg-black border-4 border-red-500 text-white font-mono">
+      {/* Header Section */}
+      <div className="border-b-4 border-red-500 p-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
           <div>
-            <CardTitle>Expense History</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filteredExpenses.length} of {expenses.length} expenses
-              {searchTerm && ` matching "${searchTerm}"`}
-            </p>
+            <div className="flex items-center gap-4 mb-2">
+              <Database className="w-8 h-8 text-red-500" />
+              <div className="text-3xl font-black uppercase tracking-wider text-red-500">
+                EXPENSE DATABASE
+              </div>
+            </div>
+            <div className="text-white uppercase tracking-wide">
+              {filteredExpenses.length} OF {expenses.length} RECORDS DISPLAYED
+              {searchTerm && ` | SEARCH: "${searchTerm.toUpperCase()}"`}
+            </div>
           </div>
-          
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search expenses..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
+
+          {/* Search Interface */}
+          <div className="relative w-full sm:w-80">
+            <div className="text-xs font-black uppercase tracking-wider text-white mb-2">
+              SEARCH DATABASE
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+              <Input
+                type="text"
+                placeholder="ENTER SEARCH TERMS..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 bg-black border-2 border-white text-white placeholder-gray-400 font-mono font-bold uppercase tracking-wide focus:border-red-500 focus:ring-0"
+              />
+            </div>
           </div>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="px-6">
-                  <SortButton field="date">Date & Time</SortButton>
-                </TableHead>
-                <TableHead className="px-6">Description</TableHead>
-                <TableHead className="px-6">
-                  <SortButton field="category">Category</SortButton>
-                </TableHead>
-                <TableHead className="text-right px-6">
-                  <SortButton field="amount">Amount</SortButton>
-                </TableHead>
-                <TableHead className="text-right px-6">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {sortedExpenses.map((expense) => (
-                <TableRow key={expense._id} className="hover:bg-muted/50">
-                  <TableCell className="px-6">
-                    <div className="flex flex-col space-y-1">
-                      <span className="text-sm font-medium">{formatDate(expense.date)}</span>
-                      <span className="text-xs text-muted-foreground">{formatTime(expense.date)}</span>
-                    </div>
-                  </TableCell>
-
-                  <TableCell className="px-6">
-                    <div className="flex flex-col space-y-1">
-                      <span className="font-medium">{expense.name}</span>
-                      {expense.notes && (
-                        <span className="text-sm text-muted-foreground line-clamp-2">{expense.notes}</span>
-                      )}
-                      {expense.receiptUrl && (
-                        <div className="flex items-center text-xs text-primary">
-                          <Paperclip className="w-3 h-3 mr-1" />
-                          Receipt
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-
-                  <TableCell className="px-6">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: expense.category?.color || "#6b7280" }}
-                      />
-                      <Badge variant="secondary" className="text-xs">
-                        {expense.category?.name || 'Uncategorized'}
-                      </Badge>
-                    </div>
-                  </TableCell>
-
-                  <TableCell className="text-right px-6">
-                    <span className="font-semibold">
-                      {formatCurrency(expense.amount)}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="text-right px-6">
-                    <div className="flex justify-end gap-1">
-                      {expense.receiptUrl && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => window.open(expense.receiptUrl, '_blank')}
-                          className="h-8 w-8"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onEditExpense(expense)}
-                        className="h-8 w-8"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(expense._id)}
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {sortedExpenses.length > 0 && (
-          <>
-            <Separator />
-            <div className="px-6 py-4 bg-muted/30">
-              <div className="flex justify-between items-center text-sm">
-                <span className="font-medium">
-                  Total: {formatCurrency(sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0))}
+      {/* Table Section */}
+      <div className="overflow-x-auto">
+        <div className="min-w-full">
+          {/* Table Header */}
+          <div className="bg-red-500 text-black border-b-4 border-red-500">
+            <div className="grid grid-cols-12 gap-4 p-4 items-center">
+              <div className="col-span-3">
+                <SortButton field="date">DATETIME</SortButton>
+              </div>
+              <div className="col-span-4">
+                <span className="font-black uppercase tracking-wider text-xs">
+                  DESCRIPTION
                 </span>
-                <span className="text-muted-foreground">
-                  {sortedExpenses.length} expense{sortedExpenses.length !== 1 ? 's' : ''}
+              </div>
+              <div className="col-span-2">
+                <SortButton field="category">CATEGORY</SortButton>
+              </div>
+              <div className="col-span-2 text-right">
+                <SortButton field="amount">AMOUNT</SortButton>
+              </div>
+              <div className="col-span-1 text-right">
+                <span className="font-black uppercase tracking-wider text-xs">
+                  ACTIONS
                 </span>
               </div>
             </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+
+          {/* Table Body */}
+          <div className="bg-black">
+            {sortedExpenses.map((expense, index) => (
+              <div
+                key={expense._id}
+                className={`grid grid-cols-12 gap-4 p-4 items-center border-b-2 border-white hover:bg-red-500 hover:text-black transition-colors group ${
+                  index % 2 === 0 ? "bg-black" : "bg-gray-900"
+                }`}
+              >
+                {/* Date & Time */}
+                <div className="col-span-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-black tracking-wider">
+                      {formatDate(expense.date)}
+                    </div>
+                    <div className="text-xs text-gray-400 group-hover:text-black">
+                      {formatTime(expense.date)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="col-span-4">
+                  <div className="space-y-1">
+                    <div className="font-black tracking-wide uppercase text-sm">
+                      {expense.name}
+                    </div>
+                    {expense.notes && (
+                      <div className="text-xs text-gray-400 group-hover:text-black line-clamp-2 uppercase">
+                        {expense.notes}
+                      </div>
+                    )}
+                    {expense.receiptUrl && (
+                      <div className="flex items-center text-xs text-red-500 group-hover:text-black">
+                        <Paperclip className="w-3 h-3 mr-1" />
+                        <span className="font-black uppercase tracking-wider">
+                          RECEIPT ATTACHED
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Category */}
+                <div className="col-span-2">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-4 h-4 border border-white group-hover:border-black"
+                      style={{
+                        backgroundColor: expense.category?.color || "#6b7280",
+                      }}
+                    />
+                    <div className="text-xs font-black uppercase tracking-wider">
+                      {expense.category?.name || "UNCATEGORIZED"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Amount */}
+                <div className="col-span-2 text-right">
+                  <div className="text-lg font-black tracking-wider">
+                    {formatCurrency(expense.amount)}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="col-span-1 text-right">
+                  <div className="flex justify-end gap-1">
+                    {expense.receiptUrl && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          window.open(expense.receiptUrl, "_blank")
+                        }
+                        className="h-8 w-8 text-white hover:text-black hover:bg-white border border-white group-hover:border-black"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEditExpense(expense)}
+                      className="h-8 w-8 text-white hover:text-black hover:bg-white border border-white group-hover:border-black"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(expense._id)}
+                      className="h-8 w-8 text-red-500 hover:text-black hover:bg-red-500 border border-red-500"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Summary */}
+      {sortedExpenses.length > 0 && (
+        <div className="border-t-4 border-red-500 bg-red-500 text-black p-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6" />
+              <span className="text-lg font-black uppercase tracking-wider">
+                DATABASE SUMMARY
+              </span>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-black tracking-wider">
+                {formatCurrency(
+                  sortedExpenses.reduce(
+                    (sum, expense) => sum + expense.amount,
+                    0,
+                  ),
+                )}
+              </div>
+              <div className="text-xs font-black uppercase tracking-wider">
+                {sortedExpenses.length} RECORD
+                {sortedExpenses.length !== 1 ? "S" : ""} TOTAL
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

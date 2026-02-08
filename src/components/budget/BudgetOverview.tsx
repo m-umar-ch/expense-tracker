@@ -1,15 +1,11 @@
 import { CategorySpending } from "../../types/expense";
 import { formatCurrency } from "../../utils/currency";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Target } from "lucide-react";
+  AlertTriangle,
+  Database,
+  TrendingUp,
+  TrendingDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BudgetOverviewProps {
@@ -18,123 +14,194 @@ interface BudgetOverviewProps {
 
 export function BudgetOverview({ categorySpending }: BudgetOverviewProps) {
   const categoriesWithBudgets = categorySpending.filter(
-    (item) => item.budgetLimit > 0,
+    (item) => item.category.budgetLimit && item.category.budgetLimit > 0,
   );
 
   if (categoriesWithBudgets.length === 0) {
     return (
-      <Card>
-        <CardContent className="text-center py-12">
-          <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Target className="h-8 w-8 text-white" />
+      <div className="bg-black border-4 border-red-500 text-white font-mono p-8">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-red-500 flex items-center justify-center mx-auto mb-6">
+            <Database className="h-10 w-10 text-black" />
           </div>
-          <CardTitle className="mb-2">Set Budget Goals</CardTitle>
-          <CardDescription className="max-w-md mx-auto">
-            Add budget limits to your categories to track spending goals and
-            stay on top of your finances.
-          </CardDescription>
-        </CardContent>
-      </Card>
+          <div className="text-2xl font-black uppercase tracking-wider text-red-500 mb-4">
+            NO BUDGET LIMITS CONFIGURED
+          </div>
+          <div className="text-white max-w-md mx-auto uppercase text-sm tracking-wide">
+            SYSTEM ERROR: NO BUDGET CONSTRAINTS DETECTED. CONFIGURE SPENDING
+            LIMITS TO ENABLE FINANCIAL MONITORING.
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Budget Overview</CardTitle>
-        <CardDescription>
-          {categoriesWithBudgets.length} categories with budget limits
-        </CardDescription>
-      </CardHeader>
+    <div className="bg-black border-4 border-red-500 text-white font-mono">
+      <div className="border-b-4 border-red-500 p-6">
+        <div className="text-3xl font-black uppercase tracking-wider text-red-500 mb-2">
+          BUDGET CONTROL SYSTEM
+        </div>
+        <div className="text-white uppercase tracking-wide">
+          {categoriesWithBudgets.length} CATEGORIES UNDER FINANCIAL SURVEILLANCE
+        </div>
+      </div>
 
-      <CardContent>
+      <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {categoriesWithBudgets.map((item) => {
-            const isOverBudget = item.totalSpent > item.budgetLimit;
-            const isNearLimit = item.budgetUsed >= 80 && !isOverBudget;
+            const budgetLimit = item.category.budgetLimit || 0;
+            const isOverBudget = item.totalSpent > budgetLimit;
+            const isNearLimit =
+              (item.budgetUtilization || 0) >= 80 && !isOverBudget;
 
             return (
-              <Card
+              <div
                 key={item.category._id}
                 className={cn(
-                  "hover:shadow-md transition-shadow",
-                  isOverBudget && "border-destructive bg-destructive/5",
+                  "border-4 p-6 font-mono",
+                  isOverBudget
+                    ? "border-red-500 bg-red-500"
+                    : isNearLimit
+                      ? "border-red-300 bg-black"
+                      : "border-white bg-black",
                 )}
               >
-                <CardContent className="p-5">
-                  <div className="flex items-center gap-3 mb-4">
+                {/* Header Section */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-4 mb-3">
                     <div
-                      className="w-4 h-4 rounded-full shadow-sm"
+                      className="w-6 h-6 border-2 border-white"
                       style={{ backgroundColor: item.category.color }}
                     />
-                    <h4 className="font-semibold">{item.category.name}</h4>
-                    {isOverBudget && (
-                      <Badge variant="destructive">Over Budget</Badge>
-                    )}
-                    {isNearLimit && (
-                      <Badge
-                        variant="outline"
-                        className="border-yellow-500 text-yellow-700 bg-yellow-50"
-                      >
-                        Near Limit
-                      </Badge>
-                    )}
+                    <div
+                      className={cn(
+                        "text-xl font-black uppercase tracking-wider",
+                        isOverBudget ? "text-black" : "text-white",
+                      )}
+                    >
+                      {item.category.name}
+                    </div>
                   </div>
 
+                  {/* Status Indicators */}
+                  <div className="flex gap-3">
+                    {isOverBudget && (
+                      <div className="flex items-center gap-2 bg-black text-red-500 px-3 py-1 border-2 border-black">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-wider">
+                          BUDGET EXCEEDED
+                        </span>
+                      </div>
+                    )}
+                    {isNearLimit && (
+                      <div className="flex items-center gap-2 bg-red-500 text-black px-3 py-1 border-2 border-red-500">
+                        <TrendingUp className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-wider">
+                          APPROACHING LIMIT
+                        </span>
+                      </div>
+                    )}
+                    {!isOverBudget && !isNearLimit && (
+                      <div className="flex items-center gap-2 bg-white text-black px-3 py-1 border-2 border-white">
+                        <TrendingDown className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-wider">
+                          WITHIN BUDGET
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Financial Data Grid */}
+                <div className="space-y-4">
+                  <div
+                    className={cn(
+                      "flex justify-between p-3 border-2",
+                      isOverBudget
+                        ? "border-black bg-black text-white"
+                        : "border-white bg-white text-black",
+                    )}
+                  >
+                    <span className="font-black uppercase tracking-wide text-xs">
+                      SPENT
+                    </span>
+                    <span className="font-black tracking-wider">
+                      {formatCurrency(item.totalSpent)}
+                    </span>
+                  </div>
+
+                  <div
+                    className={cn(
+                      "flex justify-between p-3 border-2",
+                      isOverBudget
+                        ? "border-black bg-black text-white"
+                        : "border-white bg-white text-black",
+                    )}
+                  >
+                    <span className="font-black uppercase tracking-wide text-xs">
+                      BUDGET LIMIT
+                    </span>
+                    <span className="font-black tracking-wider">
+                      {formatCurrency(budgetLimit)}
+                    </span>
+                  </div>
+
+                  <div
+                    className={cn(
+                      "flex justify-between p-3 border-2",
+                      isOverBudget
+                        ? "border-black bg-black text-red-500"
+                        : "border-white bg-white text-black",
+                    )}
+                  >
+                    <span className="font-black uppercase tracking-wide text-xs">
+                      {isOverBudget ? "OVERSPENT" : "REMAINING"}
+                    </span>
+                    <span className="font-black tracking-wider">
+                      {formatCurrency(Math.abs(budgetLimit - item.totalSpent))}
+                      {isOverBudget && " OVER"}
+                    </span>
+                  </div>
+
+                  {/* Progress Bar - Brutal Style */}
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Spent</span>
-                      <span className="font-semibold">
-                        {formatCurrency(item.totalSpent)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Budget</span>
-                      <span>{formatCurrency(item.budgetLimit)}</span>
-                    </div>
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Remaining</span>
-                      <span
-                        className={
-                          isOverBudget ? "text-destructive" : "text-green-600"
-                        }
-                      >
-                        {formatCurrency(
-                          Math.abs(item.budgetLimit - item.totalSpent),
-                        )}
-                        {isOverBudget && " over"}
-                      </span>
-                    </div>
-
-                    {/* Progress bar */}
-                    <Progress
-                      value={Math.min(item.budgetUsed, 100)}
+                    <div
                       className={cn(
-                        "w-full",
-                        isOverBudget &&
-                          "[&>[data-state=complete]]:bg-destructive [&]:bg-destructive/20",
+                        "h-6 border-2 relative overflow-hidden",
+                        isOverBudget ? "border-black" : "border-white",
                       )}
-                    />
+                    >
+                      <div
+                        className={cn(
+                          "h-full transition-all duration-300",
+                          isOverBudget ? "bg-red-500" : "bg-red-500",
+                        )}
+                        style={{
+                          width: `${Math.min(item.budgetUtilization || 0, 100)}%`,
+                        }}
+                      />
+                      {item.budgetUtilization &&
+                        item.budgetUtilization > 100 && (
+                          <div className="absolute top-0 right-0 h-full w-1 bg-black" />
+                        )}
+                    </div>
 
                     <div
                       className={cn(
-                        "text-center text-sm",
-                        isOverBudget
-                          ? "text-destructive font-semibold"
-                          : "text-muted-foreground",
+                        "text-center text-sm font-black uppercase tracking-wider",
+                        isOverBudget ? "text-black" : "text-white",
                       )}
                     >
-                      {item.budgetUsed.toFixed(1)}% used
+                      {(item.budgetUtilization || 0).toFixed(1)}% UTILIZED
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

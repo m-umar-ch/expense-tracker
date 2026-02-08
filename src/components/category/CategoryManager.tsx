@@ -5,14 +5,19 @@ import { toast } from "sonner";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Category } from "../../types/expense";
 import { formatCurrencyCompact } from "../../utils/currency";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Edit, Trash2, Plus, Folder, Palette } from "lucide-react";
+import { Edit, Trash2, Plus, Folder, Palette, X, Save } from "lucide-react";
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -24,28 +29,41 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    color: "#6b7280",
+    color: "#ff0000",
     budgetLimit: "",
   });
-  const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
 
   const createCategory = useMutation(api.categories.createCategory);
   const updateCategory = useMutation(api.categories.updateCategory);
   const deleteCategory = useMutation(api.categories.deleteCategory);
 
+  const resetForm = () => {
+    setFormData({ name: "", color: "#ff0000", budgetLimit: "" });
+    setEditingCategory(null);
+    setShowForm(false);
+  };
+
+  const handleEdit = (category: Category) => {
+    setFormData({
+      name: category.name,
+      color: category.color || "#ff0000",
+      budgetLimit: category.budgetLimit?.toString() || "",
+    });
+    setEditingCategory(category);
+    setShowForm(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name.trim()) {
-      toast.error("Category name is required");
-      return;
-    }
+    if (!formData.name.trim()) return;
 
     try {
       const categoryData = {
         name: formData.name.trim(),
         color: formData.color,
-        budgetLimit: formData.budgetLimit ? parseFloat(formData.budgetLimit) : undefined,
+        budgetLimit: formData.budgetLimit
+          ? parseFloat(formData.budgetLimit)
+          : undefined,
       };
 
       if (editingCategory) {
@@ -53,290 +71,303 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
           id: editingCategory._id,
           ...categoryData,
         });
-        toast.success("Category updated successfully");
+        toast.success("CATEGORY MODIFIED SUCCESSFULLY!");
       } else {
         await createCategory(categoryData);
-        toast.success("Category created successfully");
+        toast.success("CATEGORY ADDED TO SYSTEM!");
       }
 
       resetForm();
     } catch (error) {
-      toast.error("Failed to save category");
-      console.error(error);
+      toast.error("SYSTEM ERROR - TRY AGAIN");
     }
-  };
-
-  const handleEdit = (category: Category) => {
-    setEditingCategory(category);
-    const categoryColor = category.color || "#6b7280";
-    setFormData({
-      name: category.name,
-      color: categoryColor,
-      budgetLimit: category.budgetLimit?.toString() || "",
-    });
-    
-    // Check if the category uses a custom color (not in preset options)
-    setShowCustomColorPicker(!colorOptions.includes(categoryColor));
-    setShowForm(true);
   };
 
   const handleDelete = async (categoryId: Id<"categories">) => {
-    if (!confirm("Are you sure you want to delete this category? This action cannot be undone.")) {
-      return;
-    }
+    if (!confirm("DELETE THIS CATEGORY PERMANENTLY?")) return;
 
     try {
       await deleteCategory({ id: categoryId });
-      toast.success("Category deleted successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete category");
+      toast.success("CATEGORY DELETED FROM SYSTEM!");
+    } catch (error) {
+      toast.error("CANNOT DELETE - CATEGORY IN USE");
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      color: "#6b7280",
-      budgetLimit: "",
-    });
-    setEditingCategory(null);
-    setShowForm(false);
-    setShowCustomColorPicker(false);
-  };
-
-  const colorOptions = [
-    "#ef4444", // red
-    "#f59e0b", // amber
-    "#10b981", // emerald
-    "#3b82f6", // blue
-    "#8b5cf6", // violet
-    "#ec4899", // pink
-    "#06b6d4", // cyan
-    "#84cc16", // lime
-    "#f97316", // orange
-    "#6366f1", // indigo
-    "#14b8a6", // teal
-    "#a855f7", // purple
+  const predefinedColors = [
+    "#ff0000",
+    "#ff3333",
+    "#ff6666",
+    "#cc0000",
+    "#ffffff",
+    "#cccccc",
+    "#999999",
+    "#666666",
+    "#ffff00",
+    "#ffcc00",
+    "#ff9900",
+    "#ff6600",
+    "#00ff00",
+    "#00cc00",
+    "#009900",
+    "#006600",
+    "#0000ff",
+    "#0066ff",
+    "#0099ff",
+    "#00ccff",
+    "#ff00ff",
+    "#cc00cc",
+    "#9900cc",
+    "#6600cc",
   ];
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle>Manage Categories</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            Create and organize your expense categories
+      <DialogContent className="sm:max-w-6xl max-h-[95vh] overflow-y-auto bg-black border-4 border-red-500 text-white font-mono">
+        <DialogHeader className="border-b-4 border-red-500 pb-4 mb-6">
+          <DialogTitle className="text-3xl font-black uppercase tracking-wider text-red-500">
+            CATEGORY MANAGEMENT SYSTEM
+          </DialogTitle>
+          <p className="text-sm font-bold uppercase text-gray-400 mt-2">
+            {categories.length} CATEGORIES IN DATABASE
           </p>
         </DialogHeader>
 
-        <div className="overflow-y-auto max-h-[calc(90vh-140px)] space-y-6">
+        <div className="space-y-8">
           {/* Add/Edit Form */}
           {showForm && (
-            <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {editingCategory ? "Edit Category" : "Create New Category"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">
-                      Category Name <span className="text-destructive">*</span>
+            <div className="bg-red-500 border-4 border-black p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-black uppercase text-black">
+                  {editingCategory ? "MODIFY CATEGORY" : "CREATE NEW CATEGORY"}
+                </h3>
+                <Button
+                  type="button"
+                  onClick={resetForm}
+                  className="bg-black text-white border-4 border-white hover:bg-white hover:text-black font-black p-2"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+
+              <div className="bg-black p-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <Label className="block font-black uppercase text-red-500 mb-2">
+                      CATEGORY NAME *
                     </Label>
                     <Input
-                      id="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Food & Dining"
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="FOOD & DINING"
                       required
+                      className="bg-black border-4 border-red-500 text-white font-bold uppercase tracking-wide placeholder-gray-500 focus:border-white focus:ring-0 p-4"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Color Theme</Label>
-                    
-                    {/* Toggle between preset and custom colors */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <Button
-                        type="button"
-                        onClick={() => setShowCustomColorPicker(false)}
-                        variant={!showCustomColorPicker ? "default" : "outline"}
-                        size="sm"
-                      >
-                        <Palette className="w-4 h-4 mr-1" />
-                        Preset Colors
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={() => setShowCustomColorPicker(true)}
-                        variant={showCustomColorPicker ? "default" : "outline"}
-                        size="sm"
-                      >
-                        Custom Color
-                      </Button>
-                    </div>
-
-                    {showCustomColorPicker ? (
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={formData.color}
-                          onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                          className="w-12 h-10 rounded-lg border border-input cursor-pointer"
+                  <div>
+                    <Label className="block font-black uppercase text-red-500 mb-2">
+                      COLOR SCHEME
+                    </Label>
+                    <div className="grid grid-cols-8 gap-2 mb-4">
+                      {predefinedColors.map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, color })}
+                          className={`w-12 h-12 border-4 ${
+                            formData.color === color
+                              ? "border-white"
+                              : "border-gray-600"
+                          } hover:border-white transition-colors`}
+                          style={{ backgroundColor: color }}
                         />
-                        <div className="flex-1">
-                          <Input
-                            type="text"
-                            value={formData.color}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Basic hex color validation
-                              if (value.match(/^#[0-9A-Fa-f]{6}$/) || value.match(/^#[0-9A-Fa-f]{3}$/)) {
-                                setFormData({ ...formData, color: value });
-                              }
-                            }}
-                            placeholder="#000000"
-                            pattern="^#[0-9A-Fa-f]{6}$"
-                          />
-                          <p className="text-xs text-muted-foreground mt-1">Enter a hex color code (e.g., #ff5733)</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-6 gap-3">
-                        {colorOptions.map((color) => (
-                          <button
-                            key={color}
-                            type="button"
-                            onClick={() => setFormData({ ...formData, color })}
-                            className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-105 ${
-                              formData.color === color ? "border-foreground shadow-lg" : "border-border"
-                            }`}
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-                    )}
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Label className="font-black uppercase text-red-500">
+                        CUSTOM:
+                      </Label>
+                      <input
+                        type="color"
+                        value={formData.color}
+                        onChange={(e) =>
+                          setFormData({ ...formData, color: e.target.value })
+                        }
+                        className="w-16 h-12 border-4 border-red-500 bg-transparent cursor-pointer"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="budget">Monthly Budget Limit (Rs.)</Label>
+                  <div>
+                    <Label className="block font-black uppercase text-red-500 mb-2">
+                      BUDGET LIMIT ($) - OPTIONAL
+                    </Label>
                     <Input
-                      id="budget"
                       type="number"
                       step="0.01"
                       min="0"
                       value={formData.budgetLimit}
-                      onChange={(e) => setFormData({ ...formData, budgetLimit: e.target.value })}
-                      placeholder="Optional budget limit"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          budgetLimit: e.target.value,
+                        })
+                      }
+                      placeholder="500.00"
+                      className="bg-black border-4 border-red-500 text-white font-bold uppercase tracking-wide placeholder-gray-500 focus:border-white focus:ring-0 p-4"
                     />
-                    <p className="text-xs text-muted-foreground">Set a monthly spending limit for this category</p>
                   </div>
 
-                  <div className="flex gap-3 pt-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={resetForm}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
+                  <div className="flex gap-4">
                     <Button
                       type="submit"
-                      className="flex-1"
+                      className="flex-1 bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-wide py-4 border-4 border-black"
                     >
-                      {editingCategory ? "Update Category" : "Create Category"}
+                      <Save className="w-5 h-5 mr-2" />
+                      {editingCategory ? "MODIFY CATEGORY" : "CREATE CATEGORY"}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      className="bg-black border-4 border-white text-white hover:bg-white hover:text-black font-black uppercase tracking-wide py-4 px-8"
+                    >
+                      CANCEL
                     </Button>
                   </div>
                 </form>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Add Category Button */}
-          {!showForm && (
-            <Button
-              onClick={() => setShowForm(true)}
-              className="gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add New Category
-            </Button>
+              </div>
+            </div>
           )}
 
           {/* Categories List */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Your Categories</h3>
-              <Badge variant="secondary">{categories.length} categories</Badge>
+          <div className="bg-white border-4 border-black p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black uppercase text-black">
+                CATEGORY DATABASE
+              </h3>
+              {!showForm && (
+                <Button
+                  onClick={() => setShowForm(true)}
+                  className="bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-wide px-6 py-3 border-4 border-black"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  NEW CATEGORY
+                </Button>
+              )}
             </div>
-            
+
             {categories.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <div className="w-16 h-16 bg-gradient-to-br from-muted-foreground/50 to-muted-foreground rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Folder className="w-8 h-8 text-white" />
-                  </div>
-                  <p className="text-muted-foreground">No categories yet. Create your first category above.</p>
-                </CardContent>
-              </Card>
+              <div className="bg-black border-4 border-red-500 p-12 text-center">
+                <Folder className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                <h4 className="text-xl font-black uppercase text-red-500 mb-2">
+                  NO CATEGORIES FOUND
+                </h4>
+                <p className="font-bold uppercase text-gray-400">
+                  CREATE YOUR FIRST CATEGORY TO GET STARTED
+                </p>
+              </div>
             ) : (
-              <div className="space-y-3">
+              <div className="bg-black p-4 space-y-4">
                 {categories.map((category) => (
-                  <Card
+                  <div
                     key={category._id}
-                    className="hover:shadow-md transition-all"
+                    className="border-4 border-red-500 bg-black p-4 hover:border-white transition-colors"
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div
-                            className="w-6 h-6 rounded-lg shadow-sm"
-                            style={{ backgroundColor: category.color }}
-                          />
-                          <div>
-                            <h4 className="font-semibold flex items-center gap-2">
-                              {category.name}
-                              {category.isDefault && (
-                                <Badge variant="secondary">Default</Badge>
-                              )}
-                            </h4>
-                            <div className="text-sm text-muted-foreground">
-                              {category.budgetLimit ? (
-                                <span>Monthly Budget: {formatCurrencyCompact(category.budgetLimit)}</span>
-                              ) : (
-                                <span>No budget limit set</span>
-                              )}
-                            </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="w-8 h-8 border-4 border-white"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <div>
+                          <h4 className="font-black uppercase text-white text-lg">
+                            {category.name}
+                          </h4>
+                          <div className="flex items-center gap-4 mt-1">
+                            {category.budgetLimit && (
+                              <span className="font-bold uppercase text-red-500 text-sm">
+                                BUDGET:{" "}
+                                {formatCurrencyCompact(category.budgetLimit)}
+                              </span>
+                            )}
+                            {category.isDefault && (
+                              <Badge className="bg-white text-black font-black uppercase text-xs">
+                                SYSTEM DEFAULT
+                              </Badge>
+                            )}
                           </div>
                         </div>
-                        
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleEdit(category)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          {!category.isDefault && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleDelete(category._id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleEdit(category)}
+                          disabled={category.isDefault}
+                          className="bg-red-500 hover:bg-red-600 text-black font-black uppercase p-3 border-2 border-black disabled:opacity-50"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(category._id)}
+                          disabled={category.isDefault}
+                          className="bg-white hover:bg-gray-200 text-black font-black uppercase p-3 border-2 border-black disabled:opacity-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
+          </div>
+
+          {/* System Info */}
+          <div className="bg-red-500 border-4 border-black p-6">
+            <div className="bg-black p-4">
+              <h3 className="text-lg font-black uppercase text-red-500 mb-4">
+                SYSTEM STATUS
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="border-4 border-red-500 p-4">
+                  <div className="text-2xl font-black text-white">
+                    {categories.length}
+                  </div>
+                  <div className="font-bold uppercase text-gray-400 text-sm">
+                    TOTAL CATEGORIES
+                  </div>
+                </div>
+                <div className="border-4 border-red-500 p-4">
+                  <div className="text-2xl font-black text-white">
+                    {categories.filter((c) => c.budgetLimit).length}
+                  </div>
+                  <div className="font-bold uppercase text-gray-400 text-sm">
+                    WITH BUDGETS
+                  </div>
+                </div>
+                <div className="border-4 border-red-500 p-4">
+                  <div className="text-2xl font-black text-white">
+                    {categories.filter((c) => c.isDefault).length}
+                  </div>
+                  <div className="font-bold uppercase text-gray-400 text-sm">
+                    SYSTEM DEFAULTS
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Close Button */}
+          <div className="border-t-4 border-red-500 pt-6">
+            <Button
+              onClick={onClose}
+              className="w-full bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-wide py-4 border-4 border-black text-xl"
+            >
+              CLOSE CATEGORY MANAGER
+            </Button>
           </div>
         </div>
       </DialogContent>
