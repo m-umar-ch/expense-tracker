@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
@@ -32,10 +32,18 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
     color: "#ff0000",
     budgetLimit: "",
   });
+  const dialogContentRef = useRef<HTMLDivElement>(null);
 
   const createCategory = useMutation(api.categories.createCategory);
   const updateCategory = useMutation(api.categories.updateCategory);
   const deleteCategory = useMutation(api.categories.deleteCategory);
+
+  // Scroll to top when form opens
+  useEffect(() => {
+    if (showForm && dialogContentRef.current) {
+      dialogContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [showForm]);
 
   const resetForm = () => {
     setFormData({ name: "", color: "#ff0000", budgetLimit: "" });
@@ -123,7 +131,10 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-6xl max-h-[95vh] overflow-y-auto bg-black border-4 border-red-500 text-white font-mono">
+      <DialogContent
+        ref={dialogContentRef}
+        className="sm:max-w-6xl max-h-[95vh] overflow-y-auto bg-black border-4 border-red-500 text-white font-mono"
+      >
         <DialogHeader className="border-b-4 border-red-500 pb-4 mb-6">
           <DialogTitle className="text-3xl font-black uppercase tracking-wider text-red-500">
             CATEGORY MANAGEMENT SYSTEM
@@ -293,11 +304,6 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                                 {formatCurrencyCompact(category.budgetLimit)}
                               </span>
                             )}
-                            {category.isDefault && (
-                              <Badge className="bg-white text-black font-black uppercase text-xs">
-                                SYSTEM DEFAULT
-                              </Badge>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -305,15 +311,13 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                       <div className="flex items-center gap-2">
                         <Button
                           onClick={() => handleEdit(category)}
-                          disabled={category.isDefault}
-                          className="bg-red-500 hover:bg-red-600 text-black font-black uppercase p-3 border-2 border-black disabled:opacity-50"
+                          className="bg-red-500 hover:bg-red-600 text-black font-black uppercase p-3 border-2 border-black"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           onClick={() => handleDelete(category._id)}
-                          disabled={category.isDefault}
-                          className="bg-white hover:bg-gray-200 text-black font-black uppercase p-3 border-2 border-black disabled:opacity-50"
+                          className="bg-white hover:bg-gray-200 text-black font-black uppercase p-3 border-2 border-black"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -331,7 +335,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
               <h3 className="text-lg font-black uppercase text-red-500 mb-4">
                 SYSTEM STATUS
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
                 <div className="border-4 border-red-500 p-4">
                   <div className="text-2xl font-black text-white">
                     {categories.length}
@@ -346,14 +350,6 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                   </div>
                   <div className="font-bold uppercase text-gray-400 text-sm">
                     WITH BUDGETS
-                  </div>
-                </div>
-                <div className="border-4 border-red-500 p-4">
-                  <div className="text-2xl font-black text-white">
-                    {categories.filter((c) => c.isDefault).length}
-                  </div>
-                  <div className="font-bold uppercase text-gray-400 text-sm">
-                    SYSTEM DEFAULTS
                   </div>
                 </div>
               </div>
