@@ -209,3 +209,336 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Default Color Palette - All Colors Used Throughout the Application */
+.default {
+  /* === PRIMARY THEME COLORS === */
+  --brutalist-black: #000000;
+  --brutalist-white: #ffffff;
+  --brutalist-red: #ef4444; /* red-500 */
+  --brutalist-red-dark: #dc2626; /* red-600 */
+  --brutalist-red-light: #fca5a5; /* red-300 */
+
+  /* === BACKGROUND COLORS === */
+  --bg-primary: #000000; /* bg-black */
+  --bg-secondary: #ffffff; /* bg-white */
+  --bg-accent: #ef4444; /* bg-red-500 */
+  --bg-accent-hover: #dc2626; /* bg-red-600 */
+  --bg-gray-light: #e5e7eb; /* bg-gray-200 */
+  --bg-gray-dark: #1f2937; /* bg-gray-800 */
+  --bg-gray-darker: #111827; /* bg-gray-900 */
+  --bg-yellow: #facc15; /* bg-yellow-400 */
+  --bg-yellow-hover: #eab308; /* bg-yellow-500 */
+  --bg-orange: #fb923c; /* bg-orange-400 */
+  --bg-green: #4ade80; /* bg-green-400 */
+
+  /* === TEXT COLORS === */
+  --text-primary: #ffffff; /* text-white */
+  --text-secondary: #000000; /* text-black */
+  --text-accent: #ef4444; /* text-red-500 */
+  --text-gray-light: #d1d5db; /* text-gray-300 */
+  --text-gray: #9ca3af; /* text-gray-400 */
+  --text-gray-medium: #6b7280; /* text-gray-500 */
+  --text-gray-dark: #4b5563; /* text-gray-600 */
+  --text-success: #4ade80; /* text-green-400 */
+  --text-warning: #facc15; /* text-yellow-400 */
+
+  /* === BORDER COLORS === */
+  --border-primary: #ef4444; /* border-red-500 */
+  --border-secondary: #000000; /* border-black */
+  --border-tertiary: #ffffff; /* border-white */
+  --border-gray: #4b5563; /* border-gray-600 */
+  --border-light: #fca5a5; /* border-red-300 */
+
+  /* === CATEGORY COLORS (Hex Values) === */
+  --category-food: #ef4444; /* Food & Dining - red */
+  --category-transport: #3b82f6; /* Transportation - blue */
+  --category-shopping: #8b5cf6; /* Shopping - purple */
+  --category-bills: #f59e0b; /* Bills & Utilities - amber */
+  --category-entertainment: #10b981; /* Entertainment - emerald */
+  --category-healthcare: #ec4899; /* Healthcare - pink */
+  --category-groceries: #06b6d4; /* Groceries - cyan */
+  --category-personal: #84cc16; /* Personal Care - lime */
+  --category-fallback: #6b7280; /* Fallback gray */
+
+  /* === COLOR PICKER PALETTE === */
+  --picker-red-pure: #ff0000;
+  --picker-red-light: #ff3333;
+  --picker-red-lighter: #ff6666;
+  --picker-red-dark: #cc0000;
+  --picker-white: #ffffff;
+  --picker-gray-light: #cccccc;
+  --picker-gray-medium: #999999;
+  --picker-gray-dark: #666666;
+  --picker-yellow: #ffff00;
+  --picker-orange-light: #ffcc00;
+  --picker-orange: #ff9900;
+  --picker-orange-dark: #ff6600;
+  --picker-green-lime: #00ff00;
+  --picker-green: #00cc00;
+  --picker-green-dark: #009900;
+  --picker-green-darker: #006600;
+  --picker-blue: #0000ff;
+  --picker-blue-light: #0066ff;
+  --picker-blue-sky: #0099ff;
+  --picker-cyan: #00ccff;
+  --picker-magenta: #ff00ff;
+  --picker-purple: #cc00cc;
+  --picker-purple-dark: #9900cc;
+  --picker-purple-darker: #6600cc;
+
+  /* === PLACEHOLDER COLORS === */
+  --placeholder-light: #9ca3af; /* placeholder-gray-400 */
+  --placeholder-dark: #6b7280; /* placeholder-gray-500 */
+
+  /* === SHADOW COLORS (RGBA) === */
+  --shadow-white: rgba(255, 255, 255, 1);
+  --shadow-black: rgba(0, 0, 0, 1);
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-strong: rgba(0, 0, 0, 0.25);
+
+  /* === GRADIENT/OVERLAY COLORS === */
+  --overlay-white: rgba(255, 255, 255, 0.1);
+  --overlay-red: rgba(255, 0, 0, 0.1);
+
+  /* === STATUS COLORS === */
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+  --status-info: #3b82f6;
+
+  /* === INTERACTIVE STATE COLORS === */
+  --hover-bg-red: #dc2626;
+  --hover-bg-white: #f9fafb;
+  --hover-bg-gray: #1f2937;
+  --hover-bg-yellow: #eab308;
+  --hover-bg-gray-light: #e5e7eb;
+  --hover-text-black: #000000;
+  --hover-text-white: #ffffff;
+
+  /* === FOCUS COLORS === */
+  --focus-border-red: #ef4444;
+  --focus-border-white: #ffffff;
+
+  /* === BRUTALIST DESIGN SYSTEM VALUES === */
+  --border-width-thick: 4px;
+  --border-width-medium: 2px;
+  --shadow-brutal: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-white: 8px 8px 0px 0px rgba(255, 255, 255, 1);
+
+  /* === TRANSPARENCY VARIANTS === */
+  --white-95: rgba(255, 255, 255, 0.95);
+  --black-50: rgba(0, 0, 0, 0.5);
+  --red-50: rgba(239, 68, 68, 0.5);
+}
+
+/* === BRUTALIST THEME (DEFAULT) === */
+.brutalist {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --popover: #000000;
+  --popover-foreground: #ffffff;
+  --primary: #ef4444;
+  --primary-foreground: #000000;
+  --secondary: #1f2937;
+  --secondary-foreground: #ffffff;
+  --muted: #374151;
+  --muted-foreground: #d1d5db;
+  --accent: #ef4444;
+  --accent-foreground: #000000;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #ef4444;
+  --input: #1f2937;
+  --ring: #ef4444;
+
+  /* Theme-specific colors */
+  --theme-primary: #000000;
+  --theme-secondary: #ffffff;
+  --theme-accent: #ef4444;
+  --theme-accent-secondary: #dc2626;
+  --theme-surface: #111827;
+  --theme-surface-secondary: #1f2937;
+  --theme-text: #ffffff;
+  --theme-text-secondary: #d1d5db;
+  --theme-border: #ef4444;
+  --theme-shadow: rgba(0, 0, 0, 1);
+}
+
+/* === CYBERPUNK THEME === */
+.cyberpunk {
+  --background: #0a0a0a;
+  --foreground: #00ff41;
+  --card: #0a0a0a;
+  --card-foreground: #00ff41;
+  --popover: #1a1a1a;
+  --popover-foreground: #00ff41;
+  --primary: #ff0080;
+  --primary-foreground: #000000;
+  --secondary: #001a33;
+  --secondary-foreground: #00ffff;
+  --muted: #1a1a2e;
+  --muted-foreground: #00ff41;
+  --accent: #ff0080;
+  --accent-foreground: #000000;
+  --destructive: #ff073a;
+  --destructive-foreground: #ffffff;
+  --border: #00ff41;
+  --input: #1a1a2e;
+  --ring: #ff0080;
+
+  /* Theme-specific colors */
+  --theme-primary: #0a0a0a;
+  --theme-secondary: #00ff41;
+  --theme-accent: #ff0080;
+  --theme-accent-secondary: #00ffff;
+  --theme-surface: #1a1a1a;
+  --theme-surface-secondary: #1a1a2e;
+  --theme-text: #00ff41;
+  --theme-text-secondary: #00ffff;
+  --theme-border: #00ff41;
+  --theme-shadow: rgba(255, 0, 128, 0.5);
+}
+
+/* === LUXURY THEME === */
+.luxury {
+  --background: #0f0f0f;
+  --foreground: #f8f8f8;
+  --card: #1a1a1a;
+  --card-foreground: #f8f8f8;
+  --popover: #1a1a1a;
+  --popover-foreground: #f8f8f8;
+  --primary: #d4af37;
+  --primary-foreground: #000000;
+  --secondary: #2a2a2a;
+  --secondary-foreground: #f8f8f8;
+  --muted: #333333;
+  --muted-foreground: #cccccc;
+  --accent: #d4af37;
+  --accent-foreground: #000000;
+  --destructive: #8b0000;
+  --destructive-foreground: #ffffff;
+  --border: #d4af37;
+  --input: #2a2a2a;
+  --ring: #d4af37;
+
+  /* Theme-specific colors */
+  --theme-primary: #0f0f0f;
+  --theme-secondary: #f8f8f8;
+  --theme-accent: #d4af37;
+  --theme-accent-secondary: #b8941f;
+  --theme-surface: #1a1a1a;
+  --theme-surface-secondary: #2a2a2a;
+  --theme-text: #f8f8f8;
+  --theme-text-secondary: #cccccc;
+  --theme-border: #d4af37;
+  --theme-shadow: rgba(212, 175, 55, 0.3);
+}
+
+/* === ORGANIC THEME === */
+.organic {
+  --background: #fefefe;
+  --foreground: #2d3748;
+  --card: #ffffff;
+  --card-foreground: #2d3748;
+  --popover: #ffffff;
+  --popover-foreground: #2d3748;
+  --primary: #38a169;
+  --primary-foreground: #ffffff;
+  --secondary: #f7fafc;
+  --secondary-foreground: #2d3748;
+  --muted: #edf2f7;
+  --muted-foreground: #4a5568;
+  --accent: #38a169;
+  --accent-foreground: #ffffff;
+  --destructive: #e53e3e;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #ffffff;
+  --ring: #38a169;
+
+  /* Theme-specific colors */
+  --theme-primary: #fefefe;
+  --theme-secondary: #2d3748;
+  --theme-accent: #38a169;
+  --theme-accent-secondary: #2f855a;
+  --theme-surface: #ffffff;
+  --theme-surface-secondary: #f7fafc;
+  --theme-text: #2d3748;
+  --theme-text-secondary: #4a5568;
+  --theme-border: #e2e8f0;
+  --theme-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* === OCEAN THEME === */
+.ocean {
+  --background: #001122;
+  --foreground: #b3d9ff;
+  --card: #002244;
+  --card-foreground: #b3d9ff;
+  --popover: #003366;
+  --popover-foreground: #b3d9ff;
+  --primary: #0080ff;
+  --primary-foreground: #ffffff;
+  --secondary: #004488;
+  --secondary-foreground: #b3d9ff;
+  --muted: #0066aa;
+  --muted-foreground: #80c5ff;
+  --accent: #00ccff;
+  --accent-foreground: #000000;
+  --destructive: #ff4444;
+  --destructive-foreground: #ffffff;
+  --border: #0080ff;
+  --input: #003366;
+  --ring: #00ccff;
+
+  /* Theme-specific colors */
+  --theme-primary: #001122;
+  --theme-secondary: #b3d9ff;
+  --theme-accent: #0080ff;
+  --theme-accent-secondary: #00ccff;
+  --theme-surface: #002244;
+  --theme-surface-secondary: #003366;
+  --theme-text: #b3d9ff;
+  --theme-text-secondary: #80c5ff;
+  --theme-border: #0080ff;
+  --theme-shadow: rgba(0, 128, 255, 0.3);
+}
+
+/* === SUNSET THEME === */
+.sunset {
+  --background: #2d1b69;
+  --foreground: #ffeaa7;
+  --card: #4834d4;
+  --card-foreground: #ffeaa7;
+  --popover: #5742d6;
+  --popover-foreground: #ffeaa7;
+  --primary: #ff7675;
+  --primary-foreground: #2d3436;
+  --secondary: #a29bfe;
+  --secondary-foreground: #2d3436;
+  --muted: #6c5ce7;
+  --muted-foreground: #ffeaa7;
+  --accent: #fdcb6e;
+  --accent-foreground: #2d3436;
+  --destructive: #d63031;
+  --destructive-foreground: #ffffff;
+  --border: #ff7675;
+  --input: #5742d6;
+  --ring: #fdcb6e;
+
+  /* Theme-specific colors */
+  --theme-primary: #2d1b69;
+  --theme-secondary: #ffeaa7;
+  --theme-accent: #ff7675;
+  --theme-accent-secondary: #fdcb6e;
+  --theme-surface: #4834d4;
+  --theme-surface-secondary: #5742d6;
+  --theme-text: #ffeaa7;
+  --theme-text-secondary: #dda0dd;
+  --theme-border: #ff7675;
+  --theme-shadow: rgba(255, 118, 117, 0.4);
+}

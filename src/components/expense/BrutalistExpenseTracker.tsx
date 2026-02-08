@@ -15,6 +15,7 @@ import {
 import { formatCurrency } from "../../utils/currency";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SettingsModal from "../ui/SettingsModal";
 import {
   BarChart3,
   Download,
@@ -22,6 +23,7 @@ import {
   Plus,
   DollarSign,
   ArrowLeft,
+  Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +34,7 @@ export function BrutalistExpenseTracker() {
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showBudgetManager, setShowBudgetManager] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"expenses" | "analytics">(
     "expenses",
   );
@@ -216,6 +219,13 @@ export function BrutalistExpenseTracker() {
             </div>
             <div className="flex items-center space-x-4">
               <Button
+                onClick={() => setShowSettingsModal(true)}
+                className="bg-black border-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-black uppercase tracking-wide px-4 py-3 flex items-center gap-2"
+              >
+                <Settings className="w-5 h-5" />
+                SETTINGS
+              </Button>
+              <Button
                 onClick={() => navigate("/")}
                 variant="outline"
                 className="border-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-black uppercase tracking-wide px-6 py-3 flex items-center gap-2"
@@ -384,11 +394,10 @@ export function BrutalistExpenseTracker() {
         />
       )}
 
-      {showExportModal && (
-        <ExportModal
-          onClose={() => setShowExportModal(false)}
-          expenses={filteredExpenses as any}
-          selectedPeriod={selectedPeriod}
+      {showSettingsModal && (
+        <SettingsModal
+          isOpen={showSettingsModal}
+          onClose={() => setShowSettingsModal(false)}
         />
       )}
     </div>
