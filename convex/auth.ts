@@ -1,22 +1,57 @@
-import { convexAuth, getAuthUserId } from "@convex-dev/auth/server";
-import { Password } from "@convex-dev/auth/providers/Password";
-import { Anonymous } from "@convex-dev/auth/providers/Anonymous";
+import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
+import { components } from "./_generated/api";
+import { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
+import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
+import authConfig from "./auth.config";
 
-export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
-  providers: [Password, Anonymous],
-});
+/**
+ * @todo make this dynamic
+ */
+const siteUrl = "http://localhost:5173";
 
-export const loggedInUser = query({
+console.log(siteUrl);
+
+// The component client has methods needed for integrating Convex with Better Auth,
+// as well as helper methods for general use.
+export const authComponent = createClient<DataModel>(components.betterAuth);
+
+export const createAuth = (ctx: GenericCtx<DataModel>) => {
+  return betterAuth({
+    trustedOrigins: [siteUrl],
+    database: authComponent.adapter(ctx),
+    // baseURL: ,
+    // Configure simple, non-verified email/password to get started
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+    },
+    plugins: [
+      // The cross domain plugin is required for client side frameworks
+      crossDomain({ siteUrl }),
+      // The Convex plugin is required for Convex compatibility
+      convex({ authConfig }),
+    ],
+    socialProviders:
+      process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+        ? {
+            google: {
+              clientId: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              prompt: "select_account",
+              redirectURI: `${siteUrl}/api/auth/callback/google`,
+            },
+          }
+        : {},
+  });
+};
+
+// Example function for getting the current user
+// Feel free to edit, omit, etc.
+export const getCurrentUser = query({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-    const user = await ctx.db.get("users", userId);
-    if (!user) {
-      return null;
-    }
-    return user;
+    return authComponent.getAuthUser(ctx);
   },
 });

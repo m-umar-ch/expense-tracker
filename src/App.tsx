@@ -18,7 +18,7 @@ import AuthPage from "./components/AuthPage";
 
 // Simple wrapper for authenticated routes
 function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
-  const loggedInUser = useQuery(api.auth.loggedInUser);
+  const loggedInUser = useQuery(api.auth.getCurrentUser);
   const initializeCategories = useMutation(
     api.categories.initializeDefaultCategories,
   );
@@ -43,7 +43,7 @@ function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
       <Unauthenticated>
         <AuthPage />
       </Unauthenticated>
-      <Toaster />
+      <Toaster richColors />
     </>
   );
 }

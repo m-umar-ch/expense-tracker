@@ -3,29 +3,58 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 import { DollarSign, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const loggedInUser = useQuery(api.auth.loggedInUser);
+  const currentUser = useQuery(api.auth.getCurrentUser);
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already logged in
   useEffect(() => {
-    if (loggedInUser) {
+    if (currentUser) {
       navigate("/dashboard");
     }
-  }, [loggedInUser, navigate]);
+  }, [currentUser, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual auth logic here
-    // For now, redirect to dashboard
-    navigate("/dashboard");
+
+    if (!isLogin && password !== confirmPassword) {
+      toast.error("PASSWORDS DO NOT MATCH!");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      if (isLogin) {
+        await authClient.signIn.email({
+          email,
+          password,
+        });
+        toast.success("LOGIN SUCCESSFUL!");
+      } else {
+        await authClient.signUp.email({
+          email,
+          password,
+          name: email.split("@")[0], // Use email username as name
+        });
+        toast.success("ACCOUNT CREATED SUCCESSFULLY!");
+      }
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error("Auth error:", error);
+      toast.error(error.message || "AUTHENTICATION FAILED - TRY AGAIN");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -177,9 +206,14 @@ const AuthPage: React.FC = () => {
                 {/* Submit Button */}
                 <Button
                   type="submit"
-                  className="w-full bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-widest py-6 text-xl border-4 border-black transform hover:scale-105 transition-all duration-200 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
+                  disabled={isLoading}
+                  className="w-full bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-widest py-6 text-xl border-4 border-black transform hover:scale-105 transition-all duration-200 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLogin ? "LOGIN NOW" : "CREATE ACCOUNT"}
+                  {isLoading
+                    ? "PROCESSING..."
+                    : isLogin
+                      ? "LOGIN NOW"
+                      : "CREATE ACCOUNT"}
                 </Button>
               </form>
 

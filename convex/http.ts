@@ -1,8 +1,8 @@
-import { auth } from "./auth";
+import { authComponent, createAuth } from "./auth";
 import router from "./router";
 
 const http = router;
 
-auth.addHttpRoutes(http);
+authComponent.registerRoutes(http, createAuth, { cors: true });
 
 export default http;

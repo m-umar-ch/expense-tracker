@@ -1,16 +1,21 @@
 "use client";
-import { useAuthActions } from "@convex-dev/auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Mail, Lock, User, DollarSign } from "lucide-react";
 
 export function SignInForm() {
-  const { signIn } = useAuthActions();
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [submitting, setSubmitting] = useState(false);
 
@@ -26,10 +31,9 @@ export function SignInForm() {
               {flow === "signIn" ? "Welcome Back" : "Create Account"}
             </CardTitle>
             <CardDescription>
-              {flow === "signIn" 
-                ? "Sign in to continue to your expense tracker" 
-                : "Join us to start tracking your expenses"
-              }
+              {flow === "signIn"
+                ? "Sign in to continue to your expense tracker"
+                : "Join us to start tracking your expenses"}
             </CardDescription>
           </div>
         </CardHeader>
@@ -37,12 +41,30 @@ export function SignInForm() {
         <CardContent className="space-y-4">
           <form
             className="space-y-4"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               setSubmitting(true);
+
               const formData = new FormData(e.target as HTMLFormElement);
-              formData.set("flow", flow);
-              void signIn("password", formData).catch((error) => {
+              const email = formData.get("email") as string;
+              const password = formData.get("password") as string;
+
+              try {
+                if (flow === "signIn") {
+                  await authClient.signIn.email({ email, password });
+                } else {
+                  await authClient.signUp.email({
+                    email,
+                    password,
+                    name: email.split("@")[0],
+                  });
+                }
+                toast.success(
+                  flow === "signIn"
+                    ? "Signed in successfully!"
+                    : "Account created successfully!",
+                );
+              } catch (error: any) {
                 let toastTitle = "";
                 if (error.message.includes("Invalid password")) {
                   toastTitle = "Invalid password. Please try again.";
@@ -53,8 +75,9 @@ export function SignInForm() {
                       : "Could not sign up, did you mean to sign in?";
                 }
                 toast.error(toastTitle);
+              } finally {
                 setSubmitting(false);
-              });
+              }
             }}
           >
             <div className="space-y-2">
@@ -91,19 +114,18 @@ export function SignInForm() {
               </div>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={submitting}
               className="w-full"
               size="lg"
             >
               {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {submitting 
-                ? "Please wait..." 
-                : flow === "signIn" 
-                  ? "Sign In" 
-                  : "Create Account"
-              }
+              {submitting
+                ? "Please wait..."
+                : flow === "signIn"
+                  ? "Sign In"
+                  : "Create Account"}
             </Button>
           </form>
 
@@ -128,23 +150,46 @@ export function SignInForm() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground font-medium">OR</span>
+              <span className="bg-card px-2 text-muted-foreground font-medium">
+                OR
+              </span>
             </div>
           </div>
 
-          <Button 
+          <Button
             variant="outline"
             size="lg"
-            onClick={() => void signIn("anonymous")}
+            onClick={async () => {
+              try {
+                await authClient.signIn.email({
+                  email: `guest-${Date.now()}@temp.com`,
+                  password: "guest-password",
+                });
+                toast.success("Signed in as guest!");
+              } catch (error) {
+                // Create guest account if doesn't exist
+                try {
+                  await authClient.signUp.email({
+                    email: `guest-${Date.now()}@temp.com`,
+                    password: "guest-password",
+                    name: "Guest User",
+                  });
+                  toast.success("Guest account created!");
+                } catch (signUpError) {
+                  toast.error("Could not create guest account");
+                }
+              }
+            }}
             className="w-full"
           >
             <User className="mr-2 h-4 w-4" />
             Continue as Guest
           </Button>
-          
+
           <div className="text-center pt-2 border-t">
             <p className="text-xs text-muted-foreground">
-              By continuing, you agree to our terms of service and privacy policy.
+              By continuing, you agree to our terms of service and privacy
+              policy.
             </p>
           </div>
         </CardContent>
