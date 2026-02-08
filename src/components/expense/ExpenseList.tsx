@@ -19,6 +19,10 @@ import {
   Database,
   AlertTriangle,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 
 interface ExpenseListProps {
@@ -31,6 +35,8 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
   const [sortBy, setSortBy] = useState<"date" | "amount" | "category">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const handleDelete = async (expenseId: Id<"expenses">) => {
     if (
@@ -99,6 +105,21 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
 
     return sortOrder === "desc" ? -comparison : comparison;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(sortedExpenses.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedExpenses = sortedExpenses.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (items: number) => {
+    setItemsPerPage(items);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   const SortButton = ({
     field,
@@ -213,7 +234,7 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
 
           {/* Table Body */}
           <div className="bg-black">
-            {sortedExpenses.map((expense, index) => (
+            {paginatedExpenses.map((expense, index) => (
               <div
                 key={expense._id}
                 className={`grid grid-cols-12 gap-4 p-4 items-center border-b-2 border-white hover:bg-red-500 hover:text-black transition-colors group ${
@@ -314,6 +335,107 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
           </div>
         </div>
       </div>
+
+      {/* Pagination Controls */}
+      {sortedExpenses.length > 0 && (
+        <div className="border-t-4 border-red-500 bg-black p-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            {/* Items per page */}
+            <div className="flex items-center gap-4">
+              <span className="font-black uppercase text-white text-sm">
+                RECORDS PER PAGE:
+              </span>
+              <div className="flex gap-2">
+                {[5, 10, 25, 50].map((items) => (
+                  <Button
+                    key={items}
+                    onClick={() => handleItemsPerPageChange(items)}
+                    className={`px-3 py-1 text-sm font-black uppercase border-2 ${
+                      itemsPerPage === items
+                        ? "bg-red-500 text-black border-red-500"
+                        : "bg-black text-white border-white hover:bg-white hover:text-black"
+                    }`}
+                  >
+                    {items}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Page info */}
+            <div className="text-white font-bold uppercase text-sm text-center">
+              SHOWING {startIndex + 1}-
+              {Math.min(endIndex, sortedExpenses.length)} OF{" "}
+              {sortedExpenses.length} RECORDS
+              <br />
+              PAGE {currentPage} OF {totalPages}
+            </div>
+
+            {/* Page navigation */}
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="h-8 w-8 p-0 bg-black text-white border-2 border-white hover:bg-white hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="h-8 w-8 p-0 bg-black text-white border-2 border-white hover:bg-white hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              {/* Page numbers */}
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <Button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`h-8 w-8 p-0 text-sm font-black ${
+                        currentPage === pageNum
+                          ? "bg-red-500 text-black border-2 border-red-500"
+                          : "bg-black text-white border-2 border-white hover:bg-white hover:text-black"
+                      }`}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+
+              <Button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8 p-0 bg-black text-white border-2 border-white hover:bg-white hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8 p-0 bg-black text-white border-2 border-white hover:bg-white hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer Summary */}
       {sortedExpenses.length > 0 && (
