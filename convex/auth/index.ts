@@ -1,17 +1,17 @@
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
-import { components } from "./_generated/api";
-import { DataModel } from "./_generated/dataModel";
-import { query } from "./_generated/server";
+import { components } from "../_generated/api";
+import { DataModel } from "../_generated/dataModel";
+import { query } from "../_generated/server";
 import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
-import authConfig from "./auth.config";
+import { env, validateAuthEnvironment } from "../lib/envUtils";
+import authConfig from "../auth.config";
 
-/**
- * @todo make this dynamic
- */
-const siteUrl = "http://localhost:5173";
+// Validate environment variables on module load
+validateAuthEnvironment();
 
-console.log(siteUrl);
+// Get site URL from Convex environment variables (with autocomplete!)
+const siteUrl = env.siteUrl;
 
 // The component client has methods needed for integrating Convex with Better Auth,
 // as well as helper methods for general use.
@@ -33,25 +33,15 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),
     ],
-    socialProviders:
-      process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-        ? {
-            google: {
-              clientId: process.env.GOOGLE_CLIENT_ID,
-              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-              prompt: "select_account",
-              redirectURI: `${siteUrl}/api/auth/callback/google`,
-            },
-          }
-        : {},
+    socialProviders: env.hasGoogleOAuth
+      ? {
+          google: {
+            clientId: env.googleClientId,
+            clientSecret: env.googleClientSecret,
+            prompt: "select_account",
+            redirectURI: `${siteUrl}/api/auth/callback/google`,
+          },
+        }
+      : {},
   });
 };
-
-// Example function for getting the current user
-// Feel free to edit, omit, etc.
-export const getCurrentUser = query({
-  args: {},
-  handler: async (ctx) => {
-    return authComponent.getAuthUser(ctx);
-  },
-});

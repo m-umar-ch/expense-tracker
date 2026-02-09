@@ -48,7 +48,7 @@ export function BudgetManager({
   );
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateCategory = useMutation(api.categories.updateCategory);
+  const updateCategory = useMutation(api.functions.categories.updateCategory);
 
   const handleBudgetChange = (categoryId: string, value: string) => {
     setBudgets((prev) => ({ ...prev, [categoryId]: value }));
@@ -270,7 +270,7 @@ export function BudgetManager({
                                 className={cn(
                                   "w-full h-3 mb-2",
                                   status.isOverBudget &&
-                                    "[&>[data-state=complete]]:bg-red-500",
+                                    "*:data-[state=complete]:bg-red-500",
                                 )}
                               />
                               <div className="flex justify-between text-xs font-black uppercase">

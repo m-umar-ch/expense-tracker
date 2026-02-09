@@ -8,10 +8,12 @@
  * @module
  */
 
-import type * as auth from "../auth.js";
-import type * as categories from "../categories.js";
-import type * as expenses from "../expenses.js";
+import type * as auth_index from "../auth/index.js";
+import type * as auth_user from "../auth/user.js";
+import type * as functions_categories from "../functions/categories.js";
+import type * as functions_expenses from "../functions/expenses.js";
 import type * as http from "../http.js";
+import type * as lib_envUtils from "../lib/envUtils.js";
 import type * as router from "../router.js";
 
 import type {
@@ -21,10 +23,12 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  auth: typeof auth;
-  categories: typeof categories;
-  expenses: typeof expenses;
+  "auth/index": typeof auth_index;
+  "auth/user": typeof auth_user;
+  "functions/categories": typeof functions_categories;
+  "functions/expenses": typeof functions_expenses;
   http: typeof http;
+  "lib/envUtils": typeof lib_envUtils;
   router: typeof router;
 }>;
 

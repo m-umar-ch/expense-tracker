@@ -34,9 +34,9 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
   });
   const dialogContentRef = useRef<HTMLDivElement>(null);
 
-  const createCategory = useMutation(api.categories.createCategory);
-  const updateCategory = useMutation(api.categories.updateCategory);
-  const deleteCategory = useMutation(api.categories.deleteCategory);
+  const createCategory = useMutation(api.functions.categories.createCategory);
+  const updateCategory = useMutation(api.functions.categories.updateCategory);
+  const deleteCategory = useMutation(api.functions.categories.deleteCategory);
 
   // Scroll to top when form opens
   useEffect(() => {

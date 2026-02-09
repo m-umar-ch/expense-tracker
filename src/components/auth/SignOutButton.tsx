@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 
 export function SignOutButton() {
-  const currentUser = useQuery(api.auth.getCurrentUser);
+  const currentUser = useQuery(api.auth.user.getCurrentUser);
 
   if (!currentUser) {
     return null;

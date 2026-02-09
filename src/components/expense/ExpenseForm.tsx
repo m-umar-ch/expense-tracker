@@ -50,9 +50,11 @@ export function ExpenseForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const createExpense = useMutation(api.expenses.createExpense);
-  const updateExpense = useMutation(api.expenses.updateExpense);
-  const generateUploadUrl = useMutation(api.expenses.generateUploadUrl);
+  const createExpense = useMutation(api.functions.expenses.createExpense);
+  const updateExpense = useMutation(api.functions.expenses.updateExpense);
+  const generateUploadUrl = useMutation(
+    api.functions.expenses.generateUploadUrl,
+  );
 
   const selectedCategory = categories.find(
     (cat) => cat._id === formData.categoryId,

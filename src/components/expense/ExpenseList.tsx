@@ -31,7 +31,7 @@ interface ExpenseListProps {
 }
 
 export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
-  const deleteExpense = useMutation(api.expenses.deleteExpense);
+  const deleteExpense = useMutation(api.functions.expenses.deleteExpense);
   const [sortBy, setSortBy] = useState<"date" | "amount" | "category">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [searchTerm, setSearchTerm] = useState("");

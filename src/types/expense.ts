@@ -1,31 +1,43 @@
-import { Id } from "../../convex/_generated/dataModel";
+// Frontend types for Expense Tracker
+// These types mirror the Convex backend types but are frontend-specific
+
+/**
+ * Generic ID type for Convex documents
+ * This mirrors the Id<T> type from Convex but for frontend use
+ */
+export type ConvexId<TableName extends string> = string & {
+  __tableName: TableName;
+};
 
 export interface Category {
-  _id: Id<"categories">;
+  _id: ConvexId<"categories">;
   name: string;
   color?: string;
   budgetLimit?: number;
   isDefault: boolean;
-  userId: Id<"users">;
+  userId: string;
 }
 
 export interface Expense {
-  _id: Id<"expenses">;
+  _id: ConvexId<"expenses">;
   name: string;
-  categoryId: Id<"categories">;
+  categoryId: ConvexId<"categories">;
   amount: number;
   date: number;
   notes?: string;
-  receiptImageId?: Id<"_storage">;
-  userId: Id<"users">;
-  category?: Category;
-  receiptUrl?: string;
+  receiptImageId?: ConvexId<"_storage">;
+  userId: string;
+  category?: Category | null;
+  receiptUrl?: string | null;
+  _creationTime?: number;
 }
 
 export interface CategorySpending {
   category: Category;
   totalSpent: number;
   expenseCount: number;
+  budgetLimit: number;
+  budgetUsed: number;
   percentageOfTotal: number;
   budgetUtilization: number | null;
 }

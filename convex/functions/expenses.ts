@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation } from "../_generated/server";
 import { v } from "convex/values";
-import { authComponent } from "./auth";
+import { authComponent } from "../auth";
 
 export const listExpenses = query({
   args: {

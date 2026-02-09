@@ -6,6 +6,7 @@ import { ExpenseForm, ExpenseList } from "./";
 import { CategorySummary, CategoryManager } from "../category";
 import { TimePeriodFilter, ExportModal, StatisticsOverview } from "../ui";
 import { BudgetOverview, BudgetManager } from "../budget";
+import { SignOutButton } from "../auth";
 import {
   Category,
   Expense,
@@ -24,8 +25,10 @@ import {
   DollarSign,
   ArrowLeft,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { authClient } from "@/lib/auth-client";
 
 export function BrutalistExpenseTracker() {
   const navigate = useNavigate();
@@ -42,8 +45,7 @@ export function BrutalistExpenseTracker() {
     undefined,
   );
 
-  const categories =
-    (useQuery(api.categories.listCategories) as Category[]) || [];
+  const categories = useQuery(api.functions.categories.listCategories) || [];
 
   const getDateRange = (period: TimePeriod) => {
     const now = new Date();
@@ -139,63 +141,57 @@ export function BrutalistExpenseTracker() {
   };
 
   const { startDate, endDate } = getDateRange(selectedPeriod);
-  const expenses = useQuery(api.expenses.listExpenses, {
+  const expenses = useQuery(api.functions.expenses.listExpenses, {
     startDate,
     endDate,
   });
 
-  // Type the expenses properly to match API response
-  type ExpenseWithCategory = {
-    _id: Id<"expenses">;
-    name: string;
-    categoryId: Id<"categories">;
-    amount: number;
-    date: number;
-    notes?: string;
-    receiptImageId?: Id<"_storage">;
-    userId: Id<"users">;
-    category: Category | null;
-    receiptUrl?: string | null;
-    _creationTime: number;
-  };
+  // Use the dedicated API endpoint for category spending
+  const categorySpendingData = useQuery(
+    api.functions.expenses.getCategorySpending,
+    {
+      startDate,
+      endDate,
+    },
+  );
 
-  const filteredExpenses = (expenses || []) as ExpenseWithCategory[];
+  const filteredExpenses = (expenses || []) as Expense[];
 
-  const categorySpending: CategorySpending[] = [];
-  if (categories && filteredExpenses) {
-    for (const category of categories) {
-      const categoryExpenses = filteredExpenses.filter(
-        (expense) => expense.categoryId === category._id,
-      );
-      const totalSpent = categoryExpenses.reduce(
+  // Process category spending data to include additional calculated fields
+  const categorySpending: CategorySpending[] = (categorySpendingData || []).map(
+    (item) => {
+      const totalAllExpenses = filteredExpenses.reduce(
         (sum, expense) => sum + expense.amount,
         0,
       );
-      categorySpending.push({
-        category,
-        totalSpent,
-        expenseCount: categoryExpenses.length,
+      return {
+        ...item,
         percentageOfTotal:
-          filteredExpenses.length > 0
-            ? (totalSpent /
-                filteredExpenses.reduce((sum, e) => sum + e.amount, 0)) *
-              100
-            : 0,
-        budgetUtilization: category.budgetLimit
-          ? (totalSpent / category.budgetLimit) * 100
+          totalAllExpenses > 0 ? (item.totalSpent / totalAllExpenses) * 100 : 0,
+        budgetUtilization: item.category.budgetLimit
+          ? (item.totalSpent / item.category.budgetLimit) * 100
           : null,
-      });
-    }
-  }
+      };
+    },
+  );
 
-  const handleEditExpense = (expense: ExpenseWithCategory) => {
-    setEditingExpense(expense as any);
+  const handleEditExpense = (expense: Expense) => {
+    setEditingExpense(expense);
     setShowExpenseForm(true);
   };
 
   const handleCloseExpenseForm = () => {
     setShowExpenseForm(false);
     setEditingExpense(undefined);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
   };
 
   return (
@@ -218,6 +214,13 @@ export function BrutalistExpenseTracker() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button
+                onClick={handleSignOut}
+                className="bg-black border-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-black uppercase tracking-wide px-4 py-3 flex items-center gap-2"
+              >
+                <LogOut className="w-5 h-5" />
+                LOGOUT
+              </Button>
               <Button
                 onClick={() => setShowSettingsModal(true)}
                 className="bg-black border-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-black uppercase tracking-wide px-4 py-3 flex items-center gap-2"
@@ -288,7 +291,7 @@ export function BrutalistExpenseTracker() {
             SYSTEM OVERVIEW
           </h2>
           <StatisticsOverview
-            expenses={filteredExpenses as any}
+            expenses={filteredExpenses}
             categorySpending={categorySpending}
           />
         </div>
@@ -327,8 +330,8 @@ export function BrutalistExpenseTracker() {
                   TRANSACTION LOG
                 </h3>
                 <ExpenseList
-                  expenses={filteredExpenses as any}
-                  onEditExpense={handleEditExpense as any}
+                  expenses={filteredExpenses}
+                  onEditExpense={handleEditExpense}
                 />
               </div>
             )}
@@ -381,16 +384,8 @@ export function BrutalistExpenseTracker() {
       {showExportModal && (
         <ExportModal
           onClose={() => setShowExportModal(false)}
-          expenses={filteredExpenses as any}
+          expenses={filteredExpenses}
           selectedPeriod={selectedPeriod}
-        />
-      )}
-
-      {showBudgetManager && (
-        <BudgetManager
-          onClose={() => setShowBudgetManager(false)}
-          categories={categories}
-          categorySpending={categorySpending}
         />
       )}
 

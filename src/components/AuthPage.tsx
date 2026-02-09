@@ -9,7 +9,7 @@ import { DollarSign, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const currentUser = useQuery(api.auth.getCurrentUser);
+  const currentUser = useQuery(api.auth.user.getCurrentUser);
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -219,15 +219,6 @@ const AuthPage: React.FC = () => {
 
               {/* Additional Options */}
               <div className="mt-8 space-y-4">
-                {isLogin && (
-                  <Button
-                    variant="ghost"
-                    className="w-full text-gray-400 hover:text-white font-bold uppercase underline"
-                  >
-                    FORGOT PASSWORD?
-                  </Button>
-                )}
-
                 {/* Free Access Reminder */}
                 <div className="bg-red-500 border-4 border-white p-4 text-center">
                   <p className="text-black font-black uppercase text-sm">

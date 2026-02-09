@@ -10,8 +10,8 @@ import { authClient } from "@/lib/auth-client";
 const convex = new ConvexReactClient(
   import.meta.env.VITE_CONVEX_URL as string,
   {
-    // Optionally pause queries until the user is authenticated
-    expectAuth: true,
+    // Don't pause queries for unauthenticated users since we have public routes
+    expectAuth: false,
   },
 );
 createRoot(document.getElementById("root")!).render(

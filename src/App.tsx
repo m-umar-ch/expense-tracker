@@ -11,16 +11,17 @@ import { SignInForm, SignOutButton } from "./components/auth";
 import { Toaster } from "sonner";
 import { BrutalistExpenseTracker } from "./components/expense/BrutalistExpenseTracker";
 import { useEffect } from "react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Import components
 import Homepage from "./components/Homepage";
 import AuthPage from "./components/AuthPage";
 
-// Simple wrapper for authenticated routes
-function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
-  const loggedInUser = useQuery(api.auth.getCurrentUser);
+// Component that only renders for authenticated users
+function DashboardWrapper() {
+  const loggedInUser = useQuery(api.auth.user.getCurrentUser);
   const initializeCategories = useMutation(
-    api.categories.initializeDefaultCategories,
+    api.functions.categories.initializeDefaultCategories,
   );
 
   useEffect(() => {
@@ -29,6 +30,7 @@ function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
     }
   }, [loggedInUser, initializeCategories]);
 
+  // Show loading spinner while checking auth
   if (loggedInUser === undefined) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-black">
@@ -37,13 +39,26 @@ function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // If user is null (not authenticated), this won't render due to the Authenticated wrapper
+  // But we add this check for safety
+  if (!loggedInUser) {
+    return null;
+  }
+
+  return <BrutalistExpenseTracker />;
+}
+
+// Simple wrapper for protected routes with proper auth handling
+function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Authenticated>{children}</Authenticated>
+      <Authenticated>
+        {children}
+        <Toaster richColors />
+      </Authenticated>
       <Unauthenticated>
         <AuthPage />
       </Unauthenticated>
-      <Toaster richColors />
     </>
   );
 }
@@ -65,7 +80,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <AuthenticatedRoute>
-        <BrutalistExpenseTracker />
+        <DashboardWrapper />
       </AuthenticatedRoute>
     ),
   },
@@ -77,5 +92,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
+  );
 }
