@@ -48,7 +48,7 @@ export const CURRENCIES: { value: Currency; label: string; symbol: string }[] =
     { value: "JPY", label: "Japanese Yen", symbol: "¥" },
     { value: "CAD", label: "Canadian Dollar", symbol: "C$" },
     { value: "AUD", label: "Australian Dollar", symbol: "A$" },
-    { value: "INR", label: "Indian Rupee", symbol: "₹" },
+    { value: "INR", label: "Indian Rupee", symbol: "$" },
     { value: "CNY", label: "Chinese Yuan", symbol: "¥" },
     { value: "BRL", label: "Brazilian Real", symbol: "R$" },
     { value: "MXN", label: "Mexican Peso", symbol: "MX$" },

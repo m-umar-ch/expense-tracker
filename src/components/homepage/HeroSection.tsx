@@ -74,7 +74,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onGetStarted }) => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="font-bold uppercase">SAVED</span>
-                    <span className="font-black text-green-400">₹5,000</span>
+                    <span className="font-black text-green-400">$5,000</span>
                   </div>
                 </div>
               </div>
