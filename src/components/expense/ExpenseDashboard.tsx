@@ -1,15 +1,17 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { ExpenseForm, ExpenseList } from "./";
+import { ExpenseForm, ExpenseList, IncomeForm } from "./";
 import { CategorySummary, CategoryManager } from "../category";
 import { TimePeriodFilter, ExportModal, StatisticsOverview } from "../ui";
+import FinancialCharts from "../analytics/FinancialCharts";
 import { BudgetOverview, BudgetManager } from "../budget";
 import {
   Category,
   Expense,
   CategorySpending,
   TimePeriod,
+  Income,
 } from "../../types/expense";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +27,9 @@ import {
   Settings,
   LogOut,
   LayoutDashboard,
+  Wallet,
 } from "lucide-react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthActions } from "@convex-dev/auth/react";
 
@@ -33,11 +37,15 @@ export function ExpenseDashboard() {
   const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("monthly");
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showBudgetManager, setShowBudgetManager] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>(
+    undefined,
+  );
+  const [editingIncome, setEditingIncome] = useState<Income | undefined>(
     undefined,
   );
 
@@ -142,6 +150,24 @@ export function ExpenseDashboard() {
     endDate,
   });
 
+  const financialSummary = useQuery(api.functions.incomes.getFinancialSummary, {
+    startDate,
+    endDate,
+  });
+
+  const evolution = useQuery(api.functions.incomes.getEvolution, {
+    startDate,
+    endDate,
+  });
+
+  const incomesData =
+    useQuery(api.functions.incomes.listIncomes, {
+      startDate,
+      endDate,
+    }) || [];
+
+  const incomes = incomesData as Income[];
+
   const categorySpendingData = useQuery(
     api.functions.expenses.getCategorySpending,
     {
@@ -190,6 +216,36 @@ export function ExpenseDashboard() {
       console.error("Sign out error:", error);
     }
   };
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      if (e.key === "n" || e.key === "e") {
+        e.preventDefault();
+        setShowExpenseForm(true);
+      } else if (e.key === "i") {
+        e.preventDefault();
+        setShowIncomeForm(true);
+      } else if (e.key === "s") {
+        e.preventDefault();
+        setShowSettingsModal(true);
+      } else if (e.key === "k") {
+        e.preventDefault();
+        setShowCategoryManager(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -243,6 +299,14 @@ export function ExpenseDashboard() {
               Add Expense
             </Button>
             <Button
+              onClick={() => setShowIncomeForm(true)}
+              variant="outline"
+              className="gap-2 border-green-500/50 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30"
+            >
+              <Wallet className="h-4 w-4" />
+              Add Income
+            </Button>
+            <Button
               variant="outline"
               onClick={() => setShowCategoryManager(true)}
               className="gap-2"
@@ -274,6 +338,11 @@ export function ExpenseDashboard() {
         <StatisticsOverview
           expenses={filteredExpenses}
           categorySpending={categorySpending}
+          financialSummary={financialSummary}
+          daysCount={Math.max(
+            1,
+            Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)),
+          )}
         />
 
         {/* Tab Navigation */}
@@ -303,23 +372,57 @@ export function ExpenseDashboard() {
 
           <TabsContent value="analytics" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Budget Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <BudgetOverview categorySpending={categorySpending} />
-                </CardContent>
-              </Card>
+              <div className="space-y-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Budget Status</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <BudgetOverview categorySpending={categorySpending} />
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Spending Highlights</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CategorySummary categorySpending={categorySpending} />
-                </CardContent>
-              </Card>
+                {evolution && (
+                  <Card className="border-primary/20 bg-primary/5">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Period Comparison
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-end gap-2">
+                        <span
+                          className={`text-2xl font-bold ${evolution.percentageChange > 0 ? "text-destructive" : "text-green-600"}`}
+                        >
+                          {evolution.percentageChange > 0 ? "+" : ""}
+                          {evolution.percentageChange.toFixed(1)}%
+                        </span>
+                        <span className="text-sm text-muted-foreground mb-1">
+                          spending compared to previous period
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Spending Highlights</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CategorySummary categorySpending={categorySpending} />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-8">
+                <FinancialCharts
+                  expenses={filteredExpenses}
+                  incomes={incomes as Income[]}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
@@ -331,6 +434,16 @@ export function ExpenseDashboard() {
           onClose={handleCloseExpenseForm}
           categories={categories}
           editingExpense={editingExpense}
+        />
+      )}
+
+      {showIncomeForm && (
+        <IncomeForm
+          onClose={() => {
+            setShowIncomeForm(false);
+            setEditingIncome(undefined);
+          }}
+          editingIncome={editingIncome}
         />
       )}
 
@@ -353,6 +466,7 @@ export function ExpenseDashboard() {
         <ExportModal
           onClose={() => setShowExportModal(false)}
           expenses={filteredExpenses}
+          incomes={incomes}
           selectedPeriod={selectedPeriod}
         />
       )}

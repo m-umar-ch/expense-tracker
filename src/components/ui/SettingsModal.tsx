@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/select";
 import { useTheme, AVAILABLE_THEMES } from "../theme-provider";
 import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
-import { Monitor, Sun, Moon } from "lucide-react";
+import { Monitor, Sun, Moon, EyeOff } from "lucide-react";
+import { Switch } from "./switch";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -50,10 +51,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         </DialogHeader>
 
         <Tabs defaultValue="theme" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="theme">Appearance</TabsTrigger>
             <TabsTrigger value="currency">Currency</TabsTrigger>
             <TabsTrigger value="localization">Local</TabsTrigger>
+            <TabsTrigger value="privacy">Privacy</TabsTrigger>
           </TabsList>
 
           <TabsContent value="theme" className="space-y-4 py-4">
@@ -137,6 +139,30 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="privacy" className="space-y-4 py-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <EyeOff className="w-4 h-4 text-primary" />
+                  <Label className="text-base font-semibold">
+                    No-Bullshit Mode
+                  </Label>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Instantly blurs all currency amounts and private financial
+                  data. Perfect for using ExpenseTrack in cafes, airports, or
+                  during screenshares.
+                </p>
+              </div>
+              <Switch
+                checked={settings.privacyMode}
+                onCheckedChange={(checked) =>
+                  updateSetting("privacyMode", checked)
+                }
+              />
             </div>
           </TabsContent>
         </Tabs>

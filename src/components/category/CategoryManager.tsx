@@ -28,8 +28,11 @@ import {
   ChevronRight,
   PlusCircle,
   Hash,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { formatCurrencyCompact } from "@/utils/currency";
 
 interface CategoryManagerProps {
   categories: Category[];

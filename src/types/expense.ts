@@ -32,6 +32,16 @@ export interface Expense {
   _creationTime?: number;
 }
 
+export interface Income {
+  _id: ConvexId<"incomes">;
+  name: string;
+  amount: number;
+  date: number;
+  notes?: string;
+  userId: string;
+  _creationTime?: number;
+}
+
 export interface CategorySpending {
   category: Category;
   totalSpent: number;

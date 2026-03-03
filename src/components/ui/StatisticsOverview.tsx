@@ -13,13 +13,22 @@ import {
 interface StatisticsOverviewProps {
   expenses: Expense[];
   categorySpending: CategorySpending[];
+  financialSummary?: {
+    totalExpenses: number;
+    totalIncome: number;
+    netBalance: number;
+    savingsRate: number;
+  };
+  daysCount?: number;
 }
 
 export function StatisticsOverview({
   expenses,
   categorySpending,
+  financialSummary,
+  daysCount = 1,
 }: StatisticsOverviewProps) {
-  const { formatCurrency } = useSettings();
+  const { settings, formatCurrency } = useSettings();
   const totalExpenses = expenses.length;
   const totalAmount = expenses.reduce(
     (sum, expense) => sum + expense.amount,
@@ -36,26 +45,49 @@ export function StatisticsOverview({
 
   const stats = [
     {
-      label: "Total Records",
-      value: totalExpenses.toString(),
-      icon: TrendingUp,
-    },
-    {
-      label: "Total Amount",
-      value: formatCurrency(totalAmount),
+      label: "Net Balance",
+      value: financialSummary
+        ? formatCurrency(financialSummary.netBalance)
+        : formatCurrency(totalAmount * -1),
       icon: DollarSign,
+      color:
+        financialSummary && financialSummary.netBalance >= 0
+          ? "text-green-600"
+          : "text-destructive",
     },
     {
-      label: "Avg. per Record",
-      value: formatCurrency(averagePerExpense),
+      label: "Total Income",
+      value: financialSummary
+        ? formatCurrency(financialSummary.totalIncome)
+        : "--",
+      icon: TrendingUp,
+      color: "text-green-600",
+    },
+    {
+      label: "Total Expenses",
+      value: formatCurrency(totalAmount),
       icon: BarChart3,
+      color: "text-destructive",
     },
     {
-      label: "Active Categories",
-      value: categoriesWithSpending.toString(),
-      icon: FolderOpen,
+      label: "Savings Rate",
+      value: financialSummary
+        ? `${financialSummary.savingsRate.toFixed(1)}%`
+        : "--",
+      icon: PieChart,
+      color: "text-primary",
+    },
+    {
+      label: "Avg. Daily Spend",
+      value: formatCurrency(totalAmount / (daysCount || 1)),
+      icon: BarChart3,
+      color: "text-muted-foreground",
     },
   ];
+
+  const blurClass = settings.privacyMode
+    ? "blur-[8px] select-none pointer-events-none"
+    : "";
 
   return (
     <div className="w-full space-y-6">
@@ -67,10 +99,14 @@ export function StatisticsOverview({
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {stat.label}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <stat.icon
+                className={`h-4 w-4 text-muted-foreground ${blurClass}`}
+              />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className={`text-2xl font-bold ${stat.color} ${blurClass}`}>
+                {stat.value}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -97,7 +133,9 @@ export function StatisticsOverview({
                     {topCategory.category.name}
                   </h4>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xl font-bold text-primary">
+                    <span
+                      className={`text-xl font-bold text-primary ${blurClass}`}
+                    >
                       {formatCurrency(topCategory.totalSpent)}
                     </span>
                     <Badge
@@ -110,7 +148,9 @@ export function StatisticsOverview({
                 </div>
               </div>
               <div className="hidden sm:block text-right">
-                <div className="text-2xl font-black text-primary/20">
+                <div
+                  className={`text-2xl font-black text-primary/20 ${blurClass}`}
+                >
                   {topCategory.percentageOfTotal.toFixed(1)}%
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Expense, TimePeriod } from "../../types/expense";
+import { Expense, TimePeriod, Income } from "../../types/expense";
 import {
   Dialog,
   DialogContent,
@@ -14,51 +14,79 @@ import { Loader2, FileText, Code, Download, Database } from "lucide-react";
 
 interface ExportModalProps {
   expenses: Expense[];
+  incomes: Income[];
   selectedPeriod: TimePeriod;
   onClose: () => void;
 }
 
 export function ExportModal({
   expenses,
+  incomes,
   selectedPeriod,
   onClose,
 }: ExportModalProps) {
   const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
   const [isExporting, setIsExporting] = useState(false);
 
-  const exportToCSV = (data: Expense[]) => {
-    const headers = ["Date", "Name", "Category", "Amount ($)", "Notes"];
+  const exportToCSV = (data: Expense[], incomeData: Income[]) => {
+    const expenseHeaders = [
+      "Type",
+      "Date",
+      "Name",
+      "Category",
+      "Amount ($)",
+      "Notes",
+    ];
+
+    const expenseRows = data.map((item) => [
+      "Expense",
+      new Date(item.date).toLocaleDateString("en-US"),
+      `"${item.name.replace(/"/g, '""')}"`,
+      `"${item.category?.name || "Unknown"}"`,
+      item.amount.toString(),
+      `"${(item.notes || "").replace(/"/g, '""')}"`,
+    ]);
+
+    const incomeRows = incomeData.map((item) => [
+      "Income",
+      new Date(item.date).toLocaleDateString("en-US"),
+      `"${item.name.replace(/"/g, '""')}"`,
+      "N/A",
+      item.amount.toString(),
+      `"${(item.notes || "").replace(/"/g, '""')}"`,
+    ]);
+
     const csvContent = [
-      headers.join(","),
-      ...data.map((expense) =>
-        [
-          new Date(expense.date).toLocaleDateString("en-US"),
-          `"${expense.name.replace(/"/g, '""')}"`,
-          `"${expense.category?.name || "Unknown"}"`,
-          expense.amount.toString(),
-          `"${(expense.notes || "").replace(/"/g, '""')}"`,
-        ].join(","),
-      ),
-    ].join("\\n");
+      expenseHeaders.join(","),
+      ...expenseRows.map((r) => r.join(",")),
+      ...incomeRows.map((r) => r.join(",")),
+    ].join("\n");
 
     return csvContent;
   };
 
-  const exportToJSON = (data: Expense[]) => {
-    const exportData = data.map((expense) => ({
-      date: new Date(expense.date).toISOString(),
-      name: expense.name,
-      category: expense.category?.name || "Unknown",
-      amount: expense.amount,
-      notes: expense.notes || "",
-      categoryColor: expense.category?.color,
-    }));
+  const exportToJSON = (data: Expense[], incomeData: Income[]) => {
+    const exportData = {
+      expenses: data.map((expense) => ({
+        date: new Date(expense.date).toISOString(),
+        name: expense.name,
+        category: expense.category?.name || "Unknown",
+        amount: expense.amount,
+        notes: expense.notes || "",
+      })),
+      incomes: incomeData.map((income) => ({
+        date: new Date(income.date).toISOString(),
+        name: income.name,
+        amount: income.amount,
+        notes: income.notes || "",
+      })),
+    };
 
     return JSON.stringify(exportData, null, 2);
   };
 
   const handleExport = async () => {
-    if (expenses.length === 0) {
+    if (expenses.length === 0 && incomes.length === 0) {
       return;
     }
 
@@ -70,12 +98,12 @@ export function ExportModal({
       let mimeType: string;
 
       if (exportFormat === "csv") {
-        content = exportToCSV(expenses);
-        filename = `expenses-${selectedPeriod}-${new Date().toISOString().split("T")[0]}.csv`;
+        content = exportToCSV(expenses, incomes);
+        filename = `financial-data-${selectedPeriod}-${new Date().toISOString().split("T")[0]}.csv`;
         mimeType = "text/csv";
       } else {
-        content = exportToJSON(expenses);
-        filename = `expenses-${selectedPeriod}-${new Date().toISOString().split("T")[0]}.json`;
+        content = exportToJSON(expenses, incomes);
+        filename = `financial-data-${selectedPeriod}-${new Date().toISOString().split("T")[0]}.json`;
         mimeType = "application/json";
       }
 
@@ -103,7 +131,7 @@ export function ExportModal({
       "6months": "Last 6 Months",
       yearly: "This Year",
       all: "All Time",
-    };
+    } as Record<TimePeriod, string>;
     return labels[period];
   };
 
@@ -116,7 +144,7 @@ export function ExportModal({
           </DialogTitle>
           <div className="flex items-center gap-4 mt-3">
             <Badge className="bg-white text-black font-black uppercase px-3 py-1">
-              {expenses.length} RECORDS
+              {expenses.length + incomes.length} RECORDS
             </Badge>
             <Badge className="bg-red-500 text-black font-black uppercase px-3 py-1">
               {formatPeriodLabel(selectedPeriod).toUpperCase()}
@@ -124,14 +152,14 @@ export function ExportModal({
           </div>
         </DialogHeader>
 
-        {expenses.length === 0 ? (
+        {expenses.length === 0 && incomes.length === 0 ? (
           <div className="bg-red-500 border-4 border-black p-12 text-center">
             <Database className="w-16 h-16 text-black mx-auto mb-4" />
             <h3 className="text-2xl font-black uppercase text-black mb-2">
               NO DATA TO EXPORT
             </h3>
             <p className="font-bold uppercase text-black">
-              NO EXPENSES FOUND FOR SELECTED PERIOD
+              NO RECORDS FOUND FOR SELECTED PERIOD
             </p>
             <Button
               onClick={onClose}
@@ -242,10 +270,19 @@ export function ExportModal({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                   <div className="border-4 border-red-500 p-4">
                     <div className="text-3xl font-black text-white">
-                      {expenses.length}
+                      {expenses.length + incomes.length}
                     </div>
                     <div className="font-bold uppercase text-gray-400 text-sm">
                       TOTAL RECORDS
+                    </div>
+                  </div>
+                  <div className="border-4 border-red-500 p-4">
+                    <div className="text-3xl font-black text-white">
+                      $
+                      {incomes.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
+                    </div>
+                    <div className="font-bold uppercase text-gray-400 text-sm">
+                      TOTAL INCOME
                     </div>
                   </div>
                   <div className="border-4 border-red-500 p-4">
@@ -256,7 +293,7 @@ export function ExportModal({
                         .toFixed(2)}
                     </div>
                     <div className="font-bold uppercase text-gray-400 text-sm">
-                      TOTAL AMOUNT
+                      TOTAL EXPENSES
                     </div>
                   </div>
                   <div className="border-4 border-red-500 p-4">

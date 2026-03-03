@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as functions_categories from "../functions/categories.js";
 import type * as functions_expenses from "../functions/expenses.js";
+import type * as functions_incomes from "../functions/incomes.js";
 import type * as http from "../http.js";
 import type * as router from "../router.js";
 import type * as users from "../users.js";
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   "functions/categories": typeof functions_categories;
   "functions/expenses": typeof functions_expenses;
+  "functions/incomes": typeof functions_incomes;
   http: typeof http;
   router: typeof router;
   users: typeof users;

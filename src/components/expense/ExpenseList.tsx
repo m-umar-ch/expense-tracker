@@ -146,7 +146,7 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
           </div>
         ),
         cell: ({ row }) => {
-          const amount = parseFloat(row.getValue("amount"));
+          const amount = row.original.amount;
           return (
             <div className="text-right font-bold">{formatCurrency(amount)}</div>
           );
@@ -167,7 +167,9 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
                 <DropdownMenuContent align="end">
                   {expense.receiptUrl && (
                     <DropdownMenuItem
-                      onClick={() => window.open(expense.receiptUrl, "_blank")}
+                      onClick={() =>
+                        window.open(expense.receiptUrl as string, "_blank")
+                      }
                     >
                       <Eye className="mr-2 h-4 w-4" /> View Receipt
                     </DropdownMenuItem>

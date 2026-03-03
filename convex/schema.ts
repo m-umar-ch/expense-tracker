@@ -24,4 +24,14 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_and_date", ["userId", "date"])
     .index("by_user_and_category", ["userId", "categoryId"]),
+
+  incomes: defineTable({
+    name: v.string(),
+    amount: v.number(),
+    date: v.number(),
+    notes: v.optional(v.string()),
+    userId: v.id("users"),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_date", ["userId", "date"]),
 });

@@ -17,6 +17,7 @@ interface AppSettings {
   language: string;
   dateFormat: string;
   numberFormat: string;
+  privacyMode: boolean;
 }
 
 interface SettingsContextType {
@@ -35,6 +36,7 @@ const defaultSettings: AppSettings = {
   language: "en",
   dateFormat: "MM/dd/yyyy",
   numberFormat: "en-US",
+  privacyMode: false,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(

@@ -27,6 +27,7 @@ import { Upload, Loader2, Receipt, Trash2 } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
+import { Field, FieldLabel } from "../ui/field";
 
 interface ExpenseFormProps {
   categories: Category[];
@@ -39,7 +40,7 @@ const expenseSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   amount: z.number().min(0, "Amount must be positive"),
   date: z.string().min(1, "Date is required"),
-  notes: z.string().optional(),
+  notes: z.string(),
 });
 
 export function ExpenseForm({
@@ -67,7 +68,9 @@ export function ExpenseForm({
         : new Date().toISOString().split("T")[0],
       notes: editingExpense?.notes || "",
     },
-    // validatorAdapter: zodValidator(),
+    validators: {
+      onChange: expenseSchema,
+    },
     onSubmit: async ({ value }) => {
       setIsSubmitting(true);
       try {
@@ -147,114 +150,136 @@ export function ExpenseForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <form.Field
               name="name"
-              children={(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>Expense Name</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="e.g., Grocery Shopping"
-                  />
-                  {field.state.meta.errors ? (
-                    <em className="text-xs text-destructive">
-                      {field.state.meta.errors.join(", ")}
-                    </em>
-                  ) : null}
-                </div>
-              )}
+              children={(field) => {
+                const current = field.state.meta;
+                const isInvalid = current.isTouched && !current.isValid;
+
+                return (
+                  <Field className="space-y-2" data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Expense Name</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="e.g., Grocery Shopping"
+                    />
+                  </Field>
+                );
+              }}
             />
 
             <form.Field
               name="amount"
-              children={(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>Amount</Label>
-                  <Input
-                    id={field.name}
-                    type="number"
-                    step="0.01"
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(Number(e.target.value))}
-                  />
-                </div>
-              )}
+              children={(field) => {
+                const current = field.state.meta;
+                const isInvalid = current.isTouched && !current.isValid;
+
+                return (
+                  <Field className="space-y-2" data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                    <Input
+                      id={field.name}
+                      type="number"
+                      step="0.01"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) =>
+                        field.handleChange(Number(e.target.value))
+                      }
+                    />
+                  </Field>
+                );
+              }}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <form.Field
               name="categoryId"
-              children={(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>Category</Label>
-                  <Select
-                    value={field.state.value}
-                    onValueChange={(value) => field.handleChange(value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: category.color }}
-                            />
-                            {category.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              children={(field) => {
+                const current = field.state.meta;
+                const isInvalid = current.isTouched && !current.isValid;
+
+                return (
+                  <Field className="space-y-2" data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                    <Select
+                      value={field.state.value}
+                      onValueChange={(value) => field.handleChange(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: category.color }}
+                              />
+                              {category.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                );
+              }}
             />
 
             <form.Field
               name="date"
-              children={(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>Date</Label>
-                  <Input
-                    id={field.name}
-                    type="date"
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                </div>
-              )}
+              children={(field) => {
+                const current = field.state.meta;
+                const isInvalid = current.isTouched && !current.isValid;
+
+                return (
+                  <Field className="space-y-2" data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
+                    <Input
+                      id={field.name}
+                      type="date"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  </Field>
+                );
+              }}
             />
           </div>
 
           <form.Field
             name="notes"
-            children={(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Notes (Optional)</Label>
-                <Textarea
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Add details..."
-                  className="resize-none"
-                />
-              </div>
-            )}
+            children={(field) => {
+              const current = field.state.meta;
+              const isInvalid = current.isTouched && !current.isValid;
+
+              return (
+                <Field className="space-y-2" data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>Notes (Optional)</FieldLabel>
+                  <Textarea
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="Add details..."
+                    className="resize-none"
+                  />
+                </Field>
+              );
+            }}
           />
 
-          <div className="space-y-2">
-            <Label>Receipt</Label>
+          <Field className="space-y-2">
+            <FieldLabel>Receipt</FieldLabel>
             {!selectedImage ? (
               <div
                 className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted transition-colors"
@@ -296,7 +321,7 @@ export function ExpenseForm({
                 </Button>
               </div>
             )}
-          </div>
+          </Field>
 
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
