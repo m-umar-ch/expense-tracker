@@ -9,6 +9,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@convex/*": ["./convex/*"]
-    }
+    },
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true
   }
 }

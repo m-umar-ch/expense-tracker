@@ -43,6 +43,7 @@ export interface CategorySpending {
 }
 
 export type TimePeriod =
+  | "daily"
   | "weekly"
   | "monthly"
   | "3months"

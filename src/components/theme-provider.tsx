@@ -1,13 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme =
-  | "system"
-  | "brutalist"
-  | "cyberpunk"
-  | "luxury"
-  | "organic"
-  | "ocean"
-  | "sunset";
+type Theme = "light" | "dark" | "system";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -40,15 +33,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    // Remove all theme classes
-    root.classList.remove(
-      "brutalist",
-      "cyberpunk",
-      "luxury",
-      "organic",
-      "ocean",
-      "sunset",
-    );
+    root.classList.remove("light", "dark");
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -87,25 +72,8 @@ export const useTheme = () => {
   return context;
 };
 
-// Export available themes for use in components
-export const AVAILABLE_THEMES: {
-  value: Theme;
-  label: string;
-  description: string;
-}[] = [
-  { value: "system", label: "System", description: "Follow system preference" },
-  {
-    value: "brutalist",
-    label: "Brutalist",
-    description: "Bold black & red design",
-  },
-  {
-    value: "cyberpunk",
-    label: "Cyberpunk",
-    description: "Neon green & pink vibes",
-  },
-  { value: "luxury", label: "Luxury", description: "Elegant gold accents" },
-  { value: "organic", label: "Organic", description: "Natural green tones" },
-  { value: "ocean", label: "Ocean", description: "Deep blue serenity" },
-  { value: "sunset", label: "Sunset", description: "Warm purple & orange" },
+export const AVAILABLE_THEMES = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "System" },
 ];

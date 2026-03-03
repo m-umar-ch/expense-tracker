@@ -1,4 +1,4 @@
 // Expense components
-// export { ExpenseTracker } from "./ExpenseTracker";
+export { ExpenseDashboard } from "./ExpenseDashboard";
 export { ExpenseForm } from "./ExpenseForm";
 export { ExpenseList } from "./ExpenseList";

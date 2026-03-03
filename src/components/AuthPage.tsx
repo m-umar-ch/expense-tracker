@@ -1,21 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { authClient } from "@/lib/auth-client";
+import { useNavigate } from "react-router-dom";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { toast } from "sonner";
-import { DollarSign, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import {
+  DollarSign,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  Loader2,
+  Mail,
+  Lock,
+  UserPlus,
+  LogIn,
+} from "lucide-react";
+import { useForm } from "@tanstack/react-form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const currentUser = useQuery(api.auth.user.getCurrentUser);
-  const [isLogin, setIsLogin] = useState(true);
+  const { signIn } = useAuthActions();
+  const currentUser = useQuery(api.users.currentUser);
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -24,255 +44,284 @@ const AuthPage: React.FC = () => {
     }
   }, [currentUser, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!isLogin && password !== confirmPassword) {
-      toast.error("PASSWORDS DO NOT MATCH!");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      if (isLogin) {
-        await authClient.signIn.email({
-          email,
-          password,
-        });
-        toast.success("LOGIN SUCCESSFUL!");
-      } else {
-        await authClient.signUp.email({
-          email,
-          password,
-          name: email.split("@")[0], // Use email username as name
-        });
-        toast.success("ACCOUNT CREATED SUCCESSFULLY!");
+  const form = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    onSubmit: async ({ value }) => {
+      if (activeTab === "signup" && value.password !== value.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
       }
-      navigate("/dashboard");
-    } catch (error: any) {
-      console.error("Auth error:", error);
-      toast.error(error.message || "AUTHENTICATION FAILED - TRY AGAIN");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
+      setIsSubmitting(true);
+      try {
+        await signIn("password", {
+          email: value.email,
+          password: value.password,
+          flow: activeTab === "login" ? "signIn" : "signUp",
+        });
+        toast.success(
+          activeTab === "login"
+            ? "Welcome back!"
+            : "Account created successfully",
+        );
+        navigate("/dashboard");
+      } catch (error: any) {
+        toast.error(error.message || "Authentication failed");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+  });
 
   return (
-    <div className="min-h-screen bg-black text-white font-mono overflow-x-hidden">
-      {/* Raw geometric noise background */}
-      <div className="fixed inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-            repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px),
-            repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,0,0,0.1) 10px, rgba(255,0,0,0.1) 12px)
-          `,
-          }}
-        />
-      </div>
-
-      {/* Brutal header */}
-      <header className="relative z-10 border-b-4 border-red-500 bg-black">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-red-500 flex items-center justify-center transform rotate-12">
-                <DollarSign className="w-8 h-8 text-black font-bold" />
-              </div>
-              <h1 className="text-2xl font-black tracking-tighter uppercase">
-                EXPENSE<span className="text-red-500">TRACK</span>
-              </h1>
-            </div>
-            <Button
-              onClick={() => navigate("/")}
-              variant="outline"
-              className="border-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-black uppercase tracking-wide px-6 py-3 flex items-center gap-2"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              BACK HOME
-            </Button>
+    <div className="min-h-screen bg-muted/40 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-[450px] space-y-6">
+        <div className="text-center space-y-2 mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary mb-2 shadow-sm">
+            <DollarSign className="w-6 h-6 text-primary-foreground" />
           </div>
+          <h1 className="text-2xl font-bold tracking-tight">ExpenseTrack</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your finances with ease.
+          </p>
         </div>
-      </header>
 
-      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-100px)] px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Auth Form Container */}
-          <div className="bg-red-500 p-2 border-4 border-black transform rotate-1">
-            <div className="bg-black p-8 transform -rotate-1">
-              {/* Form Header */}
-              <div className="text-center mb-8">
-                <h2 className="text-4xl font-black uppercase mb-4">
-                  {isLogin ? "LOGIN" : "SIGN UP"}
-                </h2>
-                <p className="text-lg font-bold uppercase tracking-wide text-gray-300">
-                  {isLogin ? "GET BACK TO TRACKING" : "START TRACKING NOW"}
-                </p>
-              </div>
+        <Tabs
+          defaultValue="login"
+          onValueChange={(val) => setActiveTab(val as any)}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login" className="gap-2">
+              <LogIn className="w-4 h-4" />
+              Login
+            </TabsTrigger>
+            <TabsTrigger value="signup" className="gap-2">
+              <UserPlus className="w-4 h-4" />
+              Sign Up
+            </TabsTrigger>
+          </TabsList>
 
-              {/* Toggle Buttons */}
-              <div className="flex mb-8 border-4 border-red-500">
-                <Button
-                  onClick={() => setIsLogin(true)}
-                  className={`flex-1 font-black uppercase py-4 ${
-                    isLogin
-                      ? "bg-red-500 text-black"
-                      : "bg-black text-red-500 border-r-2 border-red-500"
-                  }`}
-                  style={{ borderRadius: 0 }}
+          <TabsContent
+            value="login"
+            className="animate-in fade-in zoom-in-95 duration-200"
+          >
+            <Card className="border-border shadow-sm">
+              <CardHeader>
+                <CardTitle>Welcome Back</CardTitle>
+                <CardDescription>
+                  Enter your credentials to access your account.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-0">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.handleSubmit();
+                  }}
+                  className="space-y-4"
                 >
-                  LOGIN
-                </Button>
-                <Button
-                  onClick={() => setIsLogin(false)}
-                  className={`flex-1 font-black uppercase py-4 ${
-                    !isLogin
-                      ? "bg-red-500 text-black"
-                      : "bg-black text-red-500 border-l-2 border-red-500"
-                  }`}
-                  style={{ borderRadius: 0 }}
-                >
-                  SIGN UP
-                </Button>
-              </div>
-
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email Field */}
-                <div>
-                  <label className="block text-sm font-black uppercase tracking-wide mb-2 text-red-500">
-                    EMAIL ADDRESS
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full px-4 py-4 bg-gray-900 border-4 border-red-500 text-white font-mono font-bold placeholder-gray-500 focus:outline-none focus:border-white transition-colors"
-                    placeholder="YOUR@EMAIL.COM"
-                    style={{ borderRadius: 0 }}
+                  <form.Field
+                    name="email"
+                    children={(field) => (
+                      <div className="space-y-2">
+                        <Label htmlFor={field.name}>Email address</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id={field.name}
+                            type="email"
+                            placeholder="name@example.com"
+                            className="pl-9"
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
                   />
-                </div>
 
-                {/* Password Field */}
-                <div>
-                  <label className="block text-sm font-black uppercase tracking-wide mb-2 text-red-500">
-                    PASSWORD
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="w-full px-4 py-4 pr-12 bg-gray-900 border-4 border-red-500 text-white font-mono font-bold placeholder-gray-500 focus:outline-none focus:border-white transition-colors"
-                      placeholder="YOUR PASSWORD"
-                      style={{ borderRadius: 0 }}
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2 top-2 p-2 bg-red-500 hover:bg-red-600 text-black"
-                      style={{ borderRadius: 0 }}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
+                  <form.Field
+                    name="password"
+                    children={(field) => (
+                      <div className="space-y-2">
+                        <Label htmlFor={field.name}>Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id={field.name}
+                            type={showPassword ? "text" : "password"}
+                            className="pl-9"
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            required
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  />
 
-                {/* Confirm Password Field (Sign Up Only) */}
-                {!isLogin && (
-                  <div>
-                    <label className="block text-sm font-black uppercase tracking-wide mb-2 text-red-500">
-                      CONFIRM PASSWORD
-                    </label>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      className="w-full px-4 py-4 bg-gray-900 border-4 border-red-500 text-white font-mono font-bold placeholder-gray-500 focus:outline-none focus:border-white transition-colors"
-                      placeholder="CONFIRM PASSWORD"
-                      style={{ borderRadius: 0 }}
-                    />
-                  </div>
-                )}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-widest py-6 text-xl border-4 border-black transform hover:scale-105 transition-all duration-200 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+          <TabsContent
+            value="signup"
+            className="animate-in fade-in zoom-in-95 duration-200"
+          >
+            <Card className="border-border shadow-sm">
+              <CardHeader>
+                <CardTitle>Create an Account</CardTitle>
+                <CardDescription>
+                  Join our platform to start tracking your expenses.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-0">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    form.handleSubmit();
+                  }}
+                  className="space-y-4"
                 >
-                  {isLoading
-                    ? "PROCESSING..."
-                    : isLogin
-                      ? "LOGIN NOW"
-                      : "CREATE ACCOUNT"}
-                </Button>
-              </form>
+                  <form.Field
+                    name="email"
+                    children={(field) => (
+                      <div className="space-y-2">
+                        <Label htmlFor={`${field.name}_signup`}>Email</Label>
+                        <Input
+                          id={`${field.name}_signup`}
+                          placeholder="name@example.com"
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  />
 
-              {/* Additional Options */}
-              <div className="mt-8 space-y-4">
-                {/* Free Access Reminder */}
-                <div className="bg-red-500 border-4 border-white p-4 text-center">
-                  <p className="text-black font-black uppercase text-sm">
-                    🎉 100% FREE FOREVER 🎉
-                  </p>
-                  <p className="text-black font-bold uppercase text-xs mt-1">
-                    NO LIMITS • OPEN SOURCE PROJECT
-                  </p>
-                </div>
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <form.Field
+                      name="password"
+                      children={(field) => (
+                        <div className="space-y-2">
+                          <Label htmlFor={`${field.name}_signup`}>
+                            Password
+                          </Label>
+                          <Input
+                            id={`${field.name}_signup`}
+                            type="password"
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                          />
+                        </div>
+                      )}
+                    />
+                    <form.Field
+                      name="confirmPassword"
+                      children={(field) => (
+                        <div className="space-y-2">
+                          <Label htmlFor={field.name}>Confirm</Label>
+                          <Input
+                            id={field.name}
+                            type="password"
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
 
-              {/* Terms */}
-              {!isLogin && (
-                <div className="mt-6 text-center">
-                  <p className="text-xs text-gray-500 font-bold uppercase">
-                    BY SIGNING UP YOU AGREE TO OUR
-                    <br />
-                    <span className="text-red-500 underline cursor-pointer">
-                      TERMS & CONDITIONS
-                    </span>
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter className="flex-col gap-4 text-center">
+                <p className="text-xs text-muted-foreground px-8">
+                  By clicking continue, you agree to our{" "}
+                  <a
+                    href="#"
+                    className="underline underline-offset-4 hover:text-primary"
+                  >
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="#"
+                    className="underline underline-offset-4 hover:text-primary"
+                  >
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
-          {/* Social Proof */}
-          <div className="mt-8 text-center space-y-4">
-            <div className="bg-white text-black p-4 border-4 border-red-500 transform -rotate-1">
-              <p className="font-black uppercase text-sm">
-                ⚡ OPEN SOURCE & FREE ⚡
-              </p>
-              <p className="font-bold uppercase text-xs">
-                JOIN 847,293 USERS TRACKING FOR FREE
-              </p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-black border-2 border-red-500 p-2 text-center">
-                <p className="text-2xl font-black text-red-500">99.97%</p>
-                <p className="text-xs font-bold uppercase">UPTIME</p>
-              </div>
-              <div className="bg-black border-2 border-red-500 p-2 text-center">
-                <p className="text-2xl font-black text-red-500">&lt;50ms</p>
-                <p className="text-xs font-bold uppercase">RESPONSE</p>
-              </div>
-              <div className="bg-black border-2 border-red-500 p-2 text-center">
-                <p className="text-2xl font-black text-red-500">BANK</p>
-                <p className="text-xs font-bold uppercase">SECURITY</p>
-              </div>
-            </div>
-          </div>
+        <div className="flex justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to homepage
+          </Button>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

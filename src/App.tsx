@@ -7,26 +7,26 @@ import {
   useMutation,
 } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { SignInForm, SignOutButton } from "./components/auth";
-import { Toaster } from "sonner";
-import { BrutalistExpenseTracker } from "./components/expense/BrutalistExpenseTracker";
+import { ExpenseDashboard } from "./components/expense";
 import { useEffect } from "react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-// Import components
 import Homepage from "./components/Homepage";
 import AuthPage from "./components/AuthPage";
+import { RouteErrorFallback } from "./components/RouteErrorFallback";
 
 // Component that only renders for authenticated users
 function DashboardWrapper() {
-  const loggedInUser = useQuery(api.auth.user.getCurrentUser);
+  const loggedInUser = useQuery(api.users.currentUser);
   const initializeCategories = useMutation(
     api.functions.categories.initializeDefaultCategories,
   );
+  const initializedRef = React.useRef(false);
 
   useEffect(() => {
-    if (loggedInUser) {
+    if (loggedInUser && !initializedRef.current) {
       initializeCategories();
+      initializedRef.current = true;
     }
   }, [loggedInUser, initializeCategories]);
 
@@ -45,17 +45,14 @@ function DashboardWrapper() {
     return null;
   }
 
-  return <BrutalistExpenseTracker />;
+  return <ExpenseDashboard />;
 }
 
 // Simple wrapper for protected routes with proper auth handling
 function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Authenticated>
-        {children}
-        <Toaster richColors />
-      </Authenticated>
+      <Authenticated>{children}</Authenticated>
       <Unauthenticated>
         <AuthPage />
       </Unauthenticated>
@@ -64,37 +61,52 @@ function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
 }
 
 // Router configuration
-const router = createBrowserRouter([
-  // Homepage (unauthenticated)
+const router = createBrowserRouter(
+  [
+    // Homepage (unauthenticated)
+    {
+      path: "/",
+      element: <Homepage />,
+    },
+    // Auth page
+    {
+      path: "/auth",
+      element: <AuthPage />,
+    },
+    // Main app route (authenticated dashboard)
+    {
+      path: "/dashboard",
+      element: (
+        <AuthenticatedRoute>
+          <DashboardWrapper />
+        </AuthenticatedRoute>
+      ),
+    },
+    // Catch all route - redirect to homepage
+    {
+      path: "*",
+      element: <Homepage />,
+    },
+  ],
   {
-    path: "/",
-    element: <Homepage />,
+    future: {
+      v7_normalizeFormMethod: true,
+    },
+    hydrationData: undefined,
   },
-  // Auth page
-  {
-    path: "/auth",
-    element: <AuthPage />,
-  },
-  // Main app route (authenticated dashboard)
-  {
-    path: "/dashboard",
-    element: (
-      <AuthenticatedRoute>
-        <DashboardWrapper />
-      </AuthenticatedRoute>
-    ),
-  },
-  // Catch all route - redirect to homepage
-  {
-    path: "*",
-    element: <Homepage />,
-  },
-]);
+);
+
+const routesWithFallback = router.routes.map((route) => ({
+  ...route,
+  errorElement: <RouteErrorFallback />,
+}));
+
+const finalRouter = createBrowserRouter(routesWithFallback);
 
 export default function App() {
   return (
     <ErrorBoundary>
-      <RouterProvider router={router} />
+      <RouterProvider router={finalRouter} />
     </ErrorBoundary>
   );
 }

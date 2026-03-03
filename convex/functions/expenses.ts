@@ -1,6 +1,6 @@
 import { query, mutation } from "../_generated/server";
 import { v } from "convex/values";
-import { authComponent } from "../auth";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const listExpenses = query({
   args: {
@@ -9,44 +9,50 @@ export const listExpenses = query({
     categoryId: v.optional(v.id("categories")),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) return [];
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
-    let query = ctx.db.query("expenses").withIndex("by_user_and_date", (q) => {
-      if (args.startDate && args.endDate) {
-        return q
-          .eq("userId", userId)
-          .gte("date", args.startDate)
-          .lte("date", args.endDate);
-      }
-      return q.eq("userId", userId);
-    });
+    // Fetch expenses with indexed order
+    let query = ctx.db
+      .query("expenses")
+      .withIndex("by_user_and_date", (q) => {
+        if (args.startDate && args.endDate) {
+          return q
+            .eq("userId", userId)
+            .gte("date", args.startDate)
+            .lte("date", args.endDate);
+        }
+        return q.eq("userId", userId);
+      })
+      .order("desc");
 
     const expenses = await query.collect();
 
-    // Filter by category if specified
-    const filteredExpenses = args.categoryId
-      ? expenses.filter((expense) => expense.categoryId === args.categoryId)
-      : expenses;
+    // Optimization: Fetch all categories once to avoid N+1
+    const categories = await ctx.db
+      .query("categories")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    const categoryMap = new Map(categories.map((c) => [c._id, c]));
 
-    // Get categories for each expense
-    const expensesWithCategories = await Promise.all(
-      filteredExpenses.map(async (expense) => {
-        const category = await ctx.db.get(expense.categoryId);
-        const receiptUrl = expense.receiptImageId
-          ? await ctx.storage.getUrl(expense.receiptImageId)
-          : null;
+    // Filter by category if specified and attach category data
+    const expensesWithCategories = [];
+    for (const expense of expenses) {
+      if (args.categoryId && expense.categoryId !== args.categoryId) continue;
 
-        return {
-          ...expense,
-          category,
-          receiptUrl,
-        };
-      }),
-    );
+      const category = categoryMap.get(expense.categoryId);
+      const receiptUrl = expense.receiptImageId
+        ? await ctx.storage.getUrl(expense.receiptImageId)
+        : null;
 
-    return expensesWithCategories.sort((a, b) => b.date - a.date);
+      expensesWithCategories.push({
+        ...expense,
+        category,
+        receiptUrl,
+      });
+    }
+
+    return expensesWithCategories;
   },
 });
 
@@ -60,9 +66,8 @@ export const createExpense = mutation({
     receiptImageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     // Verify category belongs to user
     const category = await ctx.db.get(args.categoryId);
@@ -93,9 +98,8 @@ export const updateExpense = mutation({
     receiptImageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const expense = await ctx.db.get(args.id);
     if (!expense || expense.userId !== userId) {
@@ -126,9 +130,8 @@ export const updateExpense = mutation({
 export const deleteExpense = mutation({
   args: { id: v.id("expenses") },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const expense = await ctx.db.get(args.id);
     if (!expense || expense.userId !== userId) {
@@ -145,9 +148,8 @@ export const getCategorySpending = query({
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) return [];
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
     const expenses = await ctx.db
       .query("expenses")
@@ -191,8 +193,8 @@ export const getCategorySpending = query({
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     return await ctx.storage.generateUploadUrl();
   },

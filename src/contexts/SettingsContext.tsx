@@ -27,6 +27,7 @@ interface SettingsContextType {
   ) => void;
   getCurrencySymbol: () => string;
   formatCurrency: (amount: number) => string;
+  formatCurrencyCompact: (amount: number) => string;
 }
 
 const defaultSettings: AppSettings = {
@@ -101,6 +102,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         updateSetting,
         getCurrencySymbol,
         formatCurrency,
+        formatCurrencyCompact: (amount: number) => {
+          return new Intl.NumberFormat(settings.numberFormat, {
+            style: "currency",
+            currency: settings.currency,
+            notation: "compact",
+          }).format(amount);
+        },
       }}
     >
       {children}

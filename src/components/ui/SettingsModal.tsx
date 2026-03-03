@@ -1,19 +1,24 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import {
-  X,
-  Monitor,
-  Sun,
-  Moon,
-  Zap,
-  Crown,
-  Leaf,
-  Waves,
-  Sunrise,
-  Cpu,
-} from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTheme, AVAILABLE_THEMES } from "../theme-provider";
 import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
+import { Monitor, Sun, Moon } from "lucide-react";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -23,223 +28,126 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { theme, setTheme } = useTheme();
   const { settings, updateSetting } = useSettings();
-  const [activeTab, setActiveTab] = useState<"theme" | "currency" | "other">(
-    "theme",
-  );
-
-  if (!isOpen) return null;
 
   const getThemeIcon = (themeValue: string) => {
     switch (themeValue) {
       case "system":
-        return Monitor;
+        return <Monitor className="w-4 h-4 mr-2" />;
       case "light":
-        return Sun;
+        return <Sun className="w-4 h-4 mr-2" />;
       case "dark":
-        return Moon;
-      case "brutalist":
-        return Zap;
-      case "cyberpunk":
-        return Cpu;
-      case "luxury":
-        return Crown;
-      case "organic":
-        return Leaf;
-      case "ocean":
-        return Waves;
-      case "sunset":
-        return Sunrise;
+        return <Moon className="w-4 h-4 mr-2" />;
       default:
-        return Monitor;
+        return <Monitor className="w-4 h-4 mr-2" />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-black border-4 border-red-500 p-8 w-full max-w-2xl mx-4 font-mono">
-        {/* Header */}
-        <div className="border-b-4 border-red-500 pb-4 mb-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-black uppercase tracking-wider text-red-500">
-              SYSTEM SETTINGS
-            </h2>
-            <Button
-              onClick={onClose}
-              className="bg-red-500 hover:bg-red-600 text-black p-2"
-            >
-              <X className="w-6 h-6" />
-            </Button>
-          </div>
-        </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>System Settings</DialogTitle>
+        </DialogHeader>
 
-        {/* Tabs */}
-        <div className="flex border-b-2 border-red-500 mb-6">
-          {[
-            { key: "theme", label: "THEME" },
-            { key: "currency", label: "CURRENCY" },
-            { key: "other", label: "OTHER" },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key as any)}
-              className={`px-6 py-3 font-black uppercase tracking-wider border-r-2 border-red-500 last:border-r-0 ${
-                activeTab === tab.key
-                  ? "bg-red-500 text-black"
-                  : "bg-black text-white hover:bg-red-500/20"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <Tabs defaultValue="theme" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="theme">Appearance</TabsTrigger>
+            <TabsTrigger value="currency">Currency</TabsTrigger>
+            <TabsTrigger value="localization">Local</TabsTrigger>
+          </TabsList>
 
-        {/* Theme Tab */}
-        {activeTab === "theme" && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-black uppercase text-white mb-4">
-              SELECT THEME
-            </h3>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-              {AVAILABLE_THEMES.map((themeOption) => {
-                const Icon = getThemeIcon(themeOption.value);
-                const isActive = theme === themeOption.value;
-
-                return (
-                  <button
-                    key={themeOption.value}
-                    onClick={() => setTheme(themeOption.value)}
-                    className={`p-4 border-2 text-left transition-colors ${
-                      isActive
-                        ? "border-red-500 bg-red-500/20"
-                        : "border-gray-600 hover:border-red-500/50"
-                    }`}
+          <TabsContent value="theme" className="space-y-4 py-4">
+            <div className="space-y-4">
+              <Label>Application Theme</Label>
+              <div className="grid grid-cols-3 gap-4">
+                {AVAILABLE_THEMES.map((option) => (
+                  <Button
+                    key={option.value}
+                    variant={theme === option.value ? "default" : "outline"}
+                    className="h-20 flex-col gap-2"
+                    onClick={() => setTheme(option.value as any)}
                   >
-                    <div className="flex items-center space-x-3 mb-2">
-                      <Icon
-                        className={`w-5 h-5 ${isActive ? "text-red-500" : "text-white"}`}
-                      />
-                      <span
-                        className={`font-bold uppercase ${isActive ? "text-red-500" : "text-white"}`}
-                      >
-                        {themeOption.label}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-400">
-                      {themeOption.description}
-                    </p>
-                  </button>
-                );
-              })}
+                    {getThemeIcon(option.value)}
+                    <span className="text-xs">{option.label}</span>
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          </TabsContent>
 
-        {/* Currency Tab */}
-        {activeTab === "currency" && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-black uppercase text-white mb-4">
-              SELECT CURRENCY
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {CURRENCIES.map((currency) => {
-                const isActive = settings.currency === currency.value;
-
-                return (
-                  <button
-                    key={currency.value}
-                    onClick={() => updateSetting("currency", currency.value)}
-                    className={`p-4 border-2 text-left transition-colors ${
-                      isActive
-                        ? "border-red-500 bg-red-500/20"
-                        : "border-gray-600 hover:border-red-500/50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span
-                          className={`font-bold uppercase block ${isActive ? "text-red-500" : "text-white"}`}
-                        >
-                          {currency.label}
-                        </span>
-                        <span className="text-sm text-gray-400">
-                          {currency.value}
-                        </span>
-                      </div>
-                      <span
-                        className={`text-2xl font-black ${isActive ? "text-red-500" : "text-white"}`}
-                      >
-                        {currency.symbol}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Other Tab */}
-        {activeTab === "other" && (
-          <div className="space-y-6">
-            <h3 className="text-xl font-black uppercase text-white mb-4">
-              OTHER SETTINGS
-            </h3>
-
-            {/* Date Format */}
-            <div>
-              <label className="block text-white font-bold uppercase mb-2">
-                DATE FORMAT
-              </label>
-              <select
-                value={settings.dateFormat}
-                onChange={(e) => updateSetting("dateFormat", e.target.value)}
-                className="bg-gray-800 text-white border-2 border-gray-600 focus:border-red-500 p-3 w-full font-mono"
+          <TabsContent value="currency" className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Base Currency</Label>
+              <Select
+                value={settings.currency}
+                onValueChange={(value) =>
+                  updateSetting("currency", value as any)
+                }
               >
-                <option value="MM/dd/yyyy">MM/DD/YYYY (US)</option>
-                <option value="dd/MM/yyyy">DD/MM/YYYY (EU)</option>
-                <option value="yyyy-MM-dd">YYYY-MM-DD (ISO)</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCIES.map((currency) => (
+                    <SelectItem key={currency.value} value={currency.value}>
+                      {currency.label} ({currency.symbol})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </TabsContent>
 
-            {/* Language */}
-            <div>
-              <label className="block text-white font-bold uppercase mb-2">
-                LANGUAGE
-              </label>
-              <select
-                value={settings.language}
-                onChange={(e) => updateSetting("language", e.target.value)}
-                className="bg-gray-800 text-white border-2 border-gray-600 focus:border-red-500 p-3 w-full font-mono"
-              >
-                <option value="en">ENGLISH</option>
-                <option value="es">ESPAÑOL</option>
-                <option value="fr">FRANÇAIS</option>
-                <option value="de">DEUTSCH</option>
-                <option value="it">ITALIANO</option>
-                <option value="pt">PORTUGUÊS</option>
-                <option value="zh">中文</option>
-                <option value="ja">日本語</option>
-              </select>
+          <TabsContent value="localization" className="space-y-4 py-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Date Format</Label>
+                <Select
+                  value={settings.dateFormat}
+                  onValueChange={(value) => updateSetting("dateFormat", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Format" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <option value="MM/dd/yyyy">MM/DD/YYYY (US)</option>
+                    <option value="dd/MM/yyyy">DD/MM/YYYY (EU)</option>
+                    <option value="yyyy-MM-dd">YYYY-MM-DD (ISO)</option>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Preferred Language</Label>
+                <Select
+                  value={settings.language}
+                  onValueChange={(value) => updateSetting("language", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Español</SelectItem>
+                    <SelectItem value="fr">Français</SelectItem>
+                    <SelectItem value="de">Deutsch</SelectItem>
+                    <SelectItem value="it">Italiano</SelectItem>
+                    <SelectItem value="zh">中文</SelectItem>
+                    <SelectItem value="ja">日本語</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-        )}
+          </TabsContent>
+        </Tabs>
 
-        {/* Footer */}
-        <div className="border-t-4 border-red-500 pt-6 mt-8">
-          <div className="flex justify-between items-center">
-            <p className="text-gray-400 font-bold uppercase text-sm">
-              SETTINGS SAVED AUTOMATICALLY
-            </p>
-            <Button
-              onClick={onClose}
-              className="bg-red-500 hover:bg-red-600 text-black font-black uppercase px-6 py-3"
-            >
-              CLOSE
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

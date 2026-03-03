@@ -1,6 +1,6 @@
 import { query, mutation } from "../_generated/server";
 import { v } from "convex/values";
-import { authComponent } from "../auth";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 const DEFAULT_CATEGORIES = [
   { name: "Food & Dining", color: "#ef4444" },
@@ -16,9 +16,8 @@ const DEFAULT_CATEGORIES = [
 export const initializeDefaultCategories = mutation({
   args: {},
   handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     // Check if user already has categories
     const existingCategories = await ctx.db
@@ -43,9 +42,8 @@ export const initializeDefaultCategories = mutation({
 export const listCategories = query({
   args: {},
   handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) return [];
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
     return await ctx.db
       .query("categories")
@@ -61,9 +59,8 @@ export const createCategory = mutation({
     budgetLimit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     return await ctx.db.insert("categories", {
       name: args.name,
@@ -83,9 +80,8 @@ export const updateCategory = mutation({
     budgetLimit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const category = await ctx.db.get(args.id);
     if (!category || category.userId !== userId) {
@@ -103,9 +99,8 @@ export const updateCategory = mutation({
 export const deleteCategory = mutation({
   args: { id: v.id("categories") },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
-    if (!user) throw new Error("Not authenticated");
-    const userId = user._id;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const category = await ctx.db.get(args.id);
     if (!category || category.userId !== userId) {

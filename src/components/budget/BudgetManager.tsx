@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Category, CategorySpending } from "../../types/expense";
-import { formatCurrency, formatCurrencyCompact } from "../../utils/currency";
+import { useSettings } from "../../contexts/SettingsContext";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -22,7 +24,9 @@ import {
   TrendingUp,
   AlertTriangle,
   Save,
-  X,
+  Info,
+  ChevronRight,
+  Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +41,7 @@ export function BudgetManager({
   categorySpending,
   onClose,
 }: BudgetManagerProps) {
+  const { formatCurrency, formatCurrencyCompact } = useSettings();
   const [budgets, setBudgets] = useState<Record<string, string>>(
     categories.reduce(
       (acc, cat) => ({
@@ -76,39 +81,16 @@ export function BudgetManager({
       }
 
       if (successCount > 0) {
-        toast.success(
-          `BUDGET SYSTEM UPDATED - ${successCount} CATEGORIES MODIFIED!`,
-        );
+        toast.success(`Configured ${successCount} budget limits`);
         onClose();
       } else {
-        toast.success("NO CHANGES TO SAVE");
+        toast.success("No changes detected");
       }
     } catch (error) {
-      toast.error("SYSTEM ERROR - BUDGET UPDATE FAILED");
+      toast.error("Error updating system budgets");
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const getBudgetStatus = (categoryId: string) => {
-    const spending = categorySpending.find(
-      (s) => s.category._id === categoryId,
-    );
-    const budgetLimit = parseFloat(budgets[categoryId]) || 0;
-
-    if (!spending || !budgetLimit) return null;
-
-    const utilization = (spending.totalSpent / budgetLimit) * 100;
-    const isOverBudget = utilization > 100;
-    const isNearLimit = utilization >= 80 && !isOverBudget;
-
-    return {
-      utilization,
-      isOverBudget,
-      isNearLimit,
-      totalSpent: spending.totalSpent,
-      remaining: budgetLimit - spending.totalSpent,
-    };
   };
 
   const totalBudgetSet = Object.values(budgets).reduce(
@@ -123,215 +105,175 @@ export function BudgetManager({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-6xl max-h-[95vh] overflow-y-auto bg-black border-4 border-red-500 text-white font-mono">
-        <DialogHeader className="border-b-4 border-red-500 pb-4 mb-6">
-          <DialogTitle className="text-3xl font-black uppercase tracking-wider text-red-500">
-            BUDGET CONTROL SYSTEM
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] shadow-none border-border">
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="text-xl font-bold flex items-center gap-2">
+            <Calculator className="w-5 h-5 text-primary" />
+            Budget Settings
           </DialogTitle>
-          <div className="flex items-center gap-4 mt-3">
-            <Badge className="bg-white text-black font-black uppercase px-3 py-1">
+          <div className="flex flex-wrap gap-2 mt-2 pt-2">
+            <Badge
+              variant="outline"
+              className="font-semibold text-[10px] uppercase tracking-tighter text-muted-foreground border-border bg-muted/30 h-6"
+            >
               {categories.length} CATEGORIES
             </Badge>
-            <Badge className="bg-red-500 text-black font-black uppercase px-3 py-1">
-              {formatCurrency(totalBudgetSet)} BUDGETED
-            </Badge>
-            <Badge className="bg-red-500 text-black font-black uppercase px-3 py-1">
-              {formatCurrency(totalSpent)} SPENT
+            <Badge
+              variant="outline"
+              className="font-semibold text-[10px] uppercase tracking-tighter text-primary border-primary/20 bg-primary/5 h-6"
+            >
+              {formatCurrency(totalBudgetSet)} TOTAL BUDGET
             </Badge>
           </div>
         </DialogHeader>
 
-        <div className="space-y-8">
-          {/* System Overview */}
-          <div className="bg-red-500 border-4 border-black p-6">
-            <h3 className="text-xl font-black uppercase text-black mb-4">
-              SYSTEM OVERVIEW
-            </h3>
-            <div className="bg-black p-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="border-4 border-red-500 p-4 text-center">
-                  <Target className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                  <div className="text-2xl font-black text-white">
-                    {formatCurrency(totalBudgetSet)}
-                  </div>
-                  <div className="font-bold uppercase text-gray-400 text-sm">
-                    TOTAL BUDGET SET
-                  </div>
-                </div>
-                <div className="border-4 border-red-500 p-4 text-center">
-                  <TrendingUp className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                  <div className="text-2xl font-black text-white">
+        <div className="space-y-6 pt-4">
+          {/* Summary Banner */}
+          <div className="flex items-center gap-4 bg-primary/5 border border-primary/20 rounded-xl p-4 shadow-sm">
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
+                <Target className="w-3 h-3" />
+                Global Status
+              </div>
+              <div className="flex justify-between items-end">
+                <div>
+                  <div className="text-2xl font-black">
                     {formatCurrency(totalSpent)}
                   </div>
-                  <div className="font-bold uppercase text-gray-400 text-sm">
-                    TOTAL SPENT
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase">
+                    Total current spending
                   </div>
                 </div>
-                <div className="border-4 border-red-500 p-4 text-center">
-                  <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <div className="text-right">
                   <div
-                    className={`text-2xl font-black ${
-                      totalBudgetSet - totalSpent >= 0
-                        ? "text-green-400"
-                        : "text-red-500"
-                    }`}
+                    className={cn(
+                      "text-lg font-bold",
+                      totalSpent > totalBudgetSet
+                        ? "text-destructive"
+                        : "text-primary",
+                    )}
                   >
                     {formatCurrency(Math.abs(totalBudgetSet - totalSpent))}
                   </div>
-                  <div className="font-bold uppercase text-gray-400 text-sm">
-                    {totalBudgetSet - totalSpent >= 0
-                      ? "REMAINING"
-                      : "OVER BUDGET"}
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase">
+                    {totalSpent > totalBudgetSet
+                      ? "EXCEEDED BY"
+                      : "REMAINING FUNDS"}
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Budget Settings */}
-          <div className="bg-white border-4 border-black p-6">
-            <h3 className="text-xl font-black uppercase text-black mb-4">
-              BUDGET CONFIGURATION
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <Info className="w-4 h-4 text-muted-foreground" />
+              Configure category limits
             </h3>
-
-            <div className="bg-black p-4 space-y-6">
+            <div className="grid grid-cols-1 gap-2 border rounded-xl overflow-hidden divide-y">
               {categories.map((category) => {
-                const status = getBudgetStatus(category._id);
                 const spending = categorySpending.find(
                   (s) => s.category._id === category._id,
                 );
+                const currentBudget = parseFloat(budgets[category._id]) || 0;
+                const utilization =
+                  currentBudget > 0
+                    ? ((spending?.totalSpent || 0) / currentBudget) * 100
+                    : 0;
+                const isOver = utilization > 100;
 
                 return (
                   <div
                     key={category._id}
-                    className="border-4 border-red-500 p-4 space-y-4"
+                    className="p-4 hover:bg-muted/30 transition-colors group"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div
-                          className="w-6 h-6 border-4 border-white"
+                          className="w-4 h-4 rounded-full border border-background shadow-xs shrink-0"
                           style={{ backgroundColor: category.color }}
                         />
-                        <div>
-                          <h4 className="font-black uppercase text-white text-lg">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-sm truncate">
                             {category.name}
                           </h4>
-                          {spending && (
-                            <p className="font-bold uppercase text-gray-400 text-sm">
-                              SPENT: {formatCurrency(spending.totalSpent)}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {status && (
-                        <div className="flex items-center gap-2">
-                          {status.isOverBudget && (
-                            <Badge className="bg-red-500 text-black font-black uppercase">
-                              OVER BUDGET
-                            </Badge>
-                          )}
-                          {status.isNearLimit && (
-                            <Badge className="bg-yellow-500 text-black font-black uppercase">
-                              NEAR LIMIT
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="block font-black uppercase text-red-500 mb-2">
-                          BUDGET LIMIT ($)
-                        </Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={budgets[category._id]}
-                          onChange={(e) =>
-                            handleBudgetChange(category._id, e.target.value)
-                          }
-                          placeholder="0.00"
-                          className="bg-black border-4 border-red-500 text-white font-bold uppercase tracking-wide placeholder-gray-500 focus:border-white focus:ring-0 p-4"
-                        />
-                      </div>
-
-                      {status && (
-                        <div className="space-y-2">
-                          <Label className="block font-black uppercase text-red-500 mb-2">
-                            BUDGET STATUS
-                          </Label>
-                          <div className="bg-red-500 border-4 border-black p-3">
-                            <div className="bg-black p-2">
-                              <Progress
-                                value={Math.min(status.utilization, 100)}
-                                className={cn(
-                                  "w-full h-3 mb-2",
-                                  status.isOverBudget &&
-                                    "*:data-[state=complete]:bg-red-500",
-                                )}
-                              />
-                              <div className="flex justify-between text-xs font-black uppercase">
-                                <span className="text-white">
-                                  {status.utilization.toFixed(1)}% USED
-                                </span>
+                          <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground uppercase mt-0.5">
+                            Spent:{" "}
+                            <span className="font-bold text-foreground">
+                              {formatCurrency(spending?.totalSpent || 0)}
+                            </span>
+                            {currentBudget > 0 && (
+                              <>
+                                <ChevronRight className="w-3 h-3 opacity-30" />
                                 <span
-                                  className={
-                                    status.remaining >= 0
-                                      ? "text-green-400"
-                                      : "text-red-500"
-                                  }
+                                  className={cn(
+                                    "font-black",
+                                    isOver
+                                      ? "text-destructive"
+                                      : "text-primary",
+                                  )}
                                 >
-                                  {status.remaining >= 0
-                                    ? `${formatCurrency(status.remaining)} LEFT`
-                                    : `${formatCurrency(Math.abs(status.remaining))} OVER`}
+                                  {utilization.toFixed(0)}% used
                                 </span>
-                              </div>
-                            </div>
+                              </>
+                            )}
                           </div>
                         </div>
-                      )}
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="relative group/input">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-bold">
+                            $
+                          </span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={budgets[category._id]}
+                            onChange={(e) =>
+                              handleBudgetChange(category._id, e.target.value)
+                            }
+                            className="w-32 h-10 pl-7 text-sm font-bold shadow-none border-border group-hover/input:border-primary transition-colors"
+                            placeholder="0.0"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="border-t-4 border-red-500 pt-6">
-            <div className="flex flex-col sm:flex-row gap-4 justify-end">
-              <Button
-                type="button"
-                onClick={onClose}
-                disabled={isSaving}
-                className="bg-black border-4 border-white text-white hover:bg-white hover:text-black font-black uppercase tracking-wide px-8 py-4 order-2 sm:order-1"
-              >
-                <X className="w-5 h-5 mr-2" />
-                CANCEL
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-wide px-8 py-4 border-4 border-black order-1 sm:order-2 text-lg"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    UPDATING SYSTEM...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5 mr-2" />
-                    SAVE BUDGET SETTINGS
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
+
+        <DialogFooter className="mt-6 gap-2">
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+            >
+              Discard
+            </Button>
+          </DialogClose>
+          <Button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="font-bold px-8 shadow-md"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Budgets
+              </>
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

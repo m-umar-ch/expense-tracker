@@ -11,7 +11,7 @@ import Footer from "./homepage/Footer";
 
 const Homepage: React.FC = () => {
   const navigate = useNavigate();
-  const loggedInUser = useQuery(api.auth.user.getCurrentUser);
+  const loggedInUser = useQuery(api.users.currentUser);
 
   const handleGetStarted = () => {
     if (loggedInUser) {
