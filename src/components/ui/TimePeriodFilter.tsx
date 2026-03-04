@@ -7,7 +7,7 @@ interface TimePeriodFilterProps {
 }
 
 const PERIODS: { value: TimePeriod; label: string }[] = [
-  { value: "daily", label: "Daily" },
+  // { value: "daily", label: "Daily" },
   { value: "weekly", label: "Week" },
   { value: "monthly", label: "Month" },
   { value: "3months", label: "3M" },

@@ -128,9 +128,12 @@ export function ExpenseDashboard() {
           endDate: yearEnd.getTime(),
         };
       case "all":
+        const allEnd = new Date(today);
+        allEnd.setDate(today.getDate() + 1);
+        allEnd.setHours(23, 59, 59, 999);
         return {
           startDate: 0,
-          endDate: Date.now() + 24 * 60 * 60 * 1000,
+          endDate: allEnd.getTime(),
         };
       default:
         const dailyStart = new Date(today);
@@ -196,6 +199,27 @@ export function ExpenseDashboard() {
         : null,
     }));
   }, [categorySpendingData, filteredExpenses]);
+
+  const effectiveDaysCount = useMemo(() => {
+    if (selectedPeriod === "all") {
+      const allDates = [
+        ...filteredExpenses.map((e) => e.date),
+        ...incomes.map((i) => i.date),
+      ];
+      if (allDates.length > 0) {
+        const minDate = Math.min(...allDates);
+        return Math.max(
+          1,
+          Math.round((Date.now() - minDate) / (1000 * 60 * 60 * 24)),
+        );
+      }
+      return 30; // default if no data
+    }
+    return Math.max(
+      1,
+      Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)),
+    );
+  }, [endDate, startDate, selectedPeriod, filteredExpenses, incomes]);
 
   const handleEditExpense = (expense: Expense) => {
     setEditingExpense(expense);
@@ -339,10 +363,7 @@ export function ExpenseDashboard() {
           expenses={filteredExpenses}
           categorySpending={categorySpending}
           financialSummary={financialSummary}
-          daysCount={Math.max(
-            1,
-            Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)),
-          )}
+          daysCount={effectiveDaysCount}
         />
 
         {/* Tab Navigation */}

@@ -38,7 +38,7 @@ interface ExpenseFormProps {
 const expenseSchema = z.object({
   name: z.string().min(1, "Name is required"),
   categoryId: z.string().min(1, "Category is required"),
-  amount: z.number().min(0, "Amount must be positive"),
+  amount: z.number(),
   date: z.string().min(1, "Date is required"),
   notes: z.string(),
 });

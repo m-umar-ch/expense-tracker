@@ -12,7 +12,13 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { format, startOfDay, eachDayOfInterval, isSameDay } from "date-fns";
+import {
+  format,
+  startOfDay,
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  isSameDay,
+} from "date-fns";
 import { Expense, Income } from "../../types/expense";
 import { useSettings } from "../../contexts/SettingsContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +29,35 @@ interface FinancialChartsProps {
   startDate: number;
   endDate: number;
 }
+
+interface TooltipPayload {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  const { formatCurrency } = useSettings();
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background border rounded-lg p-3 shadow-lg">
+        <p className="text-sm font-bold mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {entry.name}: {formatCurrency(entry.value)}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 const FinancialCharts: React.FC<FinancialChartsProps> = ({
   expenses,
@@ -35,73 +70,97 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
     ? "blur-[8px] select-none pointer-events-none"
     : "";
 
-  const chartData = useMemo(() => {
-    if (!startDate || !endDate) return [];
+  const { chartData, isMonthly } = useMemo(() => {
+    if (startDate === undefined || endDate === undefined)
+      return { chartData: [], isMonthly: false };
 
-    // Create a list of days in the interval
-    const days = eachDayOfInterval({
-      start: new Date(startDate),
-      end: new Date(endDate),
+    let effectiveStart = startDate;
+    let effectiveEnd = endDate;
+
+    if (startDate === 0) {
+      const allDates = [
+        ...expenses.map((e) => e.date),
+        ...incomes.map((i) => i.date),
+      ];
+      if (allDates.length > 0) {
+        effectiveStart = Math.min(...allDates);
+        effectiveEnd = Math.max(...allDates, Date.now());
+      } else {
+        effectiveStart = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        effectiveEnd = Date.now();
+      }
+    }
+
+    if (effectiveEnd < effectiveStart) {
+      effectiveEnd = effectiveStart;
+    }
+
+    const durationDays =
+      (effectiveEnd - effectiveStart) / (1000 * 60 * 60 * 24);
+    const groupByMonth = durationDays > 93;
+
+    const expensesByDate = new Map<string, number>();
+    const incomeByDate = new Map<string, number>();
+
+    expenses.forEach((e) => {
+      const date = new Date(e.date);
+      const key = groupByMonth
+        ? format(date, "MMM yyyy")
+        : format(date, "MMM dd");
+      expensesByDate.set(key, (expensesByDate.get(key) || 0) + e.amount);
     });
 
-    return days.map((day) => {
-      const dayStart = startOfDay(day);
+    incomes.forEach((i) => {
+      const date = new Date(i.date);
+      const key = groupByMonth
+        ? format(date, "MMM yyyy")
+        : format(date, "MMM dd");
+      incomeByDate.set(key, (incomeByDate.get(key) || 0) + i.amount);
+    });
 
-      const dayExpenses = expenses.filter((e) =>
-        isSameDay(new Date(e.date), dayStart),
-      );
-      const dayIncomes = incomes.filter((i) =>
-        isSameDay(new Date(i.date), dayStart),
-      );
+    let intervals: Date[] = [];
+    try {
+      if (groupByMonth) {
+        intervals = eachMonthOfInterval({
+          start: new Date(effectiveStart),
+          end: new Date(effectiveEnd),
+        });
+      } else {
+        intervals = eachDayOfInterval({
+          start: new Date(effectiveStart),
+          end: new Date(effectiveEnd),
+        });
+      }
+    } catch (error) {
+      return { chartData: [], isMonthly: false };
+    }
 
-      const totalExpense = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-      const totalIncome = dayIncomes.reduce((sum, i) => sum + i.amount, 0);
+    const data = intervals.map((date) => {
+      const key = groupByMonth
+        ? format(date, "MMM yyyy")
+        : format(date, "MMM dd");
+      const totalExpense = expensesByDate.get(key) || 0;
+      const totalIncome = incomeByDate.get(key) || 0;
 
       return {
-        date: format(day, "MMM dd"),
+        date: key,
         expenses: totalExpense,
         income: totalIncome,
         net: totalIncome - totalExpense,
       };
     });
+
+    return { chartData: data, isMonthly: groupByMonth };
   }, [expenses, incomes, startDate, endDate]);
-
-  interface TooltipPayload {
-    name: string;
-    value: number;
-    color: string;
-  }
-
-  interface CustomTooltipProps {
-    active?: boolean;
-    payload?: TooltipPayload[];
-    label?: string;
-  }
-
-  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-background border rounded-lg p-3 shadow-lg">
-          <p className="text-sm font-bold mb-2">{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {formatCurrency(entry.value)}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="space-y-8">
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-bold flex items-center justify-between">
-            Daily Spending Trend
+            {isMonthly ? "Monthly Spending Trend" : "Daily Spending Trend"}
             <span className="text-xs font-normal text-muted-foreground">
-              Last {chartData.length} days
+              Last {chartData.length} {isMonthly ? "months" : "days"}
             </span>
           </CardTitle>
         </CardHeader>
