@@ -1,0 +1,821 @@
+[
+  {
+    "date": 1772564400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "eidi given",
+    "amount": 1000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1772564400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "dinner",
+    "amount": 400,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1772391600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Team Treat",
+    "amount": 4286,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1772391600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 1300,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1772305200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Travel",
+    "amount": 200,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1772218800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Photocopy",
+    "amount": 150,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1772132400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 500,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1772046000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 600,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1771700400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "train card",
+    "amount": 400,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1771527600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "petrol",
+    "amount": 400,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1771441200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "samee",
+    "amount": 100,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1771268400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 1103,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1771268400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 900,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1771268400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Loan to father",
+    "amount": 50000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1771095600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Lunch",
+    "amount": 600,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1771095600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Degree",
+    "amount": 300,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1771009200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Lunch",
+    "amount": 630,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770836400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Health",
+    "amount": 1050,
+    "categoryId": "jx7d1tnm8q1ezvrkhjkpmyrpr9827bke"
+  },
+  {
+    "date": 1770750000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 220,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770750000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Scissors",
+    "amount": 250,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1770663600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 540,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770577200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 150,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770577200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 900,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1770577200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Give to Uzair",
+    "amount": 6000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1770490800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Random",
+    "amount": 500,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1770318000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Hygine",
+    "amount": 50,
+    "categoryId": "jx7d1tnm8q1ezvrkhjkpmyrpr9827bke"
+  },
+  {
+    "date": 1770231600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Ice Cream",
+    "amount": 260,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770231600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 370,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770145200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Buiscuit",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770058800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Biscuit",
+    "amount": 50,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1770058800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Give Away",
+    "amount": 6000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1769972400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Eggs + Biscuit",
+    "amount": 220,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769972400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 900,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1769886000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Travel",
+    "amount": 100,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1769799600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Travel",
+    "amount": 200,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1769799600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Lunch",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769886000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Lunch",
+    "amount": 1200,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769713200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Lunch ",
+    "amount": 700,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769540400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Snacks",
+    "amount": 150,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769367600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Snacks",
+    "amount": 200,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769367600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Slalami",
+    "amount": 5000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1769367600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Weekly Allowance",
+    "amount": -3000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1769367600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 850,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1769367600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Bike Wash",
+    "amount": 150,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1769367600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Bike Tuning",
+    "amount": 1200,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1769281200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dont Remember",
+    "amount": 400,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1769281200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Naan",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769108400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Dinner",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1769022000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Dinner",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768935600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Snacks",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768935600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Recieved",
+    "amount": -1000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1768935600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Helmet",
+    "amount": 1000,
+    "categoryId": "jx7ebn97babaztqb7w7cmkj2kn827wbx"
+  },
+  {
+    "date": 1768935600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Software",
+    "amount": 350,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1768935600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Package",
+    "amount": 120,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1768849200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "snacks",
+    "amount": 50,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768762800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Snacks",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768676400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Recieved",
+    "amount": -2000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1768676400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol ",
+    "amount": 600,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1768590000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Lunch",
+    "amount": 1300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768590000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Train card",
+    "amount": 500,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1768503600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Snacks",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768503600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Snacks",
+    "amount": 200,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768417200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Snacks",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768244400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Others",
+    "amount": 100,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1768244400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 1000,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768244400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 900,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1768158000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Recived from father",
+    "amount": -3000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1768158000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "office snacks",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768071600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "rotee",
+    "amount": 60,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1768071600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "snacks",
+    "amount": 50,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767985200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "dinner",
+    "amount": 540,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767553200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 800,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1767898800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Shoes",
+    "amount": 2500,
+    "categoryId": "jx7ebn97babaztqb7w7cmkj2kn827wbx"
+  },
+  {
+    "date": 1767898800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner Office",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767898800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 400,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1767726000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Dinner",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767639600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Salary Treat",
+    "amount": 5000,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767207600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Contabo Payment",
+    "amount": 1600,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1767639600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Add to Spend Pool",
+    "amount": -4370,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1767466800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Recieved",
+    "amount": -2000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1767639600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Dinner",
+    "amount": 250,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767466800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Snacks",
+    "amount": 350,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767380400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner",
+    "amount": 840,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767207600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Fries",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767121200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Yearly Closure",
+    "amount": -2400,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1767121200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Dinner",
+    "amount": 520,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767034800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 600,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1767034800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Dinner",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1767034800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Ayesha Call Pkg",
+    "amount": 250,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1766948400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Ofiice dinner",
+    "amount": 350,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766948400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Weekly Allowance",
+    "amount": -2000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1766775600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Snacks",
+    "amount": 250,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766602800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Fries",
+    "amount": 150,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766602800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Don't ask",
+    "amount": 100,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1766602800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Rotee",
+    "amount": 100,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766602800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Bari Call Package",
+    "amount": 250,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1766602800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Snacks",
+    "amount": 120,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766430000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Office Snacks",
+    "amount": 80,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766430000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Travel Fare",
+    "amount": 150,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1766170800000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Rickshaw Fare",
+    "amount": 100,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1766257200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Rickshaw Fare",
+    "amount": 100,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1766343600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Rickshaw Fare",
+    "amount": 100,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1766257200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Weekly Allowance",
+    "amount": -2000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1766343600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Chai",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766257200000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Chai Cake Rusk",
+    "amount": 300,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766084400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Pens",
+    "amount": 40,
+    "categoryId": "jx7ebn97babaztqb7w7cmkj2kn827wbx"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Gloves",
+    "amount": 550,
+    "categoryId": "jx7d1tnm8q1ezvrkhjkpmyrpr9827bke"
+  },
+  {
+    "date": 1766084400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner in office",
+    "amount": 610,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1766084400000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Eraser",
+    "amount": 50,
+    "categoryId": "jx7d1tnm8q1ezvrkhjkpmyrpr9827bke"
+  },
+  {
+    "date": 1765998000000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner in office",
+    "amount": 150,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Debt paid to abdullah",
+    "amount": 400,
+    "categoryId": "jx70xdexp4cjvbrsna7699v6rd82894y"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Debt paid to anas",
+    "amount": 140,
+    "categoryId": "jx70xdexp4cjvbrsna7699v6rd82894y"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "From Father",
+    "amount": -2000,
+    "categoryId": "jx72ztzhcwehs2q6hxam4tw55n829dy1"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Debt paid to isha",
+    "amount": 600,
+    "categoryId": "jx70xdexp4cjvbrsna7699v6rd82894y"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dental Floss",
+    "amount": 420,
+    "categoryId": "jx7d1tnm8q1ezvrkhjkpmyrpr9827bke"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Petrol",
+    "amount": 760,
+    "categoryId": "jx7br8y7smtcy11e0yn286s7tx827vh0"
+  },
+  {
+    "date": 1765911600000,
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk",
+    "name": "Dinner in office",
+    "amount": 560,
+    "categoryId": "jx73cmw4e45x53v6603jh9xsz1826qs7"
+  }
+]

@@ -11,6 +11,8 @@ const DEFAULT_CATEGORIES = [
   { name: "Healthcare", color: "#ec4899" },
   { name: "Groceries", color: "#06b6d4" },
   { name: "Personal Care", color: "#84cc16" },
+  { name: "Credit & Loans", color: "#84cc16" },
+  { name: "Others", color: "#84cc16" },
 ];
 
 export const initializeDefaultCategories = mutation({
