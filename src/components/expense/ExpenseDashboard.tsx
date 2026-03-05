@@ -27,6 +27,10 @@ export function ExpenseDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedPeriod =
     (searchParams.get("period") as TimePeriod) || "monthly";
+  const referenceDateString = searchParams.get("date");
+  const referenceDate = referenceDateString
+    ? parseInt(referenceDateString)
+    : Date.now();
 
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
@@ -44,14 +48,22 @@ export function ExpenseDashboard() {
   const categories = useQuery(api.functions.categories.listCategories) || [];
 
   const { startDate, endDate } = useMemo(
-    () => getDateRange(selectedPeriod),
-    [selectedPeriod],
+    () => getDateRange(selectedPeriod, referenceDate),
+    [selectedPeriod, referenceDate],
   );
 
   const handlePeriodChange = (period: TimePeriod) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set("period", period);
-    // Reset page when period changes to avoid empty pages
+    // Reset date when period changes to avoid confusion
+    newParams.delete("date");
+    newParams.set("page", "1");
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const handleDateShift = (newDate: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("date", newDate.toString());
     newParams.set("page", "1");
     setSearchParams(newParams, { replace: true });
   };
@@ -174,6 +186,8 @@ export function ExpenseDashboard() {
         <DashboardActions
           selectedPeriod={selectedPeriod}
           onPeriodChange={handlePeriodChange}
+          referenceDate={referenceDate}
+          onDateShift={handleDateShift}
           onAddExpense={() => setShowExpenseForm(true)}
           onAddIncome={() => setShowIncomeForm(true)}
           onShowCategories={() => setShowCategoryManager(true)}
@@ -208,6 +222,9 @@ export function ExpenseDashboard() {
                 <ExpenseList
                   expenses={filteredExpenses}
                   onEditExpense={handleEditExpense}
+                  selectedPeriod={selectedPeriod}
+                  referenceDate={referenceDate}
+                  onDateShift={handleDateShift}
                 />
               </CardContent>
             </Card>

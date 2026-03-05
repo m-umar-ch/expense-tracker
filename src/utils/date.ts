@@ -3,8 +3,11 @@ import { TimePeriod } from "../types/expense";
 /**
  * Returns the start and end timestamps for a given time period
  */
-export const getDateRange = (period: TimePeriod) => {
-  const now = new Date();
+export const getDateRange = (
+  period: TimePeriod,
+  referenceDate: number = Date.now(),
+) => {
+  const now = new Date(referenceDate);
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   switch (period) {
@@ -76,12 +79,9 @@ export const getDateRange = (period: TimePeriod) => {
         endDate: yearEnd.getTime(),
       };
     case "all":
-      const allEnd = new Date(today);
-      allEnd.setDate(today.getDate() + 1);
-      allEnd.setHours(23, 59, 59, 999);
       return {
         startDate: 0,
-        endDate: allEnd.getTime(),
+        endDate: now.getTime() + 86400000, // Include tomorrow for safety
       };
     default:
       const dailyStart = new Date(today);
@@ -93,6 +93,63 @@ export const getDateRange = (period: TimePeriod) => {
         endDate: dailyEnd.getTime(),
       };
   }
+};
+
+/**
+ * Get the next/previous date based on the period
+ */
+export const getNextPeriodDate = (period: TimePeriod, currentDate: number) => {
+  const date = new Date(currentDate);
+  switch (period) {
+    case "daily":
+      date.setDate(date.getDate() + 1);
+      break;
+    case "weekly":
+      date.setDate(date.getDate() + 7);
+      break;
+    case "monthly":
+      date.setMonth(date.getMonth() + 1);
+      break;
+    case "3months":
+      date.setMonth(date.getMonth() + 3);
+      break;
+    case "6months":
+      date.setMonth(date.getMonth() + 6);
+      break;
+    case "yearly":
+      date.setFullYear(date.getFullYear() + 1);
+      break;
+    default:
+      break;
+  }
+  return date.getTime();
+};
+
+export const getPrevPeriodDate = (period: TimePeriod, currentDate: number) => {
+  const date = new Date(currentDate);
+  switch (period) {
+    case "daily":
+      date.setDate(date.getDate() - 1);
+      break;
+    case "weekly":
+      date.setDate(date.getDate() - 7);
+      break;
+    case "monthly":
+      date.setMonth(date.getMonth() - 1);
+      break;
+    case "3months":
+      date.setMonth(date.getMonth() - 3);
+      break;
+    case "6months":
+      date.setMonth(date.getMonth() - 6);
+      break;
+    case "yearly":
+      date.setFullYear(date.getFullYear() - 1);
+      break;
+    default:
+      break;
+  }
+  return date.getTime();
 };
 
 /**

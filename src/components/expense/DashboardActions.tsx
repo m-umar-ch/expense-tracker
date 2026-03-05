@@ -1,11 +1,22 @@
-import { Plus, Wallet, FolderOpen, BarChart3, Download } from "lucide-react";
+import {
+  Plus,
+  Wallet,
+  FolderOpen,
+  BarChart3,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TimePeriodFilter } from "../shared/TimePeriodFilter";
 import { TimePeriod } from "../../types/expense";
+import { getNextPeriodDate, getPrevPeriodDate } from "../../utils/date";
 
 interface DashboardActionsProps {
   selectedPeriod: TimePeriod;
   onPeriodChange: (period: TimePeriod) => void;
+  referenceDate: number;
+  onDateShift: (newDate: number) => void;
   onAddExpense: () => void;
   onAddIncome: () => void;
   onShowCategories: () => void;
@@ -17,6 +28,8 @@ interface DashboardActionsProps {
 export function DashboardActions({
   selectedPeriod,
   onPeriodChange,
+  referenceDate,
+  onDateShift,
   onAddExpense,
   onAddIncome,
   onShowCategories,
@@ -26,14 +39,16 @@ export function DashboardActions({
 }: DashboardActionsProps) {
   return (
     <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between bg-card p-6 rounded-xl border shadow-sm">
-      <div className="flex-1 w-full md:w-auto">
-        <h2 className="text-sm font-medium text-muted-foreground mb-3">
+      <div className="flex-1 w-full md:w-auto space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">
           Time Period Select
         </h2>
-        <TimePeriodFilter
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={onPeriodChange}
-        />
+        <div className="flex items-center gap-2">
+          <TimePeriodFilter
+            selectedPeriod={selectedPeriod}
+            onPeriodChange={onPeriodChange}
+          />
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2 pt-4 md:pt-0">

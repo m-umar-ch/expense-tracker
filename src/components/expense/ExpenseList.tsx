@@ -54,12 +54,24 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
+import { getNextPeriodDate, getPrevPeriodDate } from "../../utils/date";
+import { TimePeriod } from "../../types/expense";
+
 interface ExpenseListProps {
   expenses: Expense[];
   onEditExpense: (expense: Expense) => void;
+  selectedPeriod: TimePeriod;
+  referenceDate: number;
+  onDateShift: (newDate: number) => void;
 }
 
-export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
+export function ExpenseList({
+  expenses,
+  onEditExpense,
+  selectedPeriod,
+  referenceDate,
+  onDateShift,
+}: ExpenseListProps) {
   const deleteExpense = useMutation(api.functions.expenses.deleteExpense);
   const { settings, formatCurrency } = useSettings();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -269,10 +281,32 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
     autoResetPageIndex: false, // Prevent reset on data change (like edit)
   });
 
+  const getPeriodLabel = (period: TimePeriod) => {
+    switch (period) {
+      case "daily":
+        return "Day";
+      case "weekly":
+        return "Week";
+      case "monthly":
+        return "Month";
+      case "3months":
+        return "3 Months";
+      case "6months":
+        return "6 Months";
+      case "yearly":
+        return "Year";
+      default:
+        return "";
+    }
+  };
+
+  const periodLabel = getPeriodLabel(selectedPeriod);
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative w-full max-w-sm">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        {/* Search - Leftmost */}
+        <div className="relative w-full lg:max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search transactions..."
@@ -280,14 +314,40 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="pl-10"
+            className="pl-10 h-9"
           />
         </div>
 
-        <div className="flex items-center space-x-2">
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {table.getFilteredRowModel().rows.length} records found
-          </span>
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+          {/* Navigation - Middle */}
+          {selectedPeriod !== "all" && (
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-9 px-3 gap-1 shadow-sm font-medium"
+                onClick={() =>
+                  onDateShift(getPrevPeriodDate(selectedPeriod, referenceDate))
+                }
+                title={`Previous ${periodLabel}`}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Prev {periodLabel}</span>
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-9 px-3 gap-1 shadow-sm font-medium"
+                onClick={() =>
+                  onDateShift(getNextPeriodDate(selectedPeriod, referenceDate))
+                }
+                title={`Next ${periodLabel}`}
+              >
+                <span className="hidden sm:inline">Next {periodLabel}</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -361,6 +421,19 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Total Records Badge - Center */}
+        <div className="hidden md:flex px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary items-center gap-2 shrink-0">
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary/70 hidden sm:inline">
+            Total
+          </span>
+          <span className="text-sm font-bold leading-none">
+            {table.getFilteredRowModel().rows.length}
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">
+            Records
+          </span>
         </div>
 
         <div className="flex items-center space-x-2">
