@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Settings } from "lucide-react";
-import SettingsModal from "../ui/SettingsModal";
+import SettingsModal from "../others/SettingsModal";
 
 interface HeaderProps {
   loggedInUser: any;

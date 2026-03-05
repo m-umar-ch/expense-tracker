@@ -2,4 +2,4 @@
 export * from "./expense";
 export * from "./budget";
 export * from "./category";
-export * from "./ui";
+export * from "./others";

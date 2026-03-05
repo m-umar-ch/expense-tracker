@@ -19,7 +19,7 @@ import {
 import { useTheme, AVAILABLE_THEMES } from "../theme-provider";
 import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
 import { Monitor, Sun, Moon, EyeOff } from "lucide-react";
-import { Switch } from "./switch";
+import { Switch } from "../ui/switch";
 
 interface SettingsModalProps {
   isOpen: boolean;

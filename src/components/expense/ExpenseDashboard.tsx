@@ -3,7 +3,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { ExpenseForm, ExpenseList, IncomeForm } from "./";
 import { CategorySummary, CategoryManager } from "../category";
-import { TimePeriodFilter, ExportModal, StatisticsOverview } from "../ui";
+import { TimePeriodFilter, ExportModal, StatisticsOverview } from "../others";
 import FinancialCharts from "../analytics/FinancialCharts";
 import { BudgetOverview, BudgetManager } from "../budget";
 import {
@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SettingsModal from "../ui/SettingsModal";
+import SettingsModal from "../others/SettingsModal";
 import {
   BarChart3,
   Download,
