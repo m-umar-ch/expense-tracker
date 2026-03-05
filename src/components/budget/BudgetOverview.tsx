@@ -65,7 +65,7 @@ export function BudgetOverview({ categorySpending }: BudgetOverviewProps) {
                       </Badge>
                     ) : isNearLimit ? (
                       <Badge
-                        variant="warning"
+                        variant="destructive"
                         className="h-5 px-1.5 text-[10px] uppercase font-bold tracking-tighter bg-amber-500 text-white hover:bg-amber-600 border-none transition-none"
                       >
                         Near Limit

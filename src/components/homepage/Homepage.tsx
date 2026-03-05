@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import Header from "./homepage/Header";
-import HeroSection from "./homepage/HeroSection";
-import FreeForeverSection from "./homepage/FreeForeverSection";
-import DonationSection from "./homepage/DonationSection";
-import CTASection from "./homepage/CTASection";
-import Footer from "./homepage/Footer";
+import { api } from "../../../convex/_generated/api";
+import Header from "./Header";
+import HeroSection from "./HeroSection";
+import FreeForeverSection from "./FreeForeverSection";
+import DonationSection from "./DonationSection";
+import CTASection from "./CTASection";
+import Footer from "./Footer";
 
 const Homepage: React.FC = () => {
   const navigate = useNavigate();

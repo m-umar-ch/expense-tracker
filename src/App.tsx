@@ -9,11 +9,11 @@ import {
 import { api } from "../convex/_generated/api";
 import { ExpenseDashboard } from "./components/expense";
 import { useEffect } from "react";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 
-import Homepage from "./components/Homepage";
-import AuthPage from "./components/AuthPage";
-import { RouteErrorFallback } from "./components/RouteErrorFallback";
+import Homepage from "./components/homepage/Homepage";
+import AuthPage from "./components/auth/AuthPage";
+import { RouteErrorFallback } from "./components/shared/RouteErrorFallback";
 
 // Component that only renders for authenticated users
 function DashboardWrapper() {

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTheme, AVAILABLE_THEMES } from "../theme-provider";
+import { useTheme, AVAILABLE_THEMES } from "../shared";
 import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
 import { Monitor, Sun, Moon, EyeOff } from "lucide-react";
 import { Switch } from "../ui/switch";

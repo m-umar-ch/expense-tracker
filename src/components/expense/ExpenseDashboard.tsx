@@ -1,40 +1,26 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { ExpenseForm, ExpenseList, IncomeForm } from "./";
+import { ExpenseForm, ExpenseList, IncomeForm } from "../";
 import { CategorySummary, CategoryManager } from "../category";
-import { TimePeriodFilter, ExportModal, StatisticsOverview } from "../others";
+import { ExportModal } from "../modals/ExportModal";
+import { StatisticsOverview } from "./StatisticsOverview";
 import FinancialCharts from "../analytics/FinancialCharts";
 import { BudgetOverview, BudgetManager } from "../budget";
 import {
-  Category,
   Expense,
   CategorySpending,
   TimePeriod,
   Income,
 } from "../../types/expense";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SettingsModal from "../others/SettingsModal";
-import {
-  BarChart3,
-  Download,
-  FolderOpen,
-  Plus,
-  DollarSign,
-  ArrowLeft,
-  Settings,
-  LogOut,
-  LayoutDashboard,
-  Wallet,
-} from "lucide-react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthActions } from "@convex-dev/auth/react";
+import SettingsModal from "../modals/SettingsModal";
+import { DashboardHeader } from "./DashboardHeader";
+import { DashboardActions } from "./DashboardActions";
+import { getDateRange, getEffectiveDaysCount } from "../../utils/date";
 
 export function ExpenseDashboard() {
-  const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("monthly");
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
@@ -51,103 +37,11 @@ export function ExpenseDashboard() {
 
   const categories = useQuery(api.functions.categories.listCategories) || [];
 
-  const getDateRange = (period: TimePeriod) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const { startDate, endDate } = useMemo(
+    () => getDateRange(selectedPeriod),
+    [selectedPeriod],
+  );
 
-    switch (period) {
-      case "weekly":
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        weekStart.setHours(0, 0, 0, 0);
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 6);
-        weekEnd.setHours(23, 59, 59, 999);
-        return {
-          startDate: weekStart.getTime(),
-          endDate: weekEnd.getTime(),
-        };
-      case "monthly":
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const monthEnd = new Date(
-          now.getFullYear(),
-          now.getMonth() + 1,
-          0,
-          23,
-          59,
-          59,
-          999,
-        );
-        return {
-          startDate: monthStart.getTime(),
-          endDate: monthEnd.getTime(),
-        };
-      case "3months":
-        const threeMonthsStart = new Date(
-          now.getFullYear(),
-          now.getMonth() - 2,
-          1,
-        );
-        const threeMonthsEnd = new Date(
-          now.getFullYear(),
-          now.getMonth() + 1,
-          0,
-          23,
-          59,
-          59,
-          999,
-        );
-        return {
-          startDate: threeMonthsStart.getTime(),
-          endDate: threeMonthsEnd.getTime(),
-        };
-      case "6months":
-        const sixMonthsStart = new Date(
-          now.getFullYear(),
-          now.getMonth() - 5,
-          1,
-        );
-        const sixMonthsEnd = new Date(
-          now.getFullYear(),
-          now.getMonth() + 1,
-          0,
-          23,
-          59,
-          59,
-          999,
-        );
-        return {
-          startDate: sixMonthsStart.getTime(),
-          endDate: sixMonthsEnd.getTime(),
-        };
-      case "yearly":
-        const yearStart = new Date(now.getFullYear(), 0, 1);
-        const yearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-        return {
-          startDate: yearStart.getTime(),
-          endDate: yearEnd.getTime(),
-        };
-      case "all":
-        const allEnd = new Date(today);
-        allEnd.setDate(today.getDate() + 1);
-        allEnd.setHours(23, 59, 59, 999);
-        return {
-          startDate: 0,
-          endDate: allEnd.getTime(),
-        };
-      default:
-        const dailyStart = new Date(today);
-        dailyStart.setHours(0, 0, 0, 0);
-        const dailyEnd = new Date(today);
-        dailyEnd.setHours(23, 59, 59, 999);
-        return {
-          startDate: dailyStart.getTime(),
-          endDate: dailyEnd.getTime(),
-        };
-    }
-  };
-
-  const { startDate, endDate } = getDateRange(selectedPeriod);
   const expenses = useQuery(api.functions.expenses.listExpenses, {
     startDate,
     endDate,
@@ -181,7 +75,6 @@ export function ExpenseDashboard() {
 
   const filteredExpenses = (expenses || []) as Expense[];
 
-  // BUG FIX: Calculate total once outside the map to avoid O(N*E)
   const categorySpending: CategorySpending[] = useMemo(() => {
     if (!categorySpendingData) return [];
 
@@ -201,23 +94,21 @@ export function ExpenseDashboard() {
   }, [categorySpendingData, filteredExpenses]);
 
   const effectiveDaysCount = useMemo(() => {
-    if (selectedPeriod === "all") {
-      const allDates = [
-        ...filteredExpenses.map((e) => e.date),
-        ...incomes.map((i) => i.date),
-      ];
-      if (allDates.length > 0) {
-        const minDate = Math.min(...allDates);
-        return Math.max(
-          1,
-          Math.round((Date.now() - minDate) / (1000 * 60 * 60 * 24)),
-        );
-      }
-      return 30; // default if no data
-    }
-    return Math.max(
-      1,
-      Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)),
+    const hasData = filteredExpenses.length > 0 || incomes.length > 0;
+    const minDate =
+      hasData && selectedPeriod === "all"
+        ? Math.min(
+            ...filteredExpenses.map((e) => e.date),
+            ...incomes.map((i) => i.date),
+          )
+        : undefined;
+
+    return getEffectiveDaysCount(
+      selectedPeriod,
+      startDate,
+      endDate,
+      hasData,
+      minDate,
     );
   }, [endDate, startDate, selectedPeriod, filteredExpenses, incomes]);
 
@@ -229,16 +120,6 @@ export function ExpenseDashboard() {
   const handleCloseExpenseForm = () => {
     setShowExpenseForm(false);
     setEditingExpense(undefined);
-  };
-
-  const { signOut } = useAuthActions();
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate("/");
-    } catch (error) {
-      console.error("Sign out error:", error);
-    }
   };
 
   // Keyboard Shortcuts
@@ -273,92 +154,20 @@ export function ExpenseDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Shadcn Header */}
-      <header className="border-b sticky top-0 z-10 bg-background/95 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <LayoutDashboard className="w-6 h-6 text-primary" />
-            <h1 className="text-xl font-bold tracking-tight">
-              Financial Dashboard
-            </h1>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Home
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowSettingsModal(true)}
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader onShowSettings={() => setShowSettingsModal(true)} />
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        {/* Period selection and primary actions */}
-        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between bg-card p-6 rounded-xl border shadow-sm">
-          <div className="flex-1 w-full md:w-auto">
-            <h2 className="text-sm font-medium text-muted-foreground mb-3">
-              Time Period Select
-            </h2>
-            <TimePeriodFilter
-              selectedPeriod={selectedPeriod}
-              onPeriodChange={setSelectedPeriod}
-            />
-          </div>
+        <DashboardActions
+          selectedPeriod={selectedPeriod}
+          onPeriodChange={setSelectedPeriod}
+          onAddExpense={() => setShowExpenseForm(true)}
+          onAddIncome={() => setShowIncomeForm(true)}
+          onShowCategories={() => setShowCategoryManager(true)}
+          onShowBudgets={() => setShowBudgetManager(true)}
+          onShowExport={() => setShowExportModal(true)}
+          isExportDisabled={!expenses || expenses.length === 0}
+        />
 
-          <div className="flex flex-wrap gap-2 pt-4 md:pt-0">
-            <Button onClick={() => setShowExpenseForm(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Expense
-            </Button>
-            <Button
-              onClick={() => setShowIncomeForm(true)}
-              variant="outline"
-              className="gap-2 border-green-500/50 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30"
-            >
-              <Wallet className="h-4 w-4" />
-              Add Income
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowCategoryManager(true)}
-              className="gap-2"
-            >
-              <FolderOpen className="h-4 w-4" />
-              Categories
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowBudgetManager(true)}
-              className="gap-2"
-            >
-              <BarChart3 className="h-4 w-4" />
-              Budgets
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowExportModal(true)}
-              disabled={!expenses || expenses.length === 0}
-              className="gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
-          </div>
-        </div>
-
-        {/* Stats Overview */}
         <StatisticsOverview
           expenses={filteredExpenses}
           categorySpending={categorySpending}
@@ -366,7 +175,6 @@ export function ExpenseDashboard() {
           daysCount={effectiveDaysCount}
         />
 
-        {/* Tab Navigation */}
         <Tabs defaultValue="expenses" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
             <TabsTrigger value="expenses" className="text-base">
@@ -449,7 +257,6 @@ export function ExpenseDashboard() {
         </Tabs>
       </main>
 
-      {/* Modals */}
       {showExpenseForm && (
         <ExpenseForm
           onClose={handleCloseExpenseForm}
