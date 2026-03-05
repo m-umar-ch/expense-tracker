@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { ExpenseForm, ExpenseList, IncomeForm } from "../";
+import { ExpenseForm } from "./ExpenseForm";
+import { ExpenseList } from "./ExpenseList";
+import { IncomeForm } from "./IncomeForm";
 import { CategorySummary, CategoryManager } from "../category";
 import { ExportModal } from "../modals/ExportModal";
 import { StatisticsOverview } from "./StatisticsOverview";

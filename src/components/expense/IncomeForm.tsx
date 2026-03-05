@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
-import { Field, FieldLabel } from "../ui/field";
+import { Field, FieldLabel, FieldError } from "../ui/field";
 
 interface IncomeFormProps {
   editingIncome?: Income;
@@ -115,7 +115,9 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g., Salary, Freelance project"
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -140,7 +142,9 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       onChange={(e) =>
                         field.handleChange(Number(e.target.value))
                       }
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -162,7 +166,9 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -187,7 +193,9 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="Add details..."
                       className="resize-none"
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}

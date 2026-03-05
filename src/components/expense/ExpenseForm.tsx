@@ -27,7 +27,7 @@ import { Upload, Loader2, Receipt, Trash2 } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
-import { Field, FieldLabel } from "../ui/field";
+import { Field, FieldLabel, FieldError } from "../ui/field";
 
 interface ExpenseFormProps {
   categories: Category[];
@@ -164,7 +164,9 @@ export function ExpenseForm({
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g., Grocery Shopping"
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -189,7 +191,9 @@ export function ExpenseForm({
                       onChange={(e) =>
                         field.handleChange(Number(e.target.value))
                       }
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -210,7 +214,7 @@ export function ExpenseForm({
                       value={field.state.value}
                       onValueChange={(value) => field.handleChange(value)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger aria-invalid={isInvalid}>
                         <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -227,6 +231,7 @@ export function ExpenseForm({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -248,7 +253,9 @@ export function ExpenseForm({
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </Field>
                 );
               }}
@@ -272,7 +279,9 @@ export function ExpenseForm({
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="Add details..."
                     className="resize-none"
+                    aria-invalid={isInvalid}
                   />
+                  <FieldError errors={field.state.meta.errors} />
                 </Field>
               );
             }}

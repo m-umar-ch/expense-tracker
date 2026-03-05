@@ -149,7 +149,7 @@ export function StatisticsOverview({
               </div>
               <div className="hidden sm:block text-right">
                 <div
-                  className={`text-2xl font-black text-primary/60 ${blurClass}`}
+                  className={`text-2xl font-black text-primary/80 ${blurClass}`}
                 >
                   {topCategory.percentageOfTotal.toFixed(1)}%
                 </div>

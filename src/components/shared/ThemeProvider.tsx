@@ -1,6 +1,17 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme =
+  | "light"
+  | "dark"
+  | "system"
+  | "blue-dark"
+  | "amber-light"
+  | "amber-dark"
+  | "clay-light"
+  | "clay-dark"
+  | "modern-dark"
+  | "neon-dark"
+  | "midnight-dark";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -33,7 +44,11 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove("light", "dark");
+    // Remove all possible theme classes
+    const allThemes = AVAILABLE_THEMES.map((t) => t.value).filter(
+      (v) => v !== "system",
+    );
+    root.classList.remove(...allThemes, "light", "dark");
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -73,7 +88,15 @@ export const useTheme = () => {
 };
 
 export const AVAILABLE_THEMES = [
+  { value: "system", label: "System" },
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
+  { value: "blue-dark", label: "Blue Dark" },
+  { value: "amber-light", label: "Amber Light" },
+  { value: "amber-dark", label: "Amber Dark" },
+  { value: "clay-light", label: "Clay Light" },
+  { value: "clay-dark", label: "Clay Dark" },
+  { value: "modern-dark", label: "Modern Dark" },
+  { value: "neon-dark", label: "Neon Dark" },
+  { value: "midnight-dark", label: "Midnight Dark" },
 ];

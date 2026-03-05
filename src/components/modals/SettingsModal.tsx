@@ -16,9 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTheme, AVAILABLE_THEMES } from "../shared";
+import { useTheme, AVAILABLE_THEMES } from "../shared/ThemeProvider";
 import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
-import { Monitor, Sun, Moon, EyeOff } from "lucide-react";
+import { Monitor, Sun, Moon, EyeOff, Palette } from "lucide-react";
 import { Switch } from "../ui/switch";
 
 interface SettingsModalProps {
@@ -35,17 +35,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
       case "system":
         return <Monitor className="w-4 h-4 mr-2" />;
       case "light":
+      case "amber-light":
+      case "clay-light":
         return <Sun className="w-4 h-4 mr-2" />;
       case "dark":
+      case "blue-dark":
+      case "amber-dark":
+      case "clay-dark":
+      case "modern-dark":
+      case "neon-dark":
+      case "midnight-dark":
         return <Moon className="w-4 h-4 mr-2" />;
       default:
-        return <Monitor className="w-4 h-4 mr-2" />;
+        return <Palette className="w-4 h-4 mr-2" />;
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>System Settings</DialogTitle>
         </DialogHeader>
@@ -61,18 +69,24 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
           <TabsContent value="theme" className="space-y-4 py-4">
             <div className="space-y-4">
               <Label>Application Theme</Label>
-              <div className="grid grid-cols-3 gap-4">
-                {AVAILABLE_THEMES.map((option) => (
-                  <Button
-                    key={option.value}
-                    variant={theme === option.value ? "default" : "outline"}
-                    className="h-20 flex-col gap-2"
-                    onClick={() => setTheme(option.value as any)}
-                  >
-                    {getThemeIcon(option.value)}
-                    <span className="text-xs">{option.label}</span>
-                  </Button>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {AVAILABLE_THEMES.map(
+                  (option: { value: string; label: string }) => (
+                    <Button
+                      key={option.value}
+                      variant={theme === option.value ? "default" : "outline"}
+                      className="h-16 flex-col gap-1 px-2 text-center"
+                      onClick={() => setTheme(option.value as any)}
+                    >
+                      <div className="flex items-center">
+                        {getThemeIcon(option.value)}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase truncate w-full">
+                        {option.label}
+                      </span>
+                    </Button>
+                  ),
+                )}
               </div>
             </div>
           </TabsContent>
@@ -112,9 +126,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     <SelectValue placeholder="Select Format" />
                   </SelectTrigger>
                   <SelectContent>
-                    <option value="MM/dd/yyyy">MM/DD/YYYY (US)</option>
-                    <option value="dd/MM/yyyy">DD/MM/YYYY (EU)</option>
-                    <option value="yyyy-MM-dd">YYYY-MM-DD (ISO)</option>
+                    <SelectItem value="MM/dd/yyyy">MM/DD/YYYY (US)</SelectItem>
+                    <SelectItem value="dd/MM/yyyy">DD/MM/YYYY (EU)</SelectItem>
+                    <SelectItem value="yyyy-MM-dd">YYYY-MM-DD (ISO)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
