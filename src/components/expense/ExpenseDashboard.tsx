@@ -22,6 +22,8 @@ import { DashboardHeader } from "./DashboardHeader";
 import { DashboardActions } from "./DashboardActions";
 import { getDateRange, getEffectiveDaysCount } from "../../utils/date";
 import { useSearchParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 export function ExpenseDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -216,9 +218,15 @@ export function ExpenseDashboard() {
           </TabsList>
 
           <TabsContent value="expenses">
-            <Card>
-              <CardHeader>
-                <CardTitle>Transactions</CardTitle>
+            <Card className="gap-5">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="text-xl sm:text-2xl font-bold">
+                  Transactions Table
+                </CardTitle>
+                <Button size="sm" onClick={() => setShowExpenseForm(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Expense
+                </Button>
               </CardHeader>
               <CardContent>
                 <ExpenseList
