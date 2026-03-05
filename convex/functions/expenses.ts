@@ -199,3 +199,49 @@ export const generateUploadUrl = mutation({
     return await ctx.storage.generateUploadUrl();
   },
 });
+
+export const getDateBoundaries = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const firstExpense = await ctx.db
+      .query("expenses")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", userId))
+      .order("asc")
+      .first();
+
+    const lastExpense = await ctx.db
+      .query("expenses")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", userId))
+      .order("desc")
+      .first();
+
+    const firstIncome = await ctx.db
+      .query("incomes")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", userId))
+      .order("asc")
+      .first();
+
+    const lastIncome = await ctx.db
+      .query("incomes")
+      .withIndex("by_user_and_date", (q) => q.eq("userId", userId))
+      .order("desc")
+      .first();
+
+    const dates = [
+      firstExpense?.date,
+      lastExpense?.date,
+      firstIncome?.date,
+      lastIncome?.date,
+    ].filter((d): d is number => d !== undefined);
+
+    if (dates.length === 0) return null;
+
+    return {
+      minDate: Math.min(...dates),
+      maxDate: Math.max(...dates),
+    };
+  },
+});

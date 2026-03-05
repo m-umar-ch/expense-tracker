@@ -99,6 +99,8 @@ export function ExpenseDashboard() {
     },
   );
 
+  const dateBoundaries = useQuery(api.functions.expenses.getDateBoundaries);
+
   const filteredExpenses = (expenses || []) as Expense[];
 
   const categorySpending: CategorySpending[] = useMemo(() => {
@@ -225,6 +227,8 @@ export function ExpenseDashboard() {
                   selectedPeriod={selectedPeriod}
                   referenceDate={referenceDate}
                   onDateShift={handleDateShift}
+                  dateBoundaries={dateBoundaries}
+                  isLoading={expenses === undefined}
                 />
               </CardContent>
             </Card>

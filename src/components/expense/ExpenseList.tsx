@@ -62,6 +62,7 @@ import {
   formatPeriodRange,
 } from "../../utils/date";
 import { TimePeriod } from "../../types/expense";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -69,6 +70,8 @@ interface ExpenseListProps {
   selectedPeriod: TimePeriod;
   referenceDate: number;
   onDateShift: (newDate: number) => void;
+  dateBoundaries?: { minDate: number; maxDate: number } | null;
+  isLoading?: boolean;
 }
 
 export function ExpenseList({
@@ -77,6 +80,8 @@ export function ExpenseList({
   selectedPeriod,
   referenceDate,
   onDateShift,
+  dateBoundaries,
+  isLoading,
 }: ExpenseListProps) {
   const deleteExpense = useMutation(api.functions.expenses.deleteExpense);
   const { settings, formatCurrency } = useSettings();
@@ -313,6 +318,14 @@ export function ExpenseList({
   const now = Date.now();
   const isCurrentPeriod = now >= startDate && now <= endDate;
 
+  // Navigation bounds logic
+  const hasPrev = !dateBoundaries || dateBoundaries.minDate < startDate;
+
+  // They can navigate forward as long as the endDate is less than the current time,
+  // or less than any future expenses they might have logged.
+  const maxAllowedDate = Math.max(now, dateBoundaries?.maxDate || 0);
+  const hasNext = !dateBoundaries || endDate < maxAllowedDate;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
@@ -341,6 +354,7 @@ export function ExpenseList({
                   onDateShift(getPrevPeriodDate(selectedPeriod, referenceDate))
                 }
                 title={`Previous ${periodLabel}`}
+                disabled={!hasPrev}
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">Prev</span>
@@ -349,14 +363,14 @@ export function ExpenseList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2 text-muted-foreground hover:text-primary hover:bg-background"
+                  className="h-8 px-2 text-muted-foreground hover:text-primary hover:bg-background shrink-0"
                   onClick={() => onDateShift(Date.now())}
                   title={`Go to Current ${periodLabel}`}
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                 </Button>
               )}
-              <div className="px-2 font-semibold text-sm min-w-[120px] text-center whitespace-nowrap text-foreground">
+              <div className="px-2 font-semibold text-sm min-w-[120px] text-center whitespace-nowrap text-foreground shrink-0 overflow-hidden text-ellipsis">
                 {formattedRange}
               </div>
               <Button
@@ -367,6 +381,7 @@ export function ExpenseList({
                   onDateShift(getNextPeriodDate(selectedPeriod, referenceDate))
                 }
                 title={`Next ${periodLabel}`}
+                disabled={!hasNext}
               >
                 <span className="hidden sm:inline">Next</span>
                 <ChevronRight className="h-4 w-4" />
@@ -395,7 +410,37 @@ export function ExpenseList({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              Array.from({ length: 10 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-5 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-2">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-3 w-3 rounded-full shrink-0" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end">
+                      <Skeleton className="h-5 w-16" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end">
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
