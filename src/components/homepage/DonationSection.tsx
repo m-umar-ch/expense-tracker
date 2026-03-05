@@ -6,118 +6,100 @@ interface DonationSectionProps {
   onGetStarted: () => void;
 }
 
-const DonationSection: React.FC<DonationSectionProps> = ({ onGetStarted }) => {
+const DonationSection: React.FC<DonationSectionProps> = ({}) => {
   return (
-    <section className="py-20 bg-white text-black">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <h3 className="text-4xl font-black uppercase mb-4 text-black">
-            SUPPORT THE PROJECT
+        <div className="text-center mb-16 space-y-4">
+          <h3 className="text-3xl md:text-5xl font-black tracking-tight text-foreground">
+            SUPPORT THE <span className="text-primary italic">MISSION.</span>
           </h3>
-          <p className="text-xl font-bold uppercase text-red-500">
-            HELP KEEP IT FREE FOR EVERYONE
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            We are community-driven and independent. Your support helps us keep
+            the servers running and the code open source.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Coffee Donation */}
-          <div className="bg-black border-4 border-red-500 p-8 transform hover:scale-105 transition-transform">
-            <div className="bg-yellow-400 text-black px-4 py-2 font-black uppercase text-center mb-6">
-              ☕ BUY ME COFFEE
+          <div className="group p-8 rounded-3xl border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-bold">
+                ☕
+              </div>
+              <h4 className="text-xl font-bold">Coffee</h4>
             </div>
-            <h4 className="text-2xl font-black uppercase mb-2 text-red-500">
-              COFFEE
-            </h4>
-            <div className="text-6xl font-black mb-6 text-white">
-              $5<span className="text-lg">/ONCE</span>
+            <div className="space-y-1">
+              <div className="text-4xl font-black">
+                $5
+                <span className="text-sm text-muted-foreground font-medium">
+                  /once
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Keep the developer caffeinated.
+              </p>
             </div>
-            <div className="space-y-4 mb-8">
-              {[].map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <Check className="w-6 h-6 text-yellow-400" />
-                  <span className="font-bold text-white uppercase text-sm">
-                    {feature}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <Button
-              onClick={onGetStarted}
-              className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-black uppercase py-4"
-            >
-              DONATE $5
+            <Button className="w-full rounded-xl font-bold" variant="secondary">
+              Donate $5
             </Button>
           </div>
 
           {/* MEAL Donation */}
-          <div className="bg-red-500 border-4 border-black p-8 transform hover:scale-105 transition-transform relative">
-            <div className="absolute -top-4 -right-4 bg-black text-red-500 px-4 py-2 font-black uppercase rotate-12">
-              POPULAR
+          <div className="relative group p-8 rounded-3xl border-2 border-primary bg-primary/5 backdrop-blur-sm hover:bg-primary/10 transition-all space-y-6">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+              Most Popular
             </div>
-            <div className="bg-orange-400 text-black px-4 py-2 font-black uppercase text-center mb-6">
-              🍲 BUY ME MEAL
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                🍲
+              </div>
+              <h4 className="text-xl font-bold">Hot Meal</h4>
             </div>
-            <h4 className="text-2xl font-black uppercase mb-2 text-black">
-              MEAL
-            </h4>
-            <div className="text-6xl font-black mb-6 text-black">
-              $25<span className="text-lg">/serving</span>
+            <div className="space-y-1">
+              <div className="text-4xl font-black">
+                $25
+                <span className="text-sm text-muted-foreground font-medium">
+                  /serving
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Fuel the next big feature update.
+              </p>
             </div>
-            <div className="space-y-4 mb-8">
-              {[].map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <Check className="w-6 h-6 text-black" />
-                  <span className="font-bold uppercase text-sm text-black">
-                    {feature}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <Button
-              onClick={onGetStarted}
-              className="w-full bg-black hover:bg-gray-800 text-red-500 font-black uppercase py-4"
-            >
-              DONATE $25
+            <Button className="w-full rounded-xl font-bold shadow-lg shadow-primary/20">
+              Donate $25
             </Button>
           </div>
 
           {/* Sponsor Donation */}
-          <div className="bg-black border-4 border-white p-8 transform hover:scale-105 transition-transform">
-            <div className="flex items-center justify-center space-x-2 bg-white text-black px-4 py-2 font-black uppercase text-center mb-6">
-              <Crown className="w-5 h-5" />
-              <span>SPONSOR</span>
+          <div className="group p-8 rounded-3xl border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-yellow-500/10 text-yellow-600 flex items-center justify-center font-bold">
+                <Crown className="w-5 h-5" />
+              </div>
+              <h4 className="text-xl font-bold">Sponsor</h4>
             </div>
-            <h4 className="text-2xl font-black uppercase mb-2 text-white">
-              SPONSOR
-            </h4>
-            <div className="text-6xl font-black mb-6 text-white">
-              $100<span className="text-lg">+</span>
+            <div className="space-y-1">
+              <div className="text-4xl font-black">
+                $100
+                <span className="text-sm text-muted-foreground font-medium">
+                  +
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Become a permanent part of our community.
+              </p>
             </div>
-            <div className="space-y-4 mb-8">
-              {[].map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <Check className="w-6 h-6 text-white" />
-                  <span className="font-bold uppercase text-white text-sm">
-                    {feature}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <Button
-              onClick={onGetStarted}
-              className="w-full bg-white hover:bg-gray-200 text-black font-black uppercase py-4"
-            >
-              BECOME SPONSOR
+            <Button className="w-full rounded-xl font-bold" variant="outline">
+              Become a Sponsor
             </Button>
           </div>
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-xl font-bold uppercase tracking-wide text-red-500 mb-4">
-            YOUR DONATIONS KEEP THIS FREE
-          </p>
-          <p className="text-lg font-bold uppercase tracking-wide text-gray-600">
-            NO CORPORATE OVERLORDS • JUST COMMUNITY SUPPORT
+        <div className="text-center mt-16 pt-8 border-t space-y-2">
+          <p className="text-xs font-black uppercase tracking-[0.4em] text-muted-foreground">
+            No Corporate Overlords • 100% Independent
           </p>
         </div>
       </div>

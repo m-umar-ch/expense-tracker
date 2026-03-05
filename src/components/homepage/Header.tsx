@@ -13,30 +13,37 @@ const Header: React.FC<HeaderProps> = ({ loggedInUser, onGetStarted }) => {
 
   return (
     <>
-      <header className="relative z-10 border-b-4 border-red-500 bg-black">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-red-500 flex items-center justify-center transform rotate-12">
-                <DollarSign className="w-8 h-8 text-black font-bold" />
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
+        <div className="max-w-7xl mx-auto px-4 h-20">
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-3 group cursor-pointer">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform duration-300">
+                <DollarSign className="w-6 h-6 text-primary-foreground font-bold" />
               </div>
-              <h1 className="text-2xl font-black tracking-tighter uppercase">
-                EXPENSE<span className="text-red-500">TRACK</span>
+              <h1 className="text-xl font-black tracking-tight flex items-center">
+                EXPENSE<span className="text-primary">TRACK</span>
+                <span className="ml-1.5 px-1.5 py-0.5 rounded bg-muted text-[10px] font-bold uppercase tracking-widest text-muted-foreground border">
+                  PRO
+                </span>
               </h1>
             </div>
+
             <div className="flex items-center space-x-4">
               <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowSettingsModal(true)}
-                className="bg-black border-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-black uppercase tracking-wide px-4 py-3 transform hover:scale-105 transition-transform flex items-center gap-2"
+                className="gap-2 font-bold"
               >
-                <Settings className="w-5 h-5" />
-                SETTINGS
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">SETTINGS</span>
               </Button>
               <Button
                 onClick={onGetStarted}
-                className="bg-red-500 hover:bg-red-600 text-black font-black uppercase tracking-wide px-8 py-3 transform hover:scale-105 transition-transform border-2 border-black"
+                size="sm"
+                className="font-bold px-6 shadow-lg shadow-primary/20"
               >
-                {loggedInUser ? "DASHBOARD" : "LOGIN"}
+                {loggedInUser ? "DASHBOARD" : "ACCESS ACCOUNT"}
               </Button>
             </div>
           </div>
