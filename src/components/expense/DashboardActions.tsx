@@ -44,7 +44,7 @@ export function DashboardActions({
         <Button
           onClick={onAddIncome}
           variant="outline"
-          className="gap-2 border-green-500/50 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30"
+          className="gap-2 border-green-500/50 text-green-600 hover:text-green-600 hover:border-green-500/50 hover:bg-transparent"
         >
           <Wallet className="h-4 w-4" />
           Add Income

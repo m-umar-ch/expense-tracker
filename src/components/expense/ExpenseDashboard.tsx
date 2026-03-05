@@ -21,9 +21,13 @@ import SettingsModal from "../modals/SettingsModal";
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardActions } from "./DashboardActions";
 import { getDateRange, getEffectiveDaysCount } from "../../utils/date";
+import { useSearchParams } from "react-router-dom";
 
 export function ExpenseDashboard() {
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("monthly");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedPeriod =
+    (searchParams.get("period") as TimePeriod) || "monthly";
+
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
@@ -43,6 +47,14 @@ export function ExpenseDashboard() {
     () => getDateRange(selectedPeriod),
     [selectedPeriod],
   );
+
+  const handlePeriodChange = (period: TimePeriod) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("period", period);
+    // Reset page when period changes to avoid empty pages
+    newParams.set("page", "1");
+    setSearchParams(newParams, { replace: true });
+  };
 
   const expenses = useQuery(api.functions.expenses.listExpenses, {
     startDate,
@@ -161,7 +173,7 @@ export function ExpenseDashboard() {
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         <DashboardActions
           selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
+          onPeriodChange={handlePeriodChange}
           onAddExpense={() => setShowExpenseForm(true)}
           onAddIncome={() => setShowIncomeForm(true)}
           onShowCategories={() => setShowCategoryManager(true)}

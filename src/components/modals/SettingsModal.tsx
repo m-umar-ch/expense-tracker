@@ -16,9 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useTheme, AVAILABLE_THEMES } from "../shared/ThemeProvider";
-import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
-import { Monitor, Sun, Moon, EyeOff, Palette } from "lucide-react";
+import { useSettings, CustomCurrency } from "../../contexts/SettingsContext";
+import { Monitor, Sun, Moon, EyeOff, Palette, Plus } from "lucide-react";
 import { Switch } from "../ui/switch";
 
 interface SettingsModalProps {
@@ -28,7 +29,7 @@ interface SettingsModalProps {
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { theme, setTheme } = useTheme();
-  const { settings, updateSetting } = useSettings();
+  const { settings, updateSetting, allCurrencies } = useSettings();
 
   const getThemeIcon = (themeValue: string) => {
     switch (themeValue) {
@@ -91,26 +92,150 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             </div>
           </TabsContent>
 
-          <TabsContent value="currency" className="space-y-4 py-4">
+          <TabsContent value="currency" className="space-y-6 py-4">
             <div className="space-y-2">
-              <Label>Base Currency</Label>
+              <Label>Active Base Currency</Label>
               <Select
                 value={settings.currency}
-                onValueChange={(value) =>
-                  updateSetting("currency", value as any)
-                }
+                onValueChange={(value) => updateSetting("currency", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  {CURRENCIES.map((currency) => (
+                  {allCurrencies.map((currency) => (
                     <SelectItem key={currency.value} value={currency.value}>
                       {currency.label} ({currency.symbol})
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                    Currency Management
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Add custom currencies or update existing symbols
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-2 text-[10px] font-bold uppercase text-muted-foreground px-1">
+                  <div>Code (e.g. USD)</div>
+                  <div>Label</div>
+                  <div>Symbol</div>
+                </div>
+
+                {/* New Currency Form */}
+                <div className="grid grid-cols-3 gap-2">
+                  <Input
+                    placeholder="PKR"
+                    className="h-8 text-xs"
+                    id="new-curr-code"
+                  />
+                  <Input
+                    placeholder="Rupee"
+                    className="h-8 text-xs"
+                    id="new-curr-label"
+                  />
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Rs"
+                      className="h-8 text-xs"
+                      id="new-curr-symbol"
+                    />
+                    <Button
+                      size="sm"
+                      className="h-8 px-2"
+                      onClick={() => {
+                        const code = (
+                          document.getElementById(
+                            "new-curr-code",
+                          ) as HTMLInputElement
+                        ).value.toUpperCase();
+                        const label = (
+                          document.getElementById(
+                            "new-curr-label",
+                          ) as HTMLInputElement
+                        ).value;
+                        const symbol = (
+                          document.getElementById(
+                            "new-curr-symbol",
+                          ) as HTMLInputElement
+                        ).value;
+
+                        if (!code || !label || !symbol) return;
+
+                        const newCustoms = [
+                          ...(settings.customCurrencies || []),
+                        ];
+                        newCustoms.push({ value: code, label, symbol });
+                        updateSetting("customCurrencies", newCustoms);
+
+                        // Clear inputs
+                        (
+                          document.getElementById(
+                            "new-curr-code",
+                          ) as HTMLInputElement
+                        ).value = "";
+                        (
+                          document.getElementById(
+                            "new-curr-label",
+                          ) as HTMLInputElement
+                        ).value = "";
+                        (
+                          document.getElementById(
+                            "new-curr-symbol",
+                          ) as HTMLInputElement
+                        ).value = "";
+                      }}
+                    >
+                      <Plus className="w-4 h-4" /> Add
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2">
+                  {allCurrencies.map((curr: CustomCurrency) => (
+                    <div
+                      key={curr.value}
+                      className="grid grid-cols-3 gap-2 items-center p-2 rounded-lg bg-muted/20 border"
+                    >
+                      <div className="text-xs font-bold">{curr.value}</div>
+                      <div className="text-xs truncate">{curr.label}</div>
+                      <Input
+                        value={curr.symbol}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          const newSymbol = e.target.value;
+                          const newCustoms = [
+                            ...(settings.customCurrencies || []),
+                          ];
+                          const idx = newCustoms.findIndex(
+                            (c) => c.value === curr.value,
+                          );
+
+                          if (idx > -1) {
+                            newCustoms[idx] = {
+                              ...newCustoms[idx],
+                              symbol: newSymbol,
+                            };
+                          } else {
+                            // If it was a base currency, we add it to customs to override
+                            newCustoms.push({ ...curr, symbol: newSymbol });
+                          }
+                          updateSetting("customCurrencies", newCustoms);
+                        }}
+                        className="h-7 text-xs px-2 w-16"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </TabsContent>
 

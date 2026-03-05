@@ -3,8 +3,9 @@ import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Expense } from "../../types/expense";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSettings } from "../../contexts/SettingsContext";
+import { useSearchParams } from "react-router-dom";
 import {
   ColumnDef,
   flexRender,
@@ -61,8 +62,42 @@ interface ExpenseListProps {
 export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
   const deleteExpense = useMutation(api.functions.expenses.deleteExpense);
   const { settings, formatCurrency } = useSettings();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read initial state from URL
+  const pageParam = parseInt(searchParams.get("page") || "1");
+  const perPageParam = parseInt(searchParams.get("perPage") || "10");
+  const searchParam = searchParams.get("q") || "";
+
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    searchParam ? [{ id: "name", value: searchParam }] : [],
+  );
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex: pageParam - 1,
+      pageSize: perPageParam,
+    }),
+    [pageParam, perPageParam],
+  );
+
+  const setPagination = (updater: any) => {
+    const nextPagination =
+      typeof updater === "function" ? updater(pagination) : updater;
+
+    const newParams = new URLSearchParams(searchParams);
+
+    // If pageSize changed, reset to page 1
+    if (nextPagination.pageSize !== pagination.pageSize) {
+      newParams.set("page", "1");
+    } else {
+      newParams.set("page", (nextPagination.pageIndex + 1).toString());
+    }
+
+    newParams.set("perPage", nextPagination.pageSize.toString());
+    setSearchParams(newParams, { replace: true });
+  };
 
   const handleDelete = async (expenseId: Id<"expenses">) => {
     if (!confirm("Are you sure you want to delete this expense?")) return;
@@ -207,17 +242,31 @@ export function ExpenseList({ expenses, onEditExpense }: ExpenseListProps) {
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: (updater) => {
+      const nextFilters =
+        typeof updater === "function" ? updater(columnFilters) : updater;
+      setColumnFilters(nextFilters);
+
+      const nameFilter = nextFilters.find((f) => f.id === "name");
+      const newParams = new URLSearchParams(searchParams);
+      if (nameFilter?.value) {
+        newParams.set("q", nameFilter.value as string);
+      } else {
+        newParams.delete("q");
+      }
+      // Reset to page 1 on search
+      newParams.set("page", "1");
+      setSearchParams(newParams, { replace: true });
+    },
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
+      pagination,
     },
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
+    manualPagination: false,
+    autoResetPageIndex: false, // Prevent reset on data change (like edit)
   });
 
   return (

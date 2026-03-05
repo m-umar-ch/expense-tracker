@@ -1,16 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 
-export type Currency =
-  | "USD"
-  | "EUR"
-  | "GBP"
-  | "JPY"
-  | "CAD"
-  | "AUD"
-  | "INR"
-  | "CNY"
-  | "BRL"
-  | "MXN";
+export type Currency = string;
+
+export interface CustomCurrency {
+  value: string;
+  label: string;
+  symbol: string;
+}
 
 interface AppSettings {
   currency: Currency;
@@ -18,6 +20,7 @@ interface AppSettings {
   dateFormat: string;
   numberFormat: string;
   privacyMode: boolean;
+  customCurrencies: CustomCurrency[];
 }
 
 interface SettingsContextType {
@@ -29,6 +32,7 @@ interface SettingsContextType {
   getCurrencySymbol: () => string;
   formatCurrency: (amount: number) => string;
   formatCurrencyCompact: (amount: number) => string;
+  allCurrencies: CustomCurrency[];
 }
 
 const defaultSettings: AppSettings = {
@@ -37,25 +41,26 @@ const defaultSettings: AppSettings = {
   dateFormat: "MM/dd/yyyy",
   numberFormat: "en-US",
   privacyMode: false,
+  customCurrencies: [],
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
   undefined,
 );
 
-export const CURRENCIES: { value: Currency; label: string; symbol: string }[] =
-  [
-    { value: "USD", label: "US Dollar", symbol: "$" },
-    { value: "EUR", label: "Euro", symbol: "€" },
-    { value: "GBP", label: "British Pound", symbol: "£" },
-    { value: "JPY", label: "Japanese Yen", symbol: "¥" },
-    { value: "CAD", label: "Canadian Dollar", symbol: "C$" },
-    { value: "AUD", label: "Australian Dollar", symbol: "A$" },
-    { value: "INR", label: "Indian Rupee", symbol: "$" },
-    { value: "CNY", label: "Chinese Yuan", symbol: "¥" },
-    { value: "BRL", label: "Brazilian Real", symbol: "R$" },
-    { value: "MXN", label: "Mexican Peso", symbol: "MX$" },
-  ];
+export const CURRENCIES: CustomCurrency[] = [
+  { value: "USD", label: "US Dollar", symbol: "$" },
+  { value: "EUR", label: "Euro", symbol: "€" },
+  { value: "GBP", label: "British Pound", symbol: "£" },
+  { value: "JPY", label: "Japanese Yen", symbol: "¥" },
+  { value: "CAD", label: "Canadian Dollar", symbol: "C$" },
+  { value: "AUD", label: "Australian Dollar", symbol: "A$" },
+  { value: "INR", label: "Indian Rupee", symbol: "₹" },
+  { value: "PKR", label: "Pakistani Rupee", symbol: "Rs" },
+  { value: "CNY", label: "Chinese Yuan", symbol: "¥" },
+  { value: "BRL", label: "Brazilian Real", symbol: "R$" },
+  { value: "MXN", label: "Mexican Peso", symbol: "MX$" },
+];
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>(() => {
@@ -80,20 +85,74 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
+  const allCurrencies = useMemo(() => {
+    const base = [...CURRENCIES];
+    const customs = settings.customCurrencies || [];
+
+    // Combine them, customs override base if values match
+    const map = new Map<string, CustomCurrency>();
+    base.forEach((c) => map.set(c.value, c));
+    customs.forEach((c) => map.set(c.value, c));
+
+    return Array.from(map.values());
+  }, [settings.customCurrencies]);
+
   const getCurrencySymbol = (): string => {
-    return CURRENCIES.find((c) => c.value === settings.currency)?.symbol || "$";
+    return (
+      allCurrencies.find((c) => c.value === settings.currency)?.symbol || "$"
+    );
   };
 
   const formatCurrency = (amount: number): string => {
     const symbol = getCurrencySymbol();
     try {
-      return new Intl.NumberFormat(settings.numberFormat, {
-        style: "currency",
-        currency: settings.currency,
-      }).format(amount);
+      // Check if it's a standard 3-letter currency code for Intl
+      const isStandard = /^[A-Z]{3}$/.test(settings.currency);
+
+      if (isStandard) {
+        // We use parts to replace the symbol with our custom one if needed
+        const formatter = new Intl.NumberFormat(settings.numberFormat, {
+          style: "currency",
+          currency: settings.currency,
+        });
+
+        const parts = formatter.formatToParts(amount);
+        return parts
+          .map((part) => {
+            if (part.type === "currency") return symbol;
+            return part.value;
+          })
+          .join("");
+      }
+
+      throw new Error("Generic format");
     } catch {
-      // Fallback if currency is not supported by Intl.NumberFormat
-      return `${symbol}${amount.toFixed(2)}`;
+      // Fallback for custom or unsupported currencies
+      return `${symbol}${new Intl.NumberFormat(settings.numberFormat).format(amount)}`;
+    }
+  };
+
+  const formatCurrencyCompact = (amount: number) => {
+    const symbol = getCurrencySymbol();
+    try {
+      const isStandard = /^[A-Z]{3}$/.test(settings.currency);
+      if (isStandard) {
+        const formatter = new Intl.NumberFormat(settings.numberFormat, {
+          style: "currency",
+          currency: settings.currency,
+          notation: "compact",
+        });
+        const parts = formatter.formatToParts(amount);
+        return parts
+          .map((part) => {
+            if (part.type === "currency") return symbol;
+            return part.value;
+          })
+          .join("");
+      }
+      throw new Error("Generic format");
+    } catch {
+      return `${symbol}${new Intl.NumberFormat(settings.numberFormat, { notation: "compact" }).format(amount)}`;
     }
   };
 
@@ -104,13 +163,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         updateSetting,
         getCurrencySymbol,
         formatCurrency,
-        formatCurrencyCompact: (amount: number) => {
-          return new Intl.NumberFormat(settings.numberFormat, {
-            style: "currency",
-            currency: settings.currency,
-            notation: "compact",
-          }).format(amount);
-        },
+        formatCurrencyCompact,
+        allCurrencies,
       }}
     >
       {children}
