@@ -52,9 +52,15 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  RotateCcw,
 } from "lucide-react";
 
-import { getNextPeriodDate, getPrevPeriodDate } from "../../utils/date";
+import {
+  getNextPeriodDate,
+  getPrevPeriodDate,
+  getDateRange,
+  formatPeriodRange,
+} from "../../utils/date";
 import { TimePeriod } from "../../types/expense";
 
 interface ExpenseListProps {
@@ -78,7 +84,7 @@ export function ExpenseList({
 
   // Read initial state from URL
   const pageParam = parseInt(searchParams.get("page") || "1");
-  const perPageParam = parseInt(searchParams.get("perPage") || "10");
+  const perPageParam = parseInt(searchParams.get("perPage") || "25");
   const searchParam = searchParams.get("q") || "";
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -301,6 +307,11 @@ export function ExpenseList({
   };
 
   const periodLabel = getPeriodLabel(selectedPeriod);
+  const { startDate, endDate } = getDateRange(selectedPeriod, referenceDate);
+  const formattedRange = formatPeriodRange(selectedPeriod, startDate, endDate);
+
+  const now = Date.now();
+  const isCurrentPeriod = now >= startDate && now <= endDate;
 
   return (
     <div className="space-y-4">
@@ -321,29 +332,43 @@ export function ExpenseList({
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
           {/* Navigation - Middle */}
           {selectedPeriod !== "all" && (
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 bg-background/50 backdrop-blur rounded-lg p-1 border">
               <Button
-                variant="secondary"
+                variant="ghost"
                 size="sm"
-                className="h-9 px-3 gap-1 shadow-sm font-medium"
+                className="h-8 px-3 gap-1 font-medium hover:bg-background"
                 onClick={() =>
                   onDateShift(getPrevPeriodDate(selectedPeriod, referenceDate))
                 }
                 title={`Previous ${periodLabel}`}
               >
                 <ChevronLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Prev {periodLabel}</span>
+                <span className="hidden sm:inline">Prev</span>
               </Button>
+              {!isCurrentPeriod && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-muted-foreground hover:text-primary hover:bg-background"
+                  onClick={() => onDateShift(Date.now())}
+                  title={`Go to Current ${periodLabel}`}
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </Button>
+              )}
+              <div className="px-2 font-semibold text-sm min-w-[120px] text-center whitespace-nowrap text-foreground">
+                {formattedRange}
+              </div>
               <Button
-                variant="secondary"
+                variant="ghost"
                 size="sm"
-                className="h-9 px-3 gap-1 shadow-sm font-medium"
+                className="h-8 px-3 gap-1 font-medium hover:bg-background"
                 onClick={() =>
                   onDateShift(getNextPeriodDate(selectedPeriod, referenceDate))
                 }
                 title={`Next ${periodLabel}`}
               >
-                <span className="hidden sm:inline">Next {periodLabel}</span>
+                <span className="hidden sm:inline">Next</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -414,7 +439,7 @@ export function ExpenseList({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[5, 10, 25, 50].map((pageSize) => (
+              {[10, 25, 50, 75, 100].map((pageSize) => (
                 <SelectItem key={pageSize} value={pageSize.toString()}>
                   {pageSize}
                 </SelectItem>

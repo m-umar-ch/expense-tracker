@@ -173,3 +173,40 @@ export const getEffectiveDaysCount = (
   }
   return Math.max(1, Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)));
 };
+
+/**
+ * Returns a human-readable string representation of the current time period.
+ */
+export const formatPeriodRange = (
+  period: TimePeriod,
+  startDate: number,
+  endDate: number,
+) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  switch (period) {
+    case "daily":
+      return start.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    case "weekly":
+      return `${start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${end.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+    case "monthly":
+      return start.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+      });
+    case "3months":
+    case "6months":
+      return `${start.toLocaleDateString(undefined, { month: "short", year: "numeric" })} - ${end.toLocaleDateString(undefined, { month: "short", year: "numeric" })}`;
+    case "yearly":
+      return start.toLocaleDateString(undefined, { year: "numeric" });
+    case "all":
+      return "All Time";
+    default:
+      return "";
+  }
+};
