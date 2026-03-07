@@ -1,5 +1,11 @@
 import { TimePeriod } from "../../types/expense";
-import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TimePeriodFilterProps {
   selectedPeriod: TimePeriod;
@@ -7,13 +13,12 @@ interface TimePeriodFilterProps {
 }
 
 const PERIODS: { value: TimePeriod; label: string }[] = [
-  // { value: "daily", label: "Daily" },
-  { value: "weekly", label: "Week" },
-  { value: "monthly", label: "Month" },
-  { value: "3months", label: "3M" },
-  { value: "6months", label: "6M" },
-  { value: "yearly", label: "Year" },
-  { value: "all", label: "All" },
+  { value: "weekly", label: "Weekly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "3months", label: "3 Months" },
+  { value: "6months", label: "6 Months" },
+  { value: "yearly", label: "Yearly" },
+  { value: "all", label: "All Time" },
 ];
 
 export function TimePeriodFilter({
@@ -21,22 +26,20 @@ export function TimePeriodFilter({
   onPeriodChange,
 }: TimePeriodFilterProps) {
   return (
-    <div className="flex flex-wrap gap-1 bg-muted/50 p-1 rounded-lg w-fit border border-border/50">
-      {PERIODS.map((period) => (
-        <Button
-          key={period.value}
-          variant={selectedPeriod === period.value ? "secondary" : "ghost"}
-          size="sm"
-          onClick={() => onPeriodChange(period.value)}
-          className={`px-4 h-8 text-xs font-semibold rounded-md transition-shadow ${
-            selectedPeriod === period.value
-              ? "bg-background shadow-sm text-foreground hover:bg-background"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {period.label}
-        </Button>
-      ))}
-    </div>
+    <Select
+      value={selectedPeriod}
+      onValueChange={(value) => onPeriodChange(value as TimePeriod)}
+    >
+      <SelectTrigger className="w-[140px] h-9">
+        <SelectValue placeholder="Select period" />
+      </SelectTrigger>
+      <SelectContent>
+        {PERIODS.map((period) => (
+          <SelectItem key={period.value} value={period.value}>
+            {period.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

@@ -6,11 +6,23 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TimePeriodFilter } from "../shared/TimePeriodFilter";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TimePeriod } from "../../types/expense";
-import { getNextPeriodDate, getPrevPeriodDate } from "../../utils/date";
+import {
+  getNextPeriodDate,
+  getPrevPeriodDate,
+  getDateRange,
+  formatPeriodRange,
+} from "../../utils/date";
 
 interface DashboardActionsProps {
   selectedPeriod: TimePeriod;
@@ -23,6 +35,7 @@ interface DashboardActionsProps {
   onShowBudgets: () => void;
   onShowExport: () => void;
   isExportDisabled: boolean;
+  dateBoundaries?: { minDate: number; maxDate: number } | null;
 }
 
 export function DashboardActions({
@@ -36,18 +49,111 @@ export function DashboardActions({
   onShowBudgets,
   onShowExport,
   isExportDisabled,
+  dateBoundaries,
 }: DashboardActionsProps) {
+  const getPeriodLabel = (period: TimePeriod) => {
+    switch (period) {
+      case "weekly":
+        return "Week";
+      case "monthly":
+        return "Month";
+      case "3months":
+        return "3 Months";
+      case "6months":
+        return "6 Months";
+      case "yearly":
+        return "Year";
+      default:
+        return "";
+    }
+  };
+
+  const periodLabel = getPeriodLabel(selectedPeriod);
+  const { startDate, endDate } = getDateRange(selectedPeriod, referenceDate);
+  const formattedRange = formatPeriodRange(selectedPeriod, startDate, endDate);
+
+  const now = Date.now();
+  const isCurrentPeriod = now >= startDate && now <= endDate;
+
+  // Navigation bounds logic
+  const hasPrev = !dateBoundaries || dateBoundaries.minDate < startDate;
+  const maxAllowedDate = Math.max(now, dateBoundaries?.maxDate || 0);
+  const hasNext = !dateBoundaries || endDate < maxAllowedDate;
+
   return (
-    <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between bg-card p-6 rounded-xl border shadow-sm">
+    <div className="flex flex-col md:flex-row gap-6 items-end justify-between bg-card p-6 rounded-xl border shadow-sm">
       <div className="flex-1 w-full md:w-auto space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground">
           Time Period Select
         </h2>
         <div className="flex items-center gap-2">
-          <TimePeriodFilter
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={onPeriodChange}
-          />
+          <Select
+            value={selectedPeriod}
+            onValueChange={(value) => onPeriodChange(value as TimePeriod)}
+          >
+            <SelectTrigger className="w-[140px] h-9">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                { value: "weekly", label: "Weekly" },
+                { value: "monthly", label: "Monthly" },
+                { value: "3months", label: "3 Months" },
+                { value: "6months", label: "6 Months" },
+                { value: "yearly", label: "Yearly" },
+                { value: "all", label: "All Time" },
+              ].map((period) => (
+                <SelectItem key={period.value} value={period.value}>
+                  {period.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {selectedPeriod !== "all" && (
+            <div className="flex items-center gap-2 shrink-0 bg-background/50 backdrop-blur rounded-lg p-1 border">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 gap-1 font-medium hover:bg-background"
+                onClick={() =>
+                  onDateShift(getPrevPeriodDate(selectedPeriod, referenceDate))
+                }
+                title={`Previous ${periodLabel}`}
+                disabled={!hasPrev}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Prev</span>
+              </Button>
+              {!isCurrentPeriod && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-muted-foreground hover:text-primary hover:bg-background shrink-0"
+                  onClick={() => onDateShift(Date.now())}
+                  title={`Go to Current ${periodLabel}`}
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </Button>
+              )}
+              <div className="px-2 font-semibold text-sm min-w-[120px] text-center whitespace-nowrap text-foreground shrink-0 overflow-hidden text-ellipsis">
+                {formattedRange}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 gap-1 font-medium hover:bg-background"
+                onClick={() =>
+                  onDateShift(getNextPeriodDate(selectedPeriod, referenceDate))
+                }
+                title={`Next ${periodLabel}`}
+                disabled={!hasNext}
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

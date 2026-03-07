@@ -198,13 +198,7 @@ export function ExpenseDashboard() {
           onShowBudgets={() => setShowBudgetManager(true)}
           onShowExport={() => setShowExportModal(true)}
           isExportDisabled={!expenses || expenses.length === 0}
-        />
-
-        <StatisticsOverview
-          expenses={filteredExpenses}
-          categorySpending={categorySpending}
-          financialSummary={financialSummary}
-          daysCount={effectiveDaysCount}
+          dateBoundaries={dateBoundaries}
         />
 
         <Tabs defaultValue="expenses" className="w-full">
@@ -232,10 +226,6 @@ export function ExpenseDashboard() {
                 <ExpenseList
                   expenses={filteredExpenses}
                   onEditExpense={handleEditExpense}
-                  selectedPeriod={selectedPeriod}
-                  referenceDate={referenceDate}
-                  onDateShift={handleDateShift}
-                  dateBoundaries={dateBoundaries}
                   isLoading={expenses === undefined}
                 />
               </CardContent>
@@ -243,6 +233,12 @@ export function ExpenseDashboard() {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-8">
+            <StatisticsOverview
+              expenses={filteredExpenses}
+              categorySpending={categorySpending}
+              financialSummary={financialSummary}
+              daysCount={effectiveDaysCount}
+            />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-8">
                 <Card>
