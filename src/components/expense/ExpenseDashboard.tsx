@@ -202,11 +202,11 @@ export function ExpenseDashboard() {
         />
 
         <Tabs defaultValue="expenses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
-            <TabsTrigger value="expenses" className="text-base">
+          <TabsList className="flex w-full mb-8">
+            <TabsTrigger value="expenses" className="flex-1">
               Transaction Log
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="text-base">
+            <TabsTrigger value="analytics" className="flex-1">
               Analytics & Budgets
             </TabsTrigger>
           </TabsList>

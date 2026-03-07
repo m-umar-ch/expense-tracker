@@ -132,9 +132,9 @@ export function ExpenseForm({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="w-full max-w-full sm:max-w-[600px] h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 sm:rounded-lg overflow-hidden border-none sm:border">
+        <DialogHeader className="p-6 pb-2 shrink-0 border-b sm:border-none">
+          <DialogTitle className="text-xl">
             {editingExpense ? "Edit Expense" : "Add New Expense"}
           </DialogTitle>
         </DialogHeader>
@@ -145,9 +145,9 @@ export function ExpenseForm({
             e.stopPropagation();
             form.handleSubmit();
           }}
-          className="space-y-6 py-4"
+          className="flex-1 overflow-y-auto px-6 py-4 space-y-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <form.Field
               name="name"
               children={(field) => {
@@ -165,6 +165,7 @@ export function ExpenseForm({
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g., Grocery Shopping"
                       aria-invalid={isInvalid}
+                      className="h-11 sm:h-10"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -185,6 +186,7 @@ export function ExpenseForm({
                       id={field.name}
                       type="number"
                       step="0.01"
+                      inputMode="decimal"
                       name={field.name}
                       value={field.state.value}
                       onBlur={field.handleBlur}
@@ -192,6 +194,7 @@ export function ExpenseForm({
                         field.handleChange(Number(e.target.value))
                       }
                       aria-invalid={isInvalid}
+                      className="h-11 sm:h-10 text-lg sm:text-base font-medium"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -200,7 +203,7 @@ export function ExpenseForm({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <form.Field
               name="categoryId"
               children={(field) => {
@@ -214,18 +217,23 @@ export function ExpenseForm({
                       value={field.state.value}
                       onValueChange={(value) => field.handleChange(value)}
                     >
-                      <SelectTrigger aria-invalid={isInvalid}>
+                      <SelectTrigger
+                        aria-invalid={isInvalid}
+                        className="h-11 sm:h-10"
+                      >
                         <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
                           <SelectItem key={category._id} value={category._id}>
-                            <div className="flex items-center gap-2 shrink-0">
+                            <div className="flex items-center gap-2 shrink-0 py-1">
                               <div
-                                className="w-3 h-3 rounded-full"
+                                className="w-4 h-4 rounded-full border border-black/10"
                                 style={{ backgroundColor: category.color }}
                               />
-                              {category.name}
+                              <span className="font-medium text-base sm:text-sm">
+                                {category.name}
+                              </span>
                             </div>
                           </SelectItem>
                         ))}
@@ -254,6 +262,7 @@ export function ExpenseForm({
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
+                      className="h-11 sm:h-10"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -278,7 +287,7 @@ export function ExpenseForm({
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="Add details..."
-                    className="resize-none"
+                    className="resize-none min-h-[100px] text-base"
                     aria-invalid={isInvalid}
                   />
                   <FieldError errors={field.state.meta.errors} />
@@ -291,13 +300,15 @@ export function ExpenseForm({
             <FieldLabel>Receipt</FieldLabel>
             {!selectedImage ? (
               <div
-                className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted transition-colors"
+                className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer hover:bg-muted/50 active:bg-muted transition-all duration-200"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm font-medium">Click to upload receipt</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Max 5MB • Image files only
+                <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Upload className="w-6 h-6 text-primary" />
+                </div>
+                <p className="text-base font-bold">Upload receipt</p>
+                <p className="text-xs text-muted-foreground mt-1.5 px-4">
+                  Tap to browse or take a photo • Max 5MB
                 </p>
                 <input
                   ref={fileInputRef}
@@ -308,14 +319,16 @@ export function ExpenseForm({
                 />
               </div>
             ) : (
-              <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+              <div className="flex items-center justify-between p-4 border rounded-xl bg-muted/30">
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <Receipt className="w-5 h-5 shrink-0" />
+                  <div className="bg-primary/10 p-2 rounded-lg">
+                    <Receipt className="w-5 h-5 text-primary shrink-0" />
+                  </div>
                   <div className="overflow-hidden">
-                    <p className="text-sm font-medium truncate">
+                    <p className="text-sm font-bold truncate">
                       {selectedImage.name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">
                       {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -324,30 +337,30 @@ export function ExpenseForm({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className="rounded-full hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => setSelectedImage(null)}
                 >
-                  <Trash2 className="w-4 h-4 text-destructive" />
+                  <Trash2 className="w-5 h-5" />
                 </Button>
               </div>
             )}
           </Field>
+        </form>
 
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
+        <div className="p-6 pt-2 border-t bg-background shrink-0">
+          <div className="flex flex-col sm:flex-row gap-3">
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
               children={([canSubmit, isSubmitting]) => (
-                <Button type="submit" disabled={!canSubmit || isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting}
+                  className="h-12 sm:h-10 text-base font-bold flex-1"
+                  onClick={() => form.handleSubmit()}
+                >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Saving...
                     </>
                   ) : editingExpense ? (
@@ -358,8 +371,17 @@ export function ExpenseForm({
                 </Button>
               )}
             />
-          </DialogFooter>
-        </form>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 sm:h-10 text-base font-bold sm:flex-none sm:px-8 border-border/50"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
