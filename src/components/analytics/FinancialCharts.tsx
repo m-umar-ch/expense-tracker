@@ -154,7 +154,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
   }, [expenses, incomes, startDate, endDate]);
 
   return (
-    <div className="space-y-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-bold flex items-center justify-between">

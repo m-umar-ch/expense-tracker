@@ -20,6 +20,11 @@ interface StatisticsOverviewProps {
     savingsRate: number;
   };
   daysCount?: number;
+  evolution?: {
+    percentageChange: number;
+    currentTotal: number;
+    prevTotal: number;
+  } | null;
 }
 
 export function StatisticsOverview({
@@ -27,6 +32,7 @@ export function StatisticsOverview({
   categorySpending,
   financialSummary,
   daysCount = 1,
+  evolution,
 }: StatisticsOverviewProps) {
   const { settings, formatCurrency } = useSettings();
   const totalExpenses = expenses.length;
@@ -77,6 +83,20 @@ export function StatisticsOverview({
       icon: PieChart,
       color: "text-primary",
     },
+    ...(evolution
+      ? [
+          {
+            label: "Period Comparison",
+            value: `${evolution.percentageChange > 0 ? "+" : ""}${evolution.percentageChange.toFixed(1)}%`,
+            icon: TrendingUp,
+            color:
+              evolution.percentageChange > 0
+                ? "text-destructive"
+                : "text-green-600",
+            subtitle: "vs last period",
+          },
+        ]
+      : []),
     {
       label: "Avg. Daily Spend",
       value: formatCurrency(totalAmount / (daysCount || 1)),
@@ -92,7 +112,7 @@ export function StatisticsOverview({
   return (
     <div className="w-full space-y-6">
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map((stat, index) => (
           <Card key={index} className="shadow-none border-border/50">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -107,6 +127,11 @@ export function StatisticsOverview({
               <div className={`text-2xl font-bold ${stat.color} ${blurClass}`}>
                 {stat.value}
               </div>
+              {stat.subtitle && (
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter mt-1">
+                  {stat.subtitle}
+                </p>
+              )}
             </CardContent>
           </Card>
         ))}

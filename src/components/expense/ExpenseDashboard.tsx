@@ -238,60 +238,33 @@ export function ExpenseDashboard() {
               categorySpending={categorySpending}
               financialSummary={financialSummary}
               daysCount={effectiveDaysCount}
+              evolution={evolution}
             />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Budget Status</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <BudgetOverview categorySpending={categorySpending} />
-                  </CardContent>
-                </Card>
 
-                {evolution && (
-                  <Card className="border-primary/20 bg-primary/5">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Period Comparison
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-end gap-2">
-                        <span
-                          className={`text-2xl font-bold ${evolution.percentageChange > 0 ? "text-destructive" : "text-green-600"}`}
-                        >
-                          {evolution.percentageChange > 0 ? "+" : ""}
-                          {evolution.percentageChange.toFixed(1)}%
-                        </span>
-                        <span className="text-sm text-muted-foreground mb-1">
-                          spending compared to previous period
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-bold">Budget Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BudgetOverview categorySpending={categorySpending} />
+              </CardContent>
+            </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Spending Highlights</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CategorySummary categorySpending={categorySpending} />
-                  </CardContent>
-                </Card>
-              </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-bold">Spending Highlights</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CategorySummary categorySpending={categorySpending} />
+              </CardContent>
+            </Card>
 
-              <div className="space-y-8">
-                <FinancialCharts
-                  expenses={filteredExpenses}
-                  incomes={incomes as Income[]}
-                  startDate={startDate}
-                  endDate={endDate}
-                />
-              </div>
-            </div>
+            <FinancialCharts
+              expenses={filteredExpenses}
+              incomes={incomes as Income[]}
+              startDate={startDate}
+              endDate={endDate}
+            />
           </TabsContent>
         </Tabs>
       </main>
