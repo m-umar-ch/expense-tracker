@@ -44,7 +44,7 @@ export function CategorySummary({ categorySpending }: CategorySummaryProps) {
           return (
             <Card
               key={item.category._id}
-              className="shadow-none border-border/50 overflow-hidden"
+              className="shadow-none border-border/50 overflow-hidden py-0"
             >
               <div
                 className="h-1 w-full"

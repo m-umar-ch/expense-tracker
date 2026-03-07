@@ -83,9 +83,9 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="w-full max-w-full sm:max-w-[500px] h-dvh sm:h-auto sm:max-h-[85vh] flex flex-col p-0 sm:rounded-lg overflow-hidden border-none sm:border">
+        <DialogHeader className="p-6 pb-2 shrink-0 border-b sm:border-none">
+          <DialogTitle className="text-xl">
             {editingIncome ? "Edit Income" : "Add New Income"}
           </DialogTitle>
         </DialogHeader>
@@ -96,9 +96,9 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
             e.stopPropagation();
             form.handleSubmit();
           }}
-          className="space-y-6 py-4"
+          className="flex-1 overflow-y-auto px-6 py-4 space-y-6"
         >
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-5">
             <form.Field
               name="name"
               children={(field) => {
@@ -116,6 +116,7 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g., Salary, Freelance project"
                       aria-invalid={isInvalid}
+                      className="h-11 sm:h-10"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -136,6 +137,7 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       id={field.name}
                       type="number"
                       step="0.01"
+                      inputMode="decimal"
                       name={field.name}
                       value={field.state.value}
                       onBlur={field.handleBlur}
@@ -143,6 +145,7 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                         field.handleChange(Number(e.target.value))
                       }
                       aria-invalid={isInvalid}
+                      className="h-11 sm:h-10 text-lg sm:text-base font-medium"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -167,6 +170,7 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
+                      className="h-11 sm:h-10 dark:scheme-dark cursor-pointer"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -192,7 +196,7 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="Add details..."
-                      className="resize-none"
+                      className="resize-none min-h-[100px] text-base"
                       aria-invalid={isInvalid}
                     />
                     <FieldError errors={field.state.meta.errors} />
@@ -201,23 +205,21 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
               }}
             />
           </div>
+        </form>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
+        <div className="p-6 pt-2 border-t bg-background shrink-0">
+          <div className="flex flex-col sm:flex-row gap-3">
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
               children={([canSubmit, isSubmitting]) => (
-                <Button type="submit" disabled={!canSubmit || isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting}
+                  className="h-12 sm:h-10 text-base font-bold flex-1"
+                >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Saving...
                     </>
                   ) : editingIncome ? (
@@ -228,8 +230,17 @@ export function IncomeForm({ editingIncome, onClose }: IncomeFormProps) {
                 </Button>
               )}
             />
-          </DialogFooter>
-        </form>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 sm:h-10 text-base font-bold sm:flex-none sm:px-8 border-border/50"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

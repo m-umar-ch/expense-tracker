@@ -132,7 +132,7 @@ export function ExpenseForm({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-full sm:max-w-[600px] h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 sm:rounded-lg overflow-hidden border-none sm:border">
+      <DialogContent className="w-full max-w-full sm:max-w-[600px] h-dvh sm:h-auto sm:max-h-[90vh] flex flex-col p-0 sm:rounded-lg overflow-hidden border-none sm:border">
         <DialogHeader className="p-6 pb-2 shrink-0 border-b sm:border-none">
           <DialogTitle className="text-xl">
             {editingExpense ? "Edit Expense" : "Add New Expense"}
@@ -262,7 +262,7 @@ export function ExpenseForm({
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      className="h-11 sm:h-10"
+                      className="h-11 sm:h-10 dark:scheme-dark cursor-pointer"
                     />
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
