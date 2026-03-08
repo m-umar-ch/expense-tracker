@@ -29,8 +29,7 @@ interface DashboardActionsProps {
   onPeriodChange: (period: TimePeriod) => void;
   referenceDate: number;
   onDateShift: (newDate: number) => void;
-  onAddExpense: () => void;
-  onAddIncome: () => void;
+  onAddTransaction: (type: "expense" | "income") => void;
   onShowCategories: () => void;
   onShowBudgets: () => void;
   onShowExport: () => void;
@@ -43,8 +42,7 @@ export function DashboardActions({
   onPeriodChange,
   referenceDate,
   onDateShift,
-  onAddExpense,
-  onAddIncome,
+  onAddTransaction,
   onShowCategories,
   onShowBudgets,
   onShowExport,
@@ -158,16 +156,16 @@ export function DashboardActions({
       </div>
 
       <div className="flex flex-wrap gap-2 pt-4 md:pt-0">
-        <Button onClick={onAddExpense} className="gap-2">
+        <Button onClick={() => onAddTransaction("expense")} className="gap-2">
           <Plus className="h-4 w-4" />
           Add Expense
         </Button>
         <Button
-          onClick={onAddIncome}
+          onClick={() => onAddTransaction("income")}
           variant="outline"
           className="gap-2 border-green-500/50 text-green-600 hover:text-green-600 hover:border-green-500/50 hover:bg-transparent"
         >
-          <Wallet className="h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Add Income
         </Button>
         <Button variant="outline" onClick={onShowCategories} className="gap-2">

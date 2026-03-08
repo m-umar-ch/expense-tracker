@@ -19,13 +19,13 @@ import {
   eachMonthOfInterval,
   isSameDay,
 } from "date-fns";
-import { Expense, Income } from "../../types/expense";
+import { Transaction } from "../../types/expense";
 import { useSettings } from "../../contexts/SettingsContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface FinancialChartsProps {
-  expenses: Expense[];
-  incomes: Income[];
+  expenses: Transaction[];
+  incomes: Transaction[];
   startDate: number;
   endDate: number;
 }

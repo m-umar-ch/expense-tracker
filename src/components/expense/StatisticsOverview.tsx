@@ -1,4 +1,4 @@
-import { Expense, CategorySpending } from "../../types/expense";
+import { Transaction, CategorySpending } from "../../types/expense";
 import { useSettings } from "../../contexts/SettingsContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 interface StatisticsOverviewProps {
-  expenses: Expense[];
+  expenses: Transaction[];
   categorySpending: CategorySpending[];
   financialSummary?: {
     totalExpenses: number;

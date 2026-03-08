@@ -1,20 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { ExpenseForm } from "./ExpenseForm";
-import { ExpenseList } from "./ExpenseList";
-import { IncomeForm } from "./IncomeForm";
+import { TransactionForm } from "./TransactionForm";
+import { TransactionList } from "./TransactionList";
 import { CategorySummary, CategoryManager } from "../category";
 import { ExportModal } from "../modals/ExportModal";
 import { StatisticsOverview } from "./StatisticsOverview";
 import FinancialCharts from "../analytics/FinancialCharts";
 import { BudgetOverview, BudgetManager } from "../budget";
-import {
-  Expense,
-  CategorySpending,
-  TimePeriod,
-  Income,
-} from "../../types/expense";
+import { Transaction, CategorySpending, TimePeriod } from "../../types/expense";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SettingsModal from "../modals/SettingsModal";
@@ -34,20 +28,20 @@ export function ExpenseDashboard() {
     ? parseInt(referenceDateString)
     : Date.now();
 
-  const [showExpenseForm, setShowExpenseForm] = useState(false);
-  const [showIncomeForm, setShowIncomeForm] = useState(false);
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [transactionType, setTransactionType] = useState<"expense" | "income">(
+    "expense",
+  );
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showBudgetManager, setShowBudgetManager] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [editingExpense, setEditingExpense] = useState<Expense | undefined>(
-    undefined,
-  );
-  const [editingIncome, setEditingIncome] = useState<Income | undefined>(
-    undefined,
-  );
+  const [editingTransaction, setEditingTransaction] = useState<
+    Transaction | undefined
+  >(undefined);
 
-  const categories = useQuery(api.functions.categories.listCategories) || [];
+  const categories =
+    useQuery(api.functions.categories.listCategories, {}) || [];
 
   const { startDate, endDate } = useMemo(
     () => getDateRange(selectedPeriod, referenceDate),
@@ -70,67 +64,63 @@ export function ExpenseDashboard() {
     setSearchParams(newParams, { replace: true });
   };
 
-  const expenses = useQuery(api.functions.expenses.listExpenses, {
-    startDate,
-    endDate,
-  });
-
-  const financialSummary = useQuery(api.functions.incomes.getFinancialSummary, {
-    startDate,
-    endDate,
-  });
-
-  const evolution = useQuery(api.functions.incomes.getEvolution, {
-    startDate,
-    endDate,
-  });
-
-  const incomesData =
-    useQuery(api.functions.incomes.listIncomes, {
+  const transactions =
+    useQuery(api.functions.transactions.listTransactions, {
       startDate,
       endDate,
     }) || [];
 
-  const incomes = incomesData as Income[];
-
-  const categorySpendingData = useQuery(
-    api.functions.expenses.getCategorySpending,
+  const financialSummary = useQuery(
+    api.functions.transactions.getFinancialSummary,
     {
       startDate,
       endDate,
     },
   );
 
-  const dateBoundaries = useQuery(api.functions.expenses.getDateBoundaries);
+  const evolution = useQuery(api.functions.transactions.getEvolution, {
+    startDate,
+    endDate,
+  });
 
-  const filteredExpenses = (expenses || []) as Expense[];
+  const categorySpendingData = useQuery(
+    api.functions.transactions.getCategorySpending,
+    {
+      startDate,
+      endDate,
+    },
+  );
+
+  const dateBoundaries = useQuery(api.functions.transactions.getDateBoundaries);
+
+  const expenses = transactions.filter((t) => t.type === "expense");
+  const incomes = transactions.filter((t) => t.type === "income");
 
   const categorySpending: CategorySpending[] = useMemo(() => {
     if (!categorySpendingData) return [];
 
-    const totalAllExpenses = filteredExpenses.reduce(
-      (sum, expense) => sum + expense.amount,
-      0,
-    );
+    const totalAllExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
 
-    return categorySpendingData.map((item) => ({
+    const mapping: CategorySpending[] = categorySpendingData.map((item) => ({
       ...item,
       percentageOfTotal:
         totalAllExpenses > 0 ? (item.totalSpent / totalAllExpenses) * 100 : 0,
       budgetUtilization: item.category.budgetLimit
         ? (item.totalSpent / item.category.budgetLimit) * 100
         : null,
+      expenseCount: item.expenseCount || 0,
+      budgetUsed: item.budgetUsed || 0,
+      budgetLimit: item.budgetLimit || 0,
     }));
-  }, [categorySpendingData, filteredExpenses]);
+
+    return mapping;
+  }, [categorySpendingData, expenses]);
 
   const effectiveDaysCount = useMemo(() => {
-    const hasData = filteredExpenses.length > 0 || incomes.length > 0;
+    const hasData = transactions.length > 0;
     const minDate =
       hasData && selectedPeriod === "all"
-        ? Math.min(
-            ...filteredExpenses.map((e) => e.date),
-            ...incomes.map((i) => i.date),
-          )
+        ? Math.min(...transactions.map((t) => t.date))
         : undefined;
 
     return getEffectiveDaysCount(
@@ -140,16 +130,17 @@ export function ExpenseDashboard() {
       hasData,
       minDate,
     );
-  }, [endDate, startDate, selectedPeriod, filteredExpenses, incomes]);
+  }, [endDate, startDate, selectedPeriod, transactions]);
 
-  const handleEditExpense = (expense: Expense) => {
-    setEditingExpense(expense);
-    setShowExpenseForm(true);
+  const handleEditTransaction = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setShowTransactionForm(true);
   };
 
-  const handleCloseExpenseForm = () => {
-    setShowExpenseForm(false);
-    setEditingExpense(undefined);
+  const handleAddTransaction = (type: "expense" | "income") => {
+    setTransactionType(type);
+    setEditingTransaction(undefined);
+    setShowTransactionForm(true);
   };
 
   // Keyboard Shortcuts
@@ -165,10 +156,10 @@ export function ExpenseDashboard() {
 
       if (e.key === "n" || e.key === "e") {
         e.preventDefault();
-        setShowExpenseForm(true);
+        handleAddTransaction("expense");
       } else if (e.key === "i") {
         e.preventDefault();
-        setShowIncomeForm(true);
+        handleAddTransaction("income");
       } else if (e.key === "s") {
         e.preventDefault();
         setShowSettingsModal(true);
@@ -183,7 +174,7 @@ export function ExpenseDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <DashboardHeader onShowSettings={() => setShowSettingsModal(true)} />
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
@@ -192,18 +183,17 @@ export function ExpenseDashboard() {
           onPeriodChange={handlePeriodChange}
           referenceDate={referenceDate}
           onDateShift={handleDateShift}
-          onAddExpense={() => setShowExpenseForm(true)}
-          onAddIncome={() => setShowIncomeForm(true)}
+          onAddTransaction={handleAddTransaction}
           onShowCategories={() => setShowCategoryManager(true)}
           onShowBudgets={() => setShowBudgetManager(true)}
           onShowExport={() => setShowExportModal(true)}
-          isExportDisabled={!expenses || expenses.length === 0}
+          isExportDisabled={transactions.length === 0}
           dateBoundaries={dateBoundaries}
         />
 
-        <Tabs defaultValue="expenses" className="w-full">
+        <Tabs defaultValue="transactions" className="w-full">
           <TabsList className="flex w-full mb-8">
-            <TabsTrigger value="expenses" className="flex-1">
+            <TabsTrigger value="transactions" className="flex-1">
               Transaction Log
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex-1">
@@ -211,22 +201,27 @@ export function ExpenseDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="expenses">
-            <Card className="gap-5">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <TabsContent value="transactions">
+            <Card className="gap-5 border-none shadow-none sm:border sm:shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 px-0 sm:px-6">
                 <CardTitle className="text-xl sm:text-2xl font-bold">
                   Transactions Table
                 </CardTitle>
-                <Button size="sm" onClick={() => setShowExpenseForm(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Expense
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleAddTransaction("expense")}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Expense
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent>
-                <ExpenseList
-                  expenses={filteredExpenses}
-                  onEditExpense={handleEditExpense}
-                  isLoading={expenses === undefined}
+              <CardContent className="px-0 sm:px-6">
+                <TransactionList
+                  transactions={transactions}
+                  onEditTransaction={handleEditTransaction}
+                  isLoading={transactions === undefined}
                 />
               </CardContent>
             </Card>
@@ -234,7 +229,7 @@ export function ExpenseDashboard() {
 
           <TabsContent value="analytics" className="space-y-8">
             <StatisticsOverview
-              expenses={filteredExpenses}
+              expenses={expenses}
               categorySpending={categorySpending}
               financialSummary={financialSummary}
               daysCount={effectiveDaysCount}
@@ -260,8 +255,8 @@ export function ExpenseDashboard() {
             </Card>
 
             <FinancialCharts
-              expenses={filteredExpenses}
-              incomes={incomes as Income[]}
+              expenses={expenses}
+              incomes={incomes}
               startDate={startDate}
               endDate={endDate}
             />
@@ -269,21 +264,15 @@ export function ExpenseDashboard() {
         </Tabs>
       </main>
 
-      {showExpenseForm && (
-        <ExpenseForm
-          onClose={handleCloseExpenseForm}
-          categories={categories}
-          editingExpense={editingExpense}
-        />
-      )}
-
-      {showIncomeForm && (
-        <IncomeForm
+      {showTransactionForm && (
+        <TransactionForm
           onClose={() => {
-            setShowIncomeForm(false);
-            setEditingIncome(undefined);
+            setShowTransactionForm(false);
+            setEditingTransaction(undefined);
           }}
-          editingIncome={editingIncome}
+          categories={categories}
+          editingTransaction={editingTransaction}
+          defaultType={transactionType}
         />
       )}
 
@@ -305,7 +294,7 @@ export function ExpenseDashboard() {
       {showExportModal && (
         <ExportModal
           onClose={() => setShowExportModal(false)}
-          expenses={filteredExpenses}
+          expenses={expenses}
           incomes={incomes}
           selectedPeriod={selectedPeriod}
         />

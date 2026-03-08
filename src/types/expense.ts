@@ -5,22 +5,22 @@
  * Generic ID type for Convex documents
  * This mirrors the Id<T> type from Convex but for frontend use
  */
-export type ConvexId<TableName extends string> = string & {
-  __tableName: TableName;
-};
+export type ConvexId<TableName extends string> = string;
 
 export interface Category {
   _id: ConvexId<"categories">;
   name: string;
+  type?: "expense" | "income"; // Made optional for migration
   color?: string;
   budgetLimit?: number;
   isDefault: boolean;
   userId: string;
 }
 
-export interface Expense {
-  _id: ConvexId<"expenses">;
+export interface Transaction {
+  _id: ConvexId<"transactions">;
   name: string;
+  type: "expense" | "income";
   categoryId: ConvexId<"categories">;
   amount: number;
   date: number;
@@ -32,16 +32,6 @@ export interface Expense {
   _creationTime?: number;
 }
 
-export interface Income {
-  _id: ConvexId<"incomes">;
-  name: string;
-  amount: number;
-  date: number;
-  notes?: string;
-  userId: string;
-  _creationTime?: number;
-}
-
 export interface CategorySpending {
   category: Category;
   totalSpent: number;
@@ -50,6 +40,7 @@ export interface CategorySpending {
   budgetUsed: number;
   percentageOfTotal: number;
   budgetUtilization: number | null;
+  percentageOfBudget?: number;
 }
 
 export type TimePeriod =

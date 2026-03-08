@@ -37,10 +37,14 @@ interface BudgetManagerProps {
 }
 
 export function BudgetManager({
-  categories,
-  categorySpending,
+  categories: allCategories,
+  categorySpending: allCategorySpending,
   onClose,
 }: BudgetManagerProps) {
+  const categories = allCategories.filter((c) => c.type === "expense");
+  const categorySpending = allCategorySpending.filter(
+    (s) => s.category.type === "expense",
+  );
   const { formatCurrency, formatCurrencyCompact } = useSettings();
   const [budgets, setBudgets] = useState<Record<string, string>>(
     categories.reduce(

@@ -46,6 +46,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
     name: "",
     color: "#3b82f6",
     budgetLimit: "",
+    type: "expense" as "expense" | "income",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,7 +55,12 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
   const deleteCategory = useMutation(api.functions.categories.deleteCategory);
 
   const resetForm = () => {
-    setFormData({ name: "", color: "#3b82f6", budgetLimit: "" });
+    setFormData({
+      name: "",
+      color: "#3b82f6",
+      budgetLimit: "",
+      type: "expense",
+    });
     setEditingCategory(null);
     setShowForm(false);
   };
@@ -64,6 +70,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
       name: category.name,
       color: category.color || "#3b82f6",
       budgetLimit: category.budgetLimit?.toString() || "",
+      type: category.type || "expense",
     });
     setEditingCategory(category);
     setShowForm(true);
@@ -78,6 +85,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
       const categoryData = {
         name: formData.name.trim(),
         color: formData.color,
+        type: formData.type,
         budgetLimit: formData.budgetLimit
           ? parseFloat(formData.budgetLimit)
           : undefined,
@@ -175,23 +183,60 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
               </CardHeader>
               <CardContent className="p-4 pt-2">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="cat_name"
-                      className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                    >
-                      Category Name
-                    </Label>
-                    <Input
-                      id="cat_name"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      placeholder="e.g. Subscriptions"
-                      required
-                      className="bg-background"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="cat_name"
+                        className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                      >
+                        Category Name
+                      </Label>
+                      <Input
+                        id="cat_name"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        placeholder="e.g. Subscriptions"
+                        required
+                        className="bg-background"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        Type
+                      </Label>
+                      <div className="flex p-1 bg-background border rounded-lg h-10">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({ ...formData, type: "expense" })
+                          }
+                          className={cn(
+                            "flex-1 text-[10px] font-bold uppercase rounded-md transition-all",
+                            formData.type === "expense"
+                              ? "bg-destructive text-destructive-foreground shadow-xs"
+                              : "text-muted-foreground hover:bg-muted",
+                          )}
+                        >
+                          Expense
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({ ...formData, type: "income" })
+                          }
+                          className={cn(
+                            "flex-1 text-[10px] font-bold uppercase rounded-md transition-all",
+                            formData.type === "income"
+                              ? "bg-green-600 text-white shadow-xs"
+                              : "text-muted-foreground hover:bg-muted",
+                          )}
+                        >
+                          Income
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-3">
@@ -264,9 +309,22 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                         style={{ backgroundColor: category.color }}
                       />
                       <div className="min-w-0">
-                        <h4 className="font-bold text-sm truncate">
-                          {category.name}
-                        </h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm truncate">
+                            {category.name}
+                          </h4>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "text-[8px] h-3.5 px-1 font-bold uppercase",
+                              category.type === "income"
+                                ? "border-green-500/50 text-green-600"
+                                : "border-destructive/30 text-destructive",
+                            )}
+                          >
+                            {category.type || "expense"}
+                          </Badge>
+                        </div>
                         {category.budgetLimit && (
                           <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground mt-0.5">
                             <Badge

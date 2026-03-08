@@ -1,22 +1,12 @@
 import { useState } from "react";
-import { Expense, TimePeriod, Income } from "../../types/expense";
+import { Transaction, TimePeriod } from "../../types/expense";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import {
   Loader2,
@@ -34,8 +24,8 @@ import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 
 interface ExportModalProps {
-  expenses: Expense[];
-  incomes: Income[];
+  expenses: Transaction[];
+  incomes: Transaction[];
   selectedPeriod: TimePeriod;
   onClose: () => void;
 }
@@ -49,7 +39,7 @@ export function ExportModal({
   const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
   const [isExporting, setIsExporting] = useState(false);
 
-  const exportToCSV = (data: Expense[], incomeData: Income[]) => {
+  const exportToCSV = (data: Transaction[], incomeData: Transaction[]) => {
     const expenseHeaders = [
       "Type",
       "Date",
@@ -81,7 +71,7 @@ export function ExportModal({
     ].join("\n");
   };
 
-  const exportToJSON = (data: Expense[], incomeData: Income[]) => {
+  const exportToJSON = (data: Transaction[], incomeData: Transaction[]) => {
     const exportData = {
       expenses: data.map((e) => ({
         date: new Date(e.date).toISOString(),
