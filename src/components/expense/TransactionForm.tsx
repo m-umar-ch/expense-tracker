@@ -13,7 +13,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, Receipt, Image as ImageIcon, X, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Receipt,
+  Image as ImageIcon,
+  X,
+  Trash2,
+  CalendarIcon,
+} from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "../ui/field";
@@ -28,6 +35,18 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSettings } from "../../contexts/SettingsContext";
 import { Id } from "@convex/_generated/dataModel";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 interface TransactionFormProps {
   editingTransaction?: Transaction;
@@ -45,6 +64,25 @@ const transactionSchema = z.object({
   type: z.union([z.literal("expense"), z.literal("income")]),
 });
 
+function formatDate(date: Date | undefined) {
+  if (!date) {
+    return "";
+  }
+
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function isValidDate(date: Date | undefined) {
+  if (!date) {
+    return false;
+  }
+  return !isNaN(date.getTime());
+}
+
 export function TransactionForm({
   editingTransaction,
   defaultType = "expense",
@@ -53,6 +91,15 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(
+    editingTransaction?.date ? new Date(editingTransaction.date) : new Date(),
+  );
+  const [displayDate, setDisplayDate] = useState(
+    formatDate(
+      editingTransaction?.date ? new Date(editingTransaction.date) : new Date(),
+    ),
+  );
   const [receiptImageId, setReceiptImageId] = useState<string | undefined>(
     editingTransaction?.receiptImageId,
   );
@@ -359,14 +406,70 @@ export function TransactionForm({
                   }
                 >
                   <FieldLabel htmlFor={field.name}>Date</FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="date"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    className=" cursor-pointer font-bold"
-                  />
+                  <InputGroup>
+                    <InputGroupInput
+                      id={field.name}
+                      value={displayDate}
+                      placeholder={formatDate(new Date())}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDisplayDate(val);
+                        const parsed = new Date(val);
+                        if (isValidDate(parsed)) {
+                          setCalendarMonth(parsed);
+                          field.handleChange(
+                            parsed.toISOString().split("T")[0],
+                          );
+                        }
+                      }}
+                      onBlur={field.handleBlur}
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          setPopoverOpen(true);
+                        }
+                      }}
+                      className="font-bold"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <InputGroupButton
+                            id="date-picker-trigger"
+                            variant="ghost"
+                            size="icon-xs"
+                            aria-label="Select date"
+                          >
+                            <CalendarIcon />
+                            <span className="sr-only">Select date</span>
+                          </InputGroupButton>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto overflow-hidden p-0"
+                          align="end"
+                          alignOffset={-8}
+                          sideOffset={10}
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={new Date(field.state.value)}
+                            month={calendarMonth}
+                            onMonthChange={setCalendarMonth}
+                            onSelect={(date) => {
+                              if (date) {
+                                setCalendarMonth(date);
+                                setDisplayDate(formatDate(date));
+                                field.handleChange(
+                                  date.toISOString().split("T")[0],
+                                );
+                                setPopoverOpen(false);
+                              }
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </InputGroupAddon>
+                  </InputGroup>
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
