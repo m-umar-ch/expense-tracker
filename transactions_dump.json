@@ -1,0 +1,386 @@
+[
+  {
+    "amount": 100.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1772841600000,
+    "name": "Transport",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 1400.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1772841600000,
+    "name": "Dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 350.0,
+    "categoryId": "jx7crm34e0kep2q2sqdmx0v9th82g02b",
+    "date": 1772755200000,
+    "name": "Haircut",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 90.0,
+    "categoryId": "jx74k7sw3s53tr3wcyxrg4k8g982ha3v",
+    "date": 1772755200000,
+    "name": "Tooth brush",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 240.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1772582400000,
+    "name": "Dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 1543.0,
+    "categoryId": "jx71s5mah87nkqjfxe8k8rzdes82gbhj",
+    "date": 1772668800000,
+    "name": "Contabo Server Cost",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx7crm34e0kep2q2sqdmx0v9th82g02b",
+    "date": 1772582400000,
+    "name": "Test Expense",
+    "type": "expense",
+    "userId": "k570p08rxj8hy4qqz6w91jfh6d828mnx"
+  },
+  {
+    "amount": 50000.0,
+    "categoryId": "jx7dbs3b25snhdwvz2gwh5fz9982hvjp",
+    "date": 1772236800000,
+    "name": "Load Recieved From Father",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 560.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1765911600000,
+    "name": "Dinner in office",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 760.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1765911600000,
+    "name": "Petrol",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 420.0,
+    "categoryId": "jx74k7sw3s53tr3wcyxrg4k8g982ha3v",
+    "date": 1765911600000,
+    "name": "Dental Floss",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 600.0,
+    "categoryId": "jx7crm34e0kep2q2sqdmx0v9th82g02b",
+    "date": 1765911600000,
+    "name": "Debt paid to isha",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 2000.0,
+    "categoryId": "jx7dbs3b25snhdwvz2gwh5fz9982hvjp",
+    "date": 1765843200000,
+    "name": "From Father",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 140.0,
+    "categoryId": "jx7crm34e0kep2q2sqdmx0v9th82g02b",
+    "date": 1765911600000,
+    "name": "Debt paid to anas",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 400.0,
+    "categoryId": "jx7crm34e0kep2q2sqdmx0v9th82g02b",
+    "date": 1765911600000,
+    "name": "Debt paid to abdullah",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 150.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1765998000000,
+    "name": "Dinner in office",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 50.0,
+    "categoryId": "jx74k7sw3s53tr3wcyxrg4k8g982ha3v",
+    "date": 1766084400000,
+    "name": "Eraser",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 610.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766084400000,
+    "name": "Dinner in office",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 550.0,
+    "categoryId": "jx74k7sw3s53tr3wcyxrg4k8g982ha3v",
+    "date": 1765911600000,
+    "name": "Gloves",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 40.0,
+    "categoryId": "jx79jmevq2t75t5bzy69scn0y982hzq2",
+    "date": 1766084400000,
+    "name": "Pens",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 300.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766257200000,
+    "name": "Chai Cake Rusk",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 300.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766343600000,
+    "name": "Chai",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 2000.0,
+    "categoryId": "jx7dbs3b25snhdwvz2gwh5fz9982hvjp",
+    "date": 1766188800000,
+    "name": "Weekly Allowance",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1766343600000,
+    "name": "Rickshaw Fare",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1766257200000,
+    "name": "Rickshaw Fare",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1766170800000,
+    "name": "Rickshaw Fare",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 150.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1766430000000,
+    "name": "Travel Fare",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 80.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766430000000,
+    "name": "Office Snacks",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 120.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766602800000,
+    "name": "Office Snacks",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 250.0,
+    "categoryId": "jx71s5mah87nkqjfxe8k8rzdes82gbhj",
+    "date": 1766534400000,
+    "name": "Bari Call Package",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766602800000,
+    "name": "Rotee",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx7crm34e0kep2q2sqdmx0v9th82g02b",
+    "date": 1766602800000,
+    "name": "Don't ask",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 150.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766602800000,
+    "name": "Fries",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 250.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766775600000,
+    "name": "Snacks",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 2000.0,
+    "categoryId": "jx7dbs3b25snhdwvz2gwh5fz9982hvjp",
+    "date": 1766880000000,
+    "name": "Weekly Allowance",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 350.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1766948400000,
+    "name": "Ofiice dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 250.0,
+    "categoryId": "jx71s5mah87nkqjfxe8k8rzdes82gbhj",
+    "date": 1766966400000,
+    "name": "Ayesha Call Pkg",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 300.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1767034800000,
+    "name": "Office Dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 600.0,
+    "categoryId": "jx75dh84ats3c9fs1rfap8kbvs82g6h6",
+    "date": 1767034800000,
+    "name": "Petrol",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 520.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1767121200000,
+    "name": "Office Dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 2400.0,
+    "categoryId": "jx71s5mah87nkqjfxe8k8rzdes82gbhj",
+    "date": 1767052800000,
+    "name": "Yearly Closure",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 100.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1767207600000,
+    "name": "Fries",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 840.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1767380400000,
+    "name": "Dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 350.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1767466800000,
+    "name": "Snacks",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 250.0,
+    "categoryId": "jx7ene0va1w1k7fb8wzt84d1vx82gfpx",
+    "date": 1767639600000,
+    "name": "Office Dinner",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 2000.0,
+    "categoryId": "jx7dbs3b25snhdwvz2gwh5fz9982hvjp",
+    "date": 1767398400000,
+    "name": "Recieved",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 4370.0,
+    "categoryId": "jx7dbs3b25snhdwvz2gwh5fz9982hvjp",
+    "date": 1767571200000,
+    "name": "Add to Spend Pool",
+    "type": "income",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  },
+  {
+    "amount": 1600.0,
+    "categoryId": "jx71s5mah87nkqjfxe8k8rzdes82gbhj",
+    "date": 1767139200000,
+    "name": "Contabo Payment",
+    "type": "expense",
+    "userId": "k57eyb90ddyn4hhcdzbrghjegx826ayk"
+  }
+]
