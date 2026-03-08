@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { useState, useMemo } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -64,16 +65,19 @@ const transactionSchema = z.object({
   type: z.union([z.literal("expense"), z.literal("income")]),
 });
 
+function formatDateToLocalISO(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function formatDate(date: Date | undefined) {
-  if (!date) {
+  if (!date || !isValidDate(date)) {
     return "";
   }
 
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+  return format(date, "MMMM dd, yyyy");
 }
 
 function isValidDate(date: Date | undefined) {
@@ -127,8 +131,8 @@ export function TransactionForm({
       categoryId: editingTransaction?.categoryId || "",
       type: (editingTransaction?.type || defaultType) as "expense" | "income",
       date: editingTransaction?.date
-        ? new Date(editingTransaction.date).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
+        ? formatDateToLocalISO(new Date(editingTransaction.date))
+        : formatDateToLocalISO(new Date()),
       notes: editingTransaction?.notes || "",
     },
     validators: {
@@ -142,7 +146,7 @@ export function TransactionForm({
           type: value.type,
           amount: value.amount,
           categoryId: value.categoryId as any,
-          date: new Date(value.date).getTime(),
+          date: new Date(value.date + "T00:00:00").getTime(),
           notes: value.notes.trim() || undefined,
           receiptImageId: receiptImageId as any,
         };
@@ -324,7 +328,7 @@ export function TransactionForm({
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) =>
-                        field.handleChange(Number(e.target.value))
+                        field.handleChange(e.target.valueAsNumber)
                       }
                       className=" pl-8 text-xl font-black"
                     />
@@ -451,9 +455,7 @@ export function TransactionForm({
                               if (date) {
                                 setCalendarMonth(date);
                                 setDisplayDate(formatDate(date));
-                                field.handleChange(
-                                  date.toISOString().split("T")[0],
-                                );
+                                field.handleChange(formatDateToLocalISO(date));
                                 setPopoverOpen(false);
                               }
                             }}

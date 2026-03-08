@@ -155,32 +155,67 @@ export function TransactionList({
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-base">{row.original.name}</span>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <Badge
-              variant="outline"
-              className={`text-[10px] h-4.5 px-1.5 font-black uppercase border-none ${
-                row.original.type === "expense"
-                  ? "bg-destructive/10 text-destructive"
-                  : "bg-green-500/10 text-green-600 dark:text-green-400 dark:bg-green-400/10"
-              }`}
-            >
-              {row.original.type === "expense" ? (
-                <TrendingDown className="h-2.5 w-2.5 mr-1" />
-              ) : (
-                <TrendingUp className="h-2.5 w-2.5 mr-1" />
-              )}
-              {row.original.type}
-            </Badge>
-            {row.original.category && (
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
-                • {row.original.category.name}
-              </span>
-            )}
-          </div>
-        </div>
+        <span className="font-bold text-base">{row.original.name}</span>
       ),
+    },
+    {
+      accessorKey: "type",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 hover:bg-transparent font-bold text-xs uppercase tracking-wider"
+        >
+          Type
+          <ArrowUpDown className="ml-2 h-3 w-3" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <Badge
+          variant="outline"
+          className={`text-[10px] h-6 px-2 font-black uppercase border-none ring-1 ring-inset ${
+            row.original.type === "expense"
+              ? "bg-destructive/10 text-destructive ring-destructive/20"
+              : "bg-green-500/10 text-green-600 dark:text-green-400 ring-green-500/20 dark:bg-green-400/10"
+          }`}
+        >
+          {row.original.type === "expense" ? (
+            <TrendingDown className="h-3 w-3 mr-1" />
+          ) : (
+            <TrendingUp className="h-3 w-3 mr-1" />
+          )}
+          {row.original.type}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "categoryId",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 hover:bg-transparent font-bold text-xs uppercase tracking-wider"
+        >
+          Category
+          <ArrowUpDown className="ml-2 h-3 w-3" />
+        </Button>
+      ),
+      cell: ({ row }) =>
+        row.original.category ? (
+          <div className="flex items-center gap-2">
+            <div
+              className="w-2 h-2 rounded-full shadow-sm"
+              style={{ backgroundColor: row.original.category.color }}
+            />
+            <span className="text-sm font-bold text-muted-foreground uppercase tracking-tight">
+              {row.original.category.name}
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground italic">
+            Uncategorized
+          </span>
+        ),
     },
     {
       accessorKey: "amount",
@@ -214,43 +249,50 @@ export function TransactionList({
       cell: ({ row }) => {
         const transaction = row.original;
         return (
-          <div className="text-right">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onClick={() => onEditTransaction(transaction)}
-                >
-                  <Edit className="mr-2 h-4 w-4" /> Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={async () => {
-                    if (confirm("Are you sure you want to delete this?")) {
-                      await deleteTransaction({
-                        id: transaction._id as Id<"transactions">,
-                      });
-                      toast.success("Transaction deleted");
-                    }
-                  }}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete
-                </DropdownMenuItem>
-                {transaction.receiptUrl && (
-                  <DropdownMenuItem
-                    onClick={() =>
-                      window.open(transaction.receiptUrl!, "_blank")
-                    }
-                  >
-                    <Paperclip className="mr-2 h-4 w-4" /> View Receipt
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex items-center justify-end gap-1">
+            {transaction.receiptUrl && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg Transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(transaction.receiptUrl!, "_blank");
+                }}
+                title="View Receipt"
+              >
+                <Paperclip className="h-4 w-4" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg Transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditTransaction(transaction);
+              }}
+              title="Edit"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg Transition-all"
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (confirm("Are you sure you want to delete this?")) {
+                  await deleteTransaction({
+                    id: transaction._id as Id<"transactions">,
+                  });
+                  toast.success("Transaction deleted");
+                }
+              }}
+              title="Delete"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         );
       },
@@ -320,11 +362,10 @@ export function TransactionList({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="h-20 hover:bg-muted/20 border-border/50 cursor-pointer"
-                  onClick={() => onEditTransaction(row.original)}
+                  className="h-14 hover:bg-muted/20 border-border/50"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-4">
+                    <TableCell key={cell.id} className="py-2">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
