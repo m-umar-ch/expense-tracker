@@ -4,23 +4,19 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 
 const DEFAULT_CATEGORIES = [
   // Expense Categories
-  { name: "Food & Dining", color: "#ef4444", type: "expense" as const },
+  { name: "Food", color: "#ef4444", type: "expense" as const },
   { name: "Transportation", color: "#3b82f6", type: "expense" as const },
   { name: "Shopping", color: "#8b5cf6", type: "expense" as const },
-  { name: "Bills & Utilities", color: "#f59e0b", type: "expense" as const },
+  { name: "Bills", color: "#f59e0b", type: "expense" as const },
   { name: "Entertainment", color: "#10b981", type: "expense" as const },
   { name: "Healthcare", color: "#ec4899", type: "expense" as const },
-  { name: "Groceries", color: "#06b6d4", type: "expense" as const },
-  { name: "Personal Care", color: "#84cc16", type: "expense" as const },
-  { name: "Credit & Loans", color: "#84cc16", type: "expense" as const },
-  { name: "Others", color: "#84cc16", type: "expense" as const },
+  { name: "Other Expenses", color: "#6b7280", type: "expense" as const },
   // Income Categories
   { name: "Salary", color: "#22c55e", type: "income" as const },
-  { name: "Freelance", color: "#10b981", type: "income" as const },
-  { name: "Investments", color: "#3b82f6", type: "income" as const },
-  { name: "Gifts", color: "#ec4899", type: "income" as const },
-  { name: "Rental Income", color: "#f59e0b", type: "income" as const },
-  { name: "Others", color: "#6b7280", type: "income" as const },
+  { name: "Business / Freelance", color: "#10b981", type: "income" as const },
+  { name: "Investment", color: "#3b82f6", type: "income" as const },
+  { name: "Refunds", color: "#ec4899", type: "income" as const },
+  { name: "Other Income", color: "#6b7280", type: "income" as const },
 ];
 
 export const initializeDefaultCategories = mutation({

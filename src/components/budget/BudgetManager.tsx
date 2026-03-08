@@ -29,6 +29,7 @@ import {
   Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Id } from "@convex/_generated/dataModel";
 
 interface BudgetManagerProps {
   categories: Category[];
@@ -77,7 +78,7 @@ export function BudgetManager({
 
         if (currentBudget !== newBudget) {
           await updateCategory({
-            id: category._id,
+            id: category._id as Id<"categories">,
             budgetLimit: newBudget,
           });
           successCount++;

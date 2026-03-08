@@ -58,7 +58,7 @@ export function StatisticsOverview({
       icon: DollarSign,
       color:
         financialSummary && financialSummary.netBalance >= 0
-          ? "text-green-600"
+          ? "text-green-600 dark:text-green-400"
           : "text-destructive",
     },
     {
@@ -67,7 +67,7 @@ export function StatisticsOverview({
         ? formatCurrency(financialSummary.totalIncome)
         : "--",
       icon: TrendingUp,
-      color: "text-green-600",
+      color: "text-green-600 dark:text-green-400",
     },
     {
       label: "Total Expenses",
@@ -92,7 +92,7 @@ export function StatisticsOverview({
             color:
               evolution.percentageChange > 0
                 ? "text-destructive"
-                : "text-green-600",
+                : "text-green-600 dark:text-green-400",
             subtitle: "vs last period",
           },
         ]

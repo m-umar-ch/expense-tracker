@@ -56,6 +56,7 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Id } from "@convex/_generated/dataModel";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -162,7 +163,7 @@ export function TransactionList({
               className={`text-[10px] h-4.5 px-1.5 font-black uppercase border-none ${
                 row.original.type === "expense"
                   ? "bg-destructive/10 text-destructive"
-                  : "bg-green-600/10 text-green-600"
+                  : "bg-green-500/10 text-green-600 dark:text-green-400 dark:bg-green-400/10"
               }`}
             >
               {row.original.type === "expense" ? (
@@ -200,7 +201,7 @@ export function TransactionList({
         const isExpense = row.original.type === "expense";
         return (
           <div
-            className={`text-right font-black text-lg ${isExpense ? "text-destructive" : "text-green-600"}`}
+            className={`text-right font-black text-lg ${isExpense ? "text-destructive" : "text-green-600 dark:text-green-400"}`}
           >
             {isExpense ? "-" : "+"}
             {formatCurrency(amount)}
@@ -230,7 +231,9 @@ export function TransactionList({
                   className="text-destructive"
                   onClick={async () => {
                     if (confirm("Are you sure you want to delete this?")) {
-                      await deleteTransaction({ id: transaction._id });
+                      await deleteTransaction({
+                        id: transaction._id as Id<"transactions">,
+                      });
                       toast.success("Transaction deleted");
                     }
                   }}
@@ -290,7 +293,7 @@ export function TransactionList({
           placeholder="Search transactions..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => onSearchChange(event.target.value)}
-          className="pl-9 h-11 bg-muted/50 border-none shadow-none focus-visible:ring-1"
+          className="pl-9"
         />
       </div>
 

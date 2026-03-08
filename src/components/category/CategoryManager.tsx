@@ -93,7 +93,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
 
       if (editingCategory) {
         await updateCategory({
-          id: editingCategory._id,
+          id: editingCategory._id as Id<"categories">,
           ...categoryData,
         });
         toast.success("Category updated");
@@ -229,7 +229,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                           className={cn(
                             "flex-1 text-[10px] font-bold uppercase rounded-md transition-all",
                             formData.type === "income"
-                              ? "bg-green-600 text-white shadow-xs"
+                              ? "bg-green-600 dark:bg-green-700 text-white shadow-xs"
                               : "text-muted-foreground hover:bg-muted",
                           )}
                         >
@@ -318,7 +318,7 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                             className={cn(
                               "text-[8px] h-3.5 px-1 font-bold uppercase",
                               category.type === "income"
-                                ? "border-green-500/50 text-green-600"
+                                ? "border-green-500/50 text-green-600 dark:text-green-400 dark:border-green-400/30"
                                 : "border-destructive/30 text-destructive",
                             )}
                           >
@@ -354,7 +354,9 @@ export function CategoryManager({ categories, onClose }: CategoryManagerProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(category._id)}
+                        onClick={() =>
+                          handleDelete(category._id as Id<"categories">)
+                        }
                         className="h-8 w-8 hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash2 className="w-3.5 h-3.5" />

@@ -212,16 +212,8 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="5%"
-                      stopColor="rgb(34, 197, 94)"
-                      stopOpacity={0.1}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor="rgb(34, 197, 94)"
-                      stopOpacity={0}
-                    />
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
                     <stop
@@ -254,7 +246,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
                   type="monotone"
                   dataKey="income"
                   name="Income"
-                  stroke="rgb(34, 197, 94)"
+                  stroke="#22c55e"
                   fillOpacity={1}
                   fill="url(#colorIncome)"
                 />

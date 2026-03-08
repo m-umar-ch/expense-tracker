@@ -113,7 +113,7 @@ export function DashboardActions({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 gap-1 font-medium hover:bg-background"
+                className="h-7 px-2 gap-1 font-medium hover:bg-background"
                 onClick={() =>
                   onDateShift(getPrevPeriodDate(selectedPeriod, referenceDate))
                 }
@@ -127,7 +127,7 @@ export function DashboardActions({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2 text-muted-foreground hover:text-primary hover:bg-background shrink-0"
+                  className="h-7 px-2 text-muted-foreground hover:text-primary hover:bg-background shrink-0"
                   onClick={() => onDateShift(Date.now())}
                   title={`Go to Current ${periodLabel}`}
                 >
@@ -140,7 +140,7 @@ export function DashboardActions({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 gap-1 font-medium hover:bg-background"
+                className="h-7 px-2 gap-1 font-medium hover:bg-background"
                 onClick={() =>
                   onDateShift(getNextPeriodDate(selectedPeriod, referenceDate))
                 }

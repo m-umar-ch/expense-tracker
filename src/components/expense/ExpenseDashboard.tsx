@@ -211,9 +211,19 @@ export function ExpenseDashboard() {
                   <Button
                     size="sm"
                     onClick={() => handleAddTransaction("expense")}
+                    className="gap-2"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4" />
                     Add Expense
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-2 border-green-500/50 text-green-600 hover:text-green-600 hover:border-green-500/50 hover:bg-transparent"
+                    onClick={() => handleAddTransaction("income")}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Income
                   </Button>
                 </div>
               </CardHeader>
