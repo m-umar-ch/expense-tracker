@@ -56,6 +56,16 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Id } from "@convex/_generated/dataModel";
 
 interface TransactionListProps {
@@ -74,6 +84,9 @@ export function TransactionList({
   );
   const { formatCurrency } = useSettings();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<Transaction | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Read initial state from URL
   const pageParam = parseInt(searchParams.get("page") || "1");
@@ -280,14 +293,9 @@ export function TransactionList({
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg Transition-all"
-              onClick={async (e) => {
+              onClick={(e) => {
                 e.stopPropagation();
-                if (confirm("Are you sure you want to delete this?")) {
-                  await deleteTransaction({
-                    id: transaction._id as Id<"transactions">,
-                  });
-                  toast.success("Transaction deleted");
-                }
+                setTransactionToDelete(transaction);
               }}
               title="Delete"
             >
@@ -454,6 +462,55 @@ export function TransactionList({
           </Button>
         </div>
       </div>
+
+      <AlertDialog
+        open={!!transactionToDelete}
+        onOpenChange={(open) => !open && setTransactionToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the transaction{" "}
+              <span className="font-bold text-foreground">
+                "{transactionToDelete?.name}"
+              </span>{" "}
+              for{" "}
+              <span className="font-bold text-foreground">
+                {transactionToDelete &&
+                  formatCurrency(transactionToDelete.amount)}
+              </span>
+              . This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (!transactionToDelete) return;
+
+                setIsDeleting(true);
+                try {
+                  await deleteTransaction({
+                    id: transactionToDelete._id as Id<"transactions">,
+                  });
+                  toast.success("Transaction deleted");
+                  setTransactionToDelete(null);
+                } catch (error) {
+                  toast.error("Failed to delete transaction");
+                } finally {
+                  setIsDeleting(false);
+                }
+              }}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
