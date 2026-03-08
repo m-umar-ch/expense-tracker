@@ -21,7 +21,7 @@ import {
   Trash2,
   CalendarIcon,
 } from "lucide-react";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "../ui/field";
 import {
@@ -132,7 +132,7 @@ export function TransactionForm({
       notes: editingTransaction?.notes || "",
     },
     validators: {
-      onChange: transactionSchema,
+      onSubmit: transactionSchema,
     },
     onSubmit: async ({ value }) => {
       setIsSubmitting(true);
@@ -167,6 +167,12 @@ export function TransactionForm({
       }
     },
   });
+
+  const {
+    values,
+    isSubmitting: formSubmitting,
+    canSubmit,
+  } = useStore(form.store, (state) => state);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -217,88 +223,82 @@ export function TransactionForm({
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Transaction Type Toggle */}
-            <form.Subscribe
-              selector={(state) => state.values.type}
-              children={(currentType) => (
-                <div className="sm:col-span-2">
-                  <Label className="mb-2 block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                    Transaction Type
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2 p-1 bg-muted/50 rounded-xl border border-border/50">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        form.setFieldValue("type", "expense");
-                        const expenseCats = categories.filter(
-                          (c) => c.type === "expense" || !c.type,
-                        );
-                        if (expenseCats.length > 0) {
-                          form.setFieldValue("categoryId", expenseCats[0]._id);
-                        }
-                      }}
-                      className={cn(
-                        "py-2.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all transform active:scale-95",
-                        currentType === "expense"
-                          ? "bg-background shadow-md text-destructive scale-100"
-                          : "text-muted-foreground hover:bg-background/30",
-                      )}
-                    >
-                      Expense
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        form.setFieldValue("type", "income");
-                        const incomeCats = categories.filter(
-                          (c) => c.type === "income",
-                        );
-                        if (incomeCats.length > 0) {
-                          form.setFieldValue("categoryId", incomeCats[0]._id);
-                        }
-                      }}
-                      className={cn(
-                        "py-2.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all transform active:scale-95",
-                        currentType === "income"
-                          ? "bg-background shadow-md text-green-600 dark:text-green-400 scale-100"
-                          : "text-muted-foreground hover:bg-background/30",
-                      )}
-                    >
-                      Income
-                    </button>
-                  </div>
-                </div>
-              )}
-            />
+            <div className="sm:col-span-2">
+              <Label className="mb-2 block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                Transaction Type
+              </Label>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-muted/50 rounded-xl border border-border/50">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextType = "expense";
+                    form.reset();
+                    form.setFieldValue("type", nextType);
+                    const expenseCats = categories.filter(
+                      (c) => c.type === "expense" || !c.type,
+                    );
+                    if (expenseCats.length > 0) {
+                      form.setFieldValue("categoryId", expenseCats[0]._id);
+                    }
+                  }}
+                  className={cn(
+                    "py-2.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all transform active:scale-95",
+                    values.type === "expense"
+                      ? "bg-background shadow-md text-destructive scale-100"
+                      : "text-muted-foreground hover:bg-background/30",
+                  )}
+                >
+                  Expense
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextType = "income";
+                    form.reset();
+                    form.setFieldValue("type", nextType);
+                    const incomeCats = categories.filter(
+                      (c) => c.type === "income",
+                    );
+                    if (incomeCats.length > 0) {
+                      form.setFieldValue("categoryId", incomeCats[0]._id);
+                    }
+                  }}
+                  className={cn(
+                    "py-2.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all transform active:scale-95",
+                    values.type === "income"
+                      ? "bg-background shadow-md text-green-600 dark:text-green-400 scale-100"
+                      : "text-muted-foreground hover:bg-background/30",
+                  )}
+                >
+                  Income
+                </button>
+              </div>
+            </div>
 
             <form.Field
               name="name"
               children={(field) => (
-                <form.Subscribe
-                  selector={(state) => state.values.type}
-                  children={(currentType) => (
-                    <Field
-                      className=" sm:col-span-2"
-                      data-invalid={
-                        field.state.meta.isTouched && !field.state.meta.isValid
-                      }
-                    >
-                      <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                      <Input
-                        id={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder={
-                          currentType === "expense"
-                            ? "e.g., Grocery Shopping"
-                            : "e.g., Monthly Salary"
-                        }
-                        className=" text-base font-bold"
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </Field>
-                  )}
-                />
+                <Field
+                  className=" sm:col-span-2"
+                  data-invalid={
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  }
+                >
+                  <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                  <Input
+                    id={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder={
+                      values.type === "expense"
+                        ? "e.g., Grocery Shopping"
+                        : "e.g., Monthly Salary"
+                    }
+                    className=" text-base font-bold"
+                  />
+                  <FieldError errors={field.state.meta.errors} />
+                </Field>
               )}
             />
 
@@ -336,64 +336,56 @@ export function TransactionForm({
 
             <form.Field
               name="categoryId"
-              children={(field) => (
-                <form.Subscribe
-                  selector={(state) => state.values.type}
-                  children={(currentType) => {
-                    const filteredCategories = categories.filter(
-                      (c) =>
-                        c.type === currentType ||
-                        (currentType === "expense" && !c.type),
-                    );
+              children={(field) => {
+                const filteredCategories = categories.filter(
+                  (c) =>
+                    c.type === values.type ||
+                    (values.type === "expense" && !c.type),
+                );
 
-                    return (
-                      <Field
-                        className=""
-                        data-invalid={
-                          field.state.meta.isTouched &&
-                          !field.state.meta.isValid
-                        }
-                      >
-                        <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                        <Select
-                          value={field.state.value}
-                          onValueChange={field.handleChange}
-                        >
-                          <SelectTrigger className="font-bold">
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-xl border-border/50 shadow-2xl">
-                            {filteredCategories.length > 0 ? (
-                              filteredCategories.map((cat) => (
-                                <SelectItem
-                                  key={cat._id}
-                                  value={cat._id}
-                                  className="h-11 focus:bg-primary/5 focus:text-primary transition-colors"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div
-                                      className="w-3.5 h-3.5 rounded-full border shadow-sm"
-                                      style={{ backgroundColor: cat.color }}
-                                    />
-                                    <span className="font-bold">
-                                      {cat.name}
-                                    </span>
-                                  </div>
-                                </SelectItem>
-                              ))
-                            ) : (
-                              <div className="p-4 text-center text-sm font-bold text-muted-foreground italic">
-                                No categories found for {currentType}
+                return (
+                  <Field
+                    className=""
+                    data-invalid={
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    }
+                  >
+                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                    <Select
+                      value={field.state.value}
+                      onValueChange={field.handleChange}
+                    >
+                      <SelectTrigger className="font-bold">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-border/50 shadow-2xl">
+                        {filteredCategories.length > 0 ? (
+                          filteredCategories.map((cat) => (
+                            <SelectItem
+                              key={cat._id}
+                              value={cat._id}
+                              className="h-11 focus:bg-primary/5 focus:text-primary transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className="w-3.5 h-3.5 rounded-full border shadow-sm"
+                                  style={{ backgroundColor: cat.color }}
+                                />
+                                <span className="font-bold">{cat.name}</span>
                               </div>
-                            )}
-                          </SelectContent>
-                        </Select>
-                        <FieldError errors={field.state.meta.errors} />
-                      </Field>
-                    );
-                  }}
-                />
-              )}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center text-sm font-bold text-muted-foreground italic">
+                            No categories found for {values.type}
+                          </div>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                );
+              }}
             />
 
             <form.Field
@@ -565,37 +557,28 @@ export function TransactionForm({
 
         <div className="p-6 pt-2 border-t bg-background shrink-0">
           <div className="flex flex-col sm:flex-row gap-3">
-            <form.Subscribe
-              selector={(state) => [
-                state.canSubmit,
-                state.isSubmitting,
-                state.values.type,
-              ]}
-              children={([canSubmit, isSubmitting, currentType]) => (
-                <Button
-                  type="submit"
-                  disabled={!canSubmit || (isSubmitting as boolean)}
-                  onClick={() => form.handleSubmit()}
-                  className={cn(
-                    "h-14 sm:h-12 text-base font-black uppercase tracking-wider flex-2 rounded-xl shadow-xl transition-all active:scale-95",
-                    currentType === "income"
-                      ? "bg-green-600 hover:bg-green-700 shadow-green-600/20 dark:bg-green-700 dark:hover:bg-green-600"
-                      : "bg-primary hover:bg-primary/90 shadow-primary/20",
-                  )}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Saving...
-                    </>
-                  ) : editingTransaction ? (
-                    "Update Transaction"
-                  ) : (
-                    `Save ${currentType as string}`
-                  )}
-                </Button>
+            <Button
+              type="submit"
+              disabled={formSubmitting}
+              onClick={() => form.handleSubmit()}
+              className={cn(
+                "h-14 sm:h-12 text-base font-black uppercase tracking-wider flex-2 rounded-xl shadow-xl transition-all active:scale-95",
+                values.type === "income"
+                  ? "bg-green-600 hover:bg-green-700 shadow-green-600/20 dark:bg-green-700 dark:hover:bg-green-600"
+                  : "bg-primary hover:bg-primary/90 shadow-primary/20",
               )}
-            />
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Saving...
+                </>
+              ) : editingTransaction ? (
+                "Update Transaction"
+              ) : (
+                `Save ${values.type}`
+              )}
+            </Button>
 
             {editingTransaction && (
               <Button
