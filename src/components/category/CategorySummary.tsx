@@ -49,10 +49,10 @@ export function CategorySummary({
             )}
           </div>
           <div>
-            <h3 className="text-base font-bold tracking-tight">
+            <h3 className="text-lg font-bold tracking-tight">
               {isIncome ? "Income Distribution" : "Spending Analysis"}
             </h3>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-tighter">
               {isIncome ? "Total Income Recorded" : "Total Relative Spending"}
             </p>
           </div>
@@ -78,7 +78,7 @@ export function CategorySummary({
           return (
             <Card
               key={item.category._id}
-              className="group shadow-none border-border/50 overflow-hidden hover:border-primary/30 transition-all duration-300 py-0"
+              className="group shadow-none border-primary/20 overflow-hidden hover:border-primary/50 transition-all duration-300 py-0"
             >
               <div
                 className="h-2 w-full opacity-60 group-hover:opacity-100 transition-opacity"
@@ -86,10 +86,10 @@ export function CategorySummary({
               />
               <CardHeader className="p-4 pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-xs font-bold truncate">
+                  <CardTitle className="text-sm font-bold truncate">
                     {item.category.name}
                   </CardTitle>
-                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-black">
+                  <Badge variant="secondary" className="text-xs h-5 px-1.5 font-black">
                     {percentage.toFixed(0)}%
                   </Badge>
                 </div>
@@ -97,18 +97,18 @@ export function CategorySummary({
               <CardContent className="p-4 pt-0 space-y-4">
                 <div className="flex items-end justify-between">
                   <div>
-                    <div className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-1">
+                    <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
                       {isIncome ? "Revenue" : "Spent"}
                     </div>
-                    <div className="text-base font-black">
+                    <div className="text-lg font-black leading-none">
                       {formatCurrency(item.totalSpent)}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-1">
+                    <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
                       Ops.
                     </div>
-                    <div className="text-xs font-bold flex items-center justify-end gap-1">
+                    <div className="text-sm font-bold flex items-center justify-end gap-1">
                       <TrendingUp
                         className={cn(
                           "w-3 h-3",
@@ -122,7 +122,7 @@ export function CategorySummary({
 
                 {!isIncome && (
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground px-0.5">
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground px-0.5">
                       <span>Impact</span>
                       <span className={cn(
                         percentage >= 30 ? "text-destructive" : percentage >= 15 ? "text-amber-500" : "text-primary"

@@ -300,8 +300,9 @@ export function TransactionForm({
                         : "e.g., Monthly Salary"
                     }
                     className=" text-base font-bold"
+                    aria-invalid={field.state.meta.isTouched && !field.state.meta.isValid}
                   />
-                  <FieldError errors={field.state.meta.errors} />
+                  {/* <FieldError errors={field.state.meta.errors} /> */}
                 </Field>
               )}
             />
@@ -331,9 +332,10 @@ export function TransactionForm({
                         field.handleChange(e.target.valueAsNumber)
                       }
                       className=" pl-8 text-xl font-black"
+                      aria-invalid={field.state.meta.isTouched && !field.state.meta.isValid}
                     />
                   </div>
-                  <FieldError errors={field.state.meta.errors} />
+                  {/* <FieldError errors={field.state.meta.errors} /> */}
                 </Field>
               )}
             />
@@ -359,10 +361,13 @@ export function TransactionForm({
                       value={field.state.value}
                       onValueChange={field.handleChange}
                     >
-                      <SelectTrigger className="font-bold">
+                      <SelectTrigger className="font-bold"
+                        aria-invalid={field.state.meta.isTouched && !field.state.meta.isValid}
+                      >
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl border-border/50 shadow-2xl">
+                      <SelectContent className="rounded-xl border-border/50 shadow-2xl"
+                      >
                         {filteredCategories.length > 0 ? (
                           filteredCategories.map((cat) => (
                             <SelectItem
@@ -386,7 +391,7 @@ export function TransactionForm({
                         )}
                       </SelectContent>
                     </Select>
-                    <FieldError errors={field.state.meta.errors} />
+                    {/* <FieldError errors={field.state.meta.errors} /> */}
                   </Field>
                 );
               }}
@@ -499,7 +504,7 @@ export function TransactionForm({
               {!receiptUrl ? (
                 <Label
                   htmlFor="receipt-upload"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border/50 rounded-2xl cursor-pointer hover:bg-muted/50 transition-all hover:border-primary/50 group"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/30 rounded-2xl cursor-pointer hover:bg-muted/50 transition-all hover:border-primary/50 group"
                 >
                   {isUploading ? (
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />

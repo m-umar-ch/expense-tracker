@@ -302,10 +302,10 @@ export function ExpenseDashboard() {
 
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-dashed opacity-50" />
+                    <span className="w-full border-t border-dashed border-border" />
                   </div>
                   <div className="relative flex justify-center">
-                    <span className="bg-background px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                    <span className="bg-background px-4 text-xs font-black uppercase tracking-[0.2em] text-primary/70">
                       Income Sources Breakdown
                     </span>
                   </div>
