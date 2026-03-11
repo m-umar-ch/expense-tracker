@@ -13,6 +13,7 @@ import {
 interface StatisticsOverviewProps {
   expenses: Transaction[];
   categorySpending: CategorySpending[];
+  incomeCategorySpending?: CategorySpending[];
   financialSummary?: {
     totalExpenses: number;
     totalIncome: number;
@@ -30,6 +31,7 @@ interface StatisticsOverviewProps {
 export function StatisticsOverview({
   expenses,
   categorySpending,
+  incomeCategorySpending = [],
   financialSummary,
   daysCount = 1,
   evolution,
@@ -42,12 +44,13 @@ export function StatisticsOverview({
   );
   const averagePerExpense = totalExpenses > 0 ? totalAmount / totalExpenses : 0;
 
-  const topCategory = categorySpending
+  const topExpenseCategory = categorySpending
     .filter((cat) => cat.totalSpent > 0)
     .sort((a, b) => b.totalSpent - a.totalSpent)[0];
-  const categoriesWithSpending = categorySpending.filter(
-    (cat) => cat.totalSpent > 0,
-  ).length;
+
+  const topIncomeCategory = incomeCategorySpending
+    .filter((cat) => cat.totalSpent > 0)
+    .sort((a, b) => b.totalSpent - a.totalSpent)[0];
 
   const stats = [
     {
@@ -137,54 +140,107 @@ export function StatisticsOverview({
         ))}
       </div>
 
-      {/* Highlights */}
-      {topCategory && (
-        <Card className="bg-primary/5 border-primary/20 shadow-none">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-primary" />
-              Highest Spending Category
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-10 h-10 rounded-full border border-background shadow-sm"
-                  style={{ backgroundColor: topCategory.category.color }}
-                />
-                <div>
-                  <h4 className="text-lg font-semibold">
-                    {topCategory.category.name}
-                  </h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`text-xl font-bold text-primary ${blurClass}`}
+      {/* Highlights Grid */}
+      {(topExpenseCategory || topIncomeCategory) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {topExpenseCategory && (
+            <Card className="bg-primary/5 border-primary/20 shadow-none">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <PieChart className="w-4 h-4 text-primary" />
+                  Highest Spending Category
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="w-10 h-10 rounded-full border border-background shadow-sm"
+                      style={{ backgroundColor: topExpenseCategory.category.color }}
+                    />
+                    <div>
+                      <h4 className="font-semibold text-sm">
+                        {topExpenseCategory.category.name}
+                      </h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className={`text-lg font-bold text-primary ${blurClass}`}
+                        >
+                          {formatCurrency(topExpenseCategory.totalSpent)}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className="text-[9px] font-bold h-4 px-1"
+                        >
+                          {topExpenseCategory.expenseCount} Trans.
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="hidden sm:block text-right">
+                    <div
+                      className={`text-xl font-black text-primary/80 ${blurClass}`}
                     >
-                      {formatCurrency(topCategory.totalSpent)}
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] font-bold"
-                    >
-                      {topCategory.expenseCount} Transactions
-                    </Badge>
+                      {topExpenseCategory.percentageOfTotal.toFixed(1)}%
+                    </div>
+                    <div className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
+                      Of Total Spending
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="hidden sm:block text-right">
-                <div
-                  className={`text-2xl font-black text-primary/80 ${blurClass}`}
-                >
-                  {topCategory.percentageOfTotal.toFixed(1)}%
+              </CardContent>
+            </Card>
+          )}
+
+          {topIncomeCategory && (
+            <Card className="bg-green-500/5 border-green-500/20 shadow-none">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-green-500 rotate-90" />
+                  Primary Income Source
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="w-10 h-10 rounded-full border border-background shadow-sm"
+                      style={{ backgroundColor: topIncomeCategory.category.color }}
+                    />
+                    <div>
+                      <h4 className="font-semibold text-sm">
+                        {topIncomeCategory.category.name}
+                      </h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className={`text-lg font-bold text-green-600 dark:text-green-400 ${blurClass}`}
+                        >
+                          {formatCurrency(topIncomeCategory.totalSpent)}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className="text-[9px] font-bold h-4 px-1"
+                        >
+                          {topIncomeCategory.expenseCount} Trans.
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="hidden sm:block text-right">
+                    <div
+                      className={`text-xl font-black text-green-600/70 dark:text-green-400/70 ${blurClass}`}
+                    >
+                      {topIncomeCategory.percentageOfTotal.toFixed(1)}%
+                    </div>
+                    <div className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
+                      Of Total Income
+                    </div>
+                  </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
-                  Of Total Spending
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
     </div>
   );

@@ -17,7 +17,7 @@ import { DashboardActions } from "./DashboardActions";
 import { getDateRange, getEffectiveDaysCount } from "../../utils/date";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { PieChart, Plus, TrendingUp } from "lucide-react";
 
 export function ExpenseDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,11 +83,21 @@ export function ExpenseDashboard() {
     endDate,
   });
 
-  const categorySpendingData = useQuery(
+  const expenseCategorySpendingData = useQuery(
     api.functions.transactions.getCategorySpending,
     {
       startDate,
       endDate,
+      type: "expense",
+    },
+  );
+
+  const incomeCategorySpendingData = useQuery(
+    api.functions.transactions.getCategorySpending,
+    {
+      startDate,
+      endDate,
+      type: "income",
     },
   );
 
@@ -97,24 +107,46 @@ export function ExpenseDashboard() {
   const incomes = transactions.filter((t) => t.type === "income");
 
   const categorySpending: CategorySpending[] = useMemo(() => {
-    if (!categorySpendingData) return [];
+    if (!expenseCategorySpendingData) return [];
 
     const totalAllExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
 
-    const mapping: CategorySpending[] = categorySpendingData.map((item) => ({
-      ...item,
-      percentageOfTotal:
-        totalAllExpenses > 0 ? (item.totalSpent / totalAllExpenses) * 100 : 0,
-      budgetUtilization: item.category.budgetLimit
-        ? (item.totalSpent / item.category.budgetLimit) * 100
-        : null,
-      expenseCount: item.expenseCount || 0,
-      budgetUsed: item.budgetUsed || 0,
-      budgetLimit: item.budgetLimit || 0,
-    }));
+    const mapping: CategorySpending[] = expenseCategorySpendingData.map(
+      (item) => ({
+        ...item,
+        percentageOfTotal:
+          totalAllExpenses > 0 ? (item.totalSpent / totalAllExpenses) * 100 : 0,
+        budgetUtilization: item.category.budgetLimit
+          ? (item.totalSpent / item.category.budgetLimit) * 100
+          : null,
+        expenseCount: item.expenseCount || 0,
+        budgetUsed: item.budgetUsed || 0,
+        budgetLimit: item.budgetLimit || 0,
+      }),
+    );
 
     return mapping;
-  }, [categorySpendingData, expenses]);
+  }, [expenseCategorySpendingData, expenses]);
+
+  const incomeCategorySpending: CategorySpending[] = useMemo(() => {
+    if (!incomeCategorySpendingData) return [];
+
+    const totalAllIncome = incomes.reduce((sum, t) => sum + t.amount, 0);
+
+    const mapping: CategorySpending[] = incomeCategorySpendingData.map(
+      (item) => ({
+        ...item,
+        percentageOfTotal:
+          totalAllIncome > 0 ? (item.totalSpent / totalAllIncome) * 100 : 0,
+        budgetUtilization: null, // Income categories don't have budget limits in the same way
+        expenseCount: item.expenseCount || 0,
+        budgetUsed: 0,
+        budgetLimit: 0,
+      }),
+    );
+
+    return mapping;
+  }, [incomeCategorySpendingData, incomes]);
 
   const effectiveDaysCount = useMemo(() => {
     const hasData = transactions.length > 0;
@@ -241,6 +273,7 @@ export function ExpenseDashboard() {
             <StatisticsOverview
               expenses={expenses}
               categorySpending={categorySpending}
+              incomeCategorySpending={incomeCategorySpending}
               financialSummary={financialSummary}
               daysCount={effectiveDaysCount}
               evolution={evolution}
@@ -255,12 +288,35 @@ export function ExpenseDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-bold">Spending Highlights</CardTitle>
+            <Card className="shadow-sm border-border">
+              <CardHeader className="border-b bg-muted/10">
+                <CardTitle className="text-xl font-bold flex items-center gap-2">
+                  <PieChart className="w-5 h-5 text-primary" />
+                  Financial Distribution
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <CategorySummary categorySpending={categorySpending} />
+              <CardContent className="p-6 sm:p-10 space-y-12">
+                <section className="animate-in fade-in duration-500">
+                  <CategorySummary categorySpending={categorySpending} />
+                </section>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-dashed opacity-50" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-background px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                      Income Sources Breakdown
+                    </span>
+                  </div>
+                </div>
+
+                <section className="animate-in fade-in duration-500 delay-150">
+                  <CategorySummary
+                    categorySpending={incomeCategorySpending}
+                    isIncome={true}
+                  />
+                </section>
               </CardContent>
             </Card>
 

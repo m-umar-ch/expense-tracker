@@ -193,6 +193,7 @@ export const getCategorySpending = query({
   args: {
     startDate: v.number(),
     endDate: v.number(),
+    type: v.optional(v.union(v.literal("expense"), v.literal("income"))),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -208,14 +209,20 @@ export const getCategorySpending = query({
       )
       .collect();
 
-    const categories = await ctx.db
+    let categories = await ctx.db
       .query("categories")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
+    if (args.type) {
+      categories = categories.filter((c) => c.type === args.type);
+    }
+
     const categorySpending = categories.map((category) => {
       const categoryTransactions = transactions.filter(
-        (t) => t.categoryId === category._id,
+        (t) =>
+          t.categoryId === category._id &&
+          (!args.type || t.type === args.type),
       );
       const totalSpent = categoryTransactions.reduce(
         (sum, t) => sum + t.amount,
