@@ -409,6 +409,7 @@ export function TransactionList({
     },
     onPaginationChange: setPagination,
     manualPagination: false,
+    autoResetPageIndex: false,
   });
 
   if (isLoading) {
