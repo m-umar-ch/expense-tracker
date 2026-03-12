@@ -264,6 +264,7 @@ export function ExpenseDashboard() {
               </div>
               <TransactionList
                 transactions={transactions}
+                categories={categories}
                 onEditTransaction={handleEditTransaction}
                 isLoading={transactions === undefined}
               />

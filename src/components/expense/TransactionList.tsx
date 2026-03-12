@@ -1,8 +1,8 @@
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
-import { Transaction } from "../../types/expense";
-import { useState, useMemo } from "react";
+import { Transaction, Category } from "../../types/expense";
+import { useState, useMemo, useEffect } from "react";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -29,7 +29,10 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -47,6 +50,7 @@ import {
   Paperclip,
   ArrowUpDown,
   Search,
+  Filter,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -78,12 +82,14 @@ import { Id } from "@convex/_generated/dataModel";
 
 interface TransactionListProps {
   transactions: Transaction[];
+  categories: Category[];
   onEditTransaction: (transaction: Transaction) => void;
   isLoading?: boolean;
 }
 
 export function TransactionList({
   transactions,
+  categories,
   onEditTransaction,
   isLoading,
 }: TransactionListProps) {
@@ -102,11 +108,41 @@ export function TransactionList({
   const pageParam = parseInt(searchParams.get("page") || "1");
   const perPageParam = parseInt(searchParams.get("perPage") || "25");
   const searchParam = searchParams.get("q") || "";
+  const categoryParam = searchParams.get("cid") || "all";
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    searchParam ? [{ id: "name", value: searchParam }] : [],
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => {
+    const filters: ColumnFiltersState = [];
+    if (searchParam) filters.push({ id: "name", value: searchParam });
+    if (categoryParam !== "all")
+      filters.push({ id: "categoryId", value: categoryParam });
+    return filters;
+  });
+
+  const expenseCategories = useMemo(
+    () => categories.filter((c) => c.type === "expense"),
+    [categories],
   );
+  const incomeCategories = useMemo(
+    () => categories.filter((c) => c.type === "income"),
+    [categories],
+  );
+  const otherCategories = useMemo(
+    () =>
+      categories.filter(
+        (c) => !c.type || (c.type !== "expense" && c.type !== "income"),
+      ),
+    [categories],
+  );
+
+  // Sync state with URL params for back/forward support
+  useEffect(() => {
+    const filters: ColumnFiltersState = [];
+    if (searchParam) filters.push({ id: "name", value: searchParam });
+    if (categoryParam !== "all")
+      filters.push({ id: "categoryId", value: categoryParam });
+    setColumnFilters(filters);
+  }, [searchParam, categoryParam]);
 
   const pagination = useMemo(
     () => ({
@@ -143,7 +179,30 @@ export function TransactionList({
     // Reset to page 1 on search
     newParams.set("page", "1");
     setSearchParams(newParams, { replace: true });
-    setColumnFilters(value ? [{ id: "name", value }] : []);
+
+    setColumnFilters((prev) => {
+      const otherFilters = prev.filter((f) => f.id !== "name");
+      return value ? [...otherFilters, { id: "name", value }] : otherFilters;
+    });
+  };
+
+  const onCategoryChange = (value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value && value !== "all") {
+      newParams.set("cid", value);
+    } else {
+      newParams.delete("cid");
+    }
+    // Reset to page 1 on filter
+    newParams.set("page", "1");
+    setSearchParams(newParams, { replace: true });
+
+    setColumnFilters((prev) => {
+      const otherFilters = prev.filter((f) => f.id !== "categoryId");
+      return value && value !== "all"
+        ? [...otherFilters, { id: "categoryId", value }]
+        : otherFilters;
+    });
   };
 
   const columns: ColumnDef<Transaction>[] = [
@@ -364,14 +423,104 @@ export function TransactionList({
 
   return (
     <div className="space-y-6">
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search transactions..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => onSearchChange(event.target.value)}
-          className="pl-9"
-        />
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search transactions..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => onSearchChange(event.target.value)}
+            className="pl-9 h-10 bg-muted/20 border-border/50 rounded-xl"
+          />
+        </div>
+
+        <div className="w-full md:w-[240px]">
+          <Select
+            value={
+              (table.getColumn("categoryId")?.getFilterValue() as string) ??
+              "all"
+            }
+            onValueChange={onCategoryChange}
+          >
+            <SelectTrigger className="bg-muted/20 border-border/50 rounded-xl font-medium">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="All Categories" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="">
+              <SelectItem value="all" className="font-bold">
+                All Categories
+              </SelectItem>
+
+              {expenseCategories.length > 0 && (
+                <>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectLabel className="font-black text-destructive/70 uppercase tracking-tighter text-[10px] px-2 py-1.5">
+                      Expense Categories
+                    </SelectLabel>
+                    {expenseCategories.map((category) => (
+                      <SelectItem key={category._id} value={category._id}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          {category.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </>
+              )}
+
+              {incomeCategories.length > 0 && (
+                <>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectLabel className="font-black text-green-600/70 dark:text-green-400/70 uppercase tracking-tighter text-[10px] px-2 py-1.5">
+                      Income Categories
+                    </SelectLabel>
+                    {incomeCategories.map((category) => (
+                      <SelectItem key={category._id} value={category._id}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          {category.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </>
+              )}
+
+              {otherCategories.length > 0 && (
+                <>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectLabel className="font-black text-muted-foreground/70 uppercase tracking-tighter text-[10px] px-2 py-1.5">
+                      Other Categories
+                    </SelectLabel>
+                    {otherCategories.map((category) => (
+                      <SelectItem key={category._id} value={category._id}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          {category.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="rounded-xl border border-border/50 overflow-hidden bg-card">
