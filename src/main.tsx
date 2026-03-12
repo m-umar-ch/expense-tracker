@@ -12,7 +12,7 @@ const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 createRoot(document.getElementById("root")!).render(
   <ConvexAuthProvider client={convex}>
     <SettingsProvider>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="amber-dark" storageKey="vite-ui-theme">
         <App />
         <Toaster
           richColors

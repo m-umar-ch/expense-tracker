@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const PrivacySection: React.FC = () => {
-  const [isPrivacyEnabled, setIsPrivacyEnabled] = useState(false);
+  const [isPrivacyEnabled, setIsPrivacyEnabled] = useState(true);
 
   // Dummy data for the preview card
   const dummyTransactions = [
