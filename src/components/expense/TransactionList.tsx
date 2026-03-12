@@ -543,12 +543,12 @@ export function TransactionList({
         open={!!transactionForDetail}
         onOpenChange={(open) => !open && setTransactionForDetail(null)}
       >
-        <DialogContent className="max-w-4xl overflow-hidden p-0 border border-border/50 shadow-2xl bg-card sm:rounded-4xl">
+        <DialogContent className="w-[95vw] sm:max-w-5xl sm:w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 border border-border/50 shadow-2xl bg-card rounded-2xl sm:rounded-3xl">
           {transactionForDetail && (
             <div className="flex flex-col">
               {/* Header with Background Pattern/Color */}
               <div
-                className={`h-40 sm:h-48 w-full relative overflow-hidden flex items-end p-8 sm:p-12 ${
+                className={`h-28 sm:h-40 w-full relative overflow-hidden flex items-end p-6 sm:px-12 ${
                   transactionForDetail.type === "expense"
                     ? "bg-destructive/10"
                     : "bg-green-500/10"
@@ -556,15 +556,15 @@ export function TransactionList({
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                   {transactionForDetail.type === "expense" ? (
-                    <TrendingDown className="h-48 w-48 -translate-y-8 translate-x-8" />
+                    <TrendingDown className="h-32 w-32 sm:h-40 sm:w-40 -translate-y-4 translate-x-4" />
                   ) : (
-                    <TrendingUp className="h-48 w-48 -translate-y-8 translate-x-8" />
+                    <TrendingUp className="h-32 w-32 sm:h-40 sm:w-40 -translate-y-4 translate-x-4" />
                   )}
                 </div>
-                <div className="z-10 flex flex-col gap-3">
+                <div className="z-10 flex flex-col gap-1.5 sm:gap-2">
                   <Badge
                     variant="outline"
-                    className={`w-fit text-xs font-black uppercase border-none ring-1 ring-inset px-3 py-1 bg-background/50 backdrop-blur-md ${
+                    className={`w-fit text-[10px] font-black uppercase border-none ring-1 ring-inset px-2.5 py-0.5 bg-background/50 backdrop-blur-md ${
                       transactionForDetail.type === "expense"
                         ? "text-destructive ring-destructive/30"
                         : "text-green-700 dark:text-green-400 ring-green-500/30"
@@ -572,7 +572,7 @@ export function TransactionList({
                   >
                     {transactionForDetail.type}
                   </Badge>
-                  <DialogTitle className="text-4xl sm:text-5xl font-black tracking-tighter drop-shadow-sm text-foreground">
+                  <DialogTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground line-clamp-1">
                     {transactionForDetail.name}
                   </DialogTitle>
                   <DialogDescription className="sr-only">
@@ -581,16 +581,16 @@ export function TransactionList({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-0">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
                 {/* Details Column */}
-                <div className="p-8 sm:p-12 space-y-12 border-b lg:border-b-0 lg:border-r border-border/40">
-                  <div className="flex flex-wrap items-center gap-10 sm:gap-16">
-                    <div className="space-y-2">
-                      <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                <div className="p-6 sm:p-12 space-y-8 sm:space-y-10 border-b lg:border-b-0 lg:border-r border-border/40">
+                  <div className="flex flex-col sm:grid sm:grid-cols-2 gap-6 sm:gap-8">
+                    <div className="space-y-1 sm:space-y-1.5">
+                      <p className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         Amount
                       </p>
                       <p
-                        className={`text-4xl sm:text-5xl font-black tracking-tighter drop-shadow-sm ${
+                        className={`text-2xl sm:text-3xl font-black tracking-tight ${
                           transactionForDetail.type === "expense"
                             ? "text-destructive"
                             : "text-green-600 dark:text-green-400"
@@ -600,11 +600,11 @@ export function TransactionList({
                         {formatCurrency(transactionForDetail.amount)}
                       </p>
                     </div>
-                    <div className="space-y-2 lg:ml-auto">
-                      <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                    <div className="space-y-1 sm:space-y-1.5 sm:text-right">
+                      <p className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         Date
                       </p>
-                      <p className="text-xl sm:text-2xl font-bold text-foreground">
+                      <p className="text-lg sm:text-xl font-bold text-foreground mt-0 sm:mt-1">
                         {new Date(transactionForDetail.date).toLocaleDateString(
                           undefined,
                           {
@@ -615,47 +615,47 @@ export function TransactionList({
                     </div>
                   </div>
 
-                  <div className="space-y-8">
-                    <div className="space-y-3">
-                      <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                  <div className="space-y-6">
+                    <div className="space-y-2 sm:space-y-2.5">
+                      <p className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         Category
                       </p>
                       {transactionForDetail.category ? (
-                        <div className="flex items-center gap-5 bg-muted/20 p-5 rounded-3xl border border-border/50 transition-all hover:bg-muted/40">
+                        <div className="flex items-center gap-3 sm:gap-4 bg-muted/20 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-border/50">
                           <div
-                            className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner"
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner shrink-0"
                             style={{
                               backgroundColor:
                                 transactionForDetail.category.color,
                             }}
                           >
-                            <span className="text-white text-2xl font-black drop-shadow-md">
+                            <span className="text-white text-lg sm:text-xl font-bold drop-shadow-sm">
                               {transactionForDetail.category.name.charAt(0)}
                             </span>
                           </div>
-                          <div>
-                            <p className="font-black text-xl uppercase tracking-tight text-foreground">
+                          <div className="min-w-0">
+                            <p className="font-bold text-base sm:text-lg uppercase tracking-tight text-foreground leading-tight truncate">
                               {transactionForDetail.category.name}
                             </p>
-                            <p className="text-sm text-muted-foreground font-medium">
-                              Transaction Category
+                            <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                              Category
                             </p>
                           </div>
                         </div>
                       ) : (
-                        <div className="p-5 bg-muted/20 rounded-3xl border border-dashed border-border/50 text-sm text-muted-foreground italic">
+                        <div className="p-4 bg-muted/20 rounded-xl sm:rounded-2xl border border-dashed border-border/50 text-sm text-muted-foreground italic">
                           Uncategorized
                         </div>
                       )}
                     </div>
 
                     {transactionForDetail.notes && (
-                      <div className="space-y-3">
-                        <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                      <div className="space-y-2 sm:space-y-2.5">
+                        <p className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                           Notes
                         </p>
-                        <div className="bg-muted/10 p-6 rounded-3xl border border-border/50">
-                          <p className="text-base sm:text-lg text-foreground/90 leading-relaxed font-medium">
+                        <div className="bg-muted/10 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-border/50">
+                          <p className="text-sm sm:text-base text-foreground/80 leading-relaxed font-medium line-clamp-4 sm:line-clamp-none">
                             {transactionForDetail.notes}
                           </p>
                         </div>
@@ -665,18 +665,18 @@ export function TransactionList({
                 </div>
 
                 {/* Receipt Column */}
-                <div className="bg-muted/5 p-8 sm:p-12 flex flex-col gap-6">
-                  <div className="space-y-1">
-                    <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                <div className="bg-muted/5 p-6 sm:p-12 flex flex-col gap-4 sm:gap-6">
+                  <div className="space-y-0.5 sm:space-y-1">
+                    <p className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                       Receipt Attachment
                     </p>
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
                       Digital proof of transaction
                     </p>
                   </div>
 
                   {transactionForDetail.receiptUrl ? (
-                    <div className="relative group w-full flex-1 min-h-[300px] rounded-3xl overflow-hidden border-4 border-background shadow-xl bg-card mt-2">
+                    <div className="relative group w-full flex-1 aspect-[4/3] sm:aspect-auto sm:min-h-[300px] rounded-xl sm:rounded-2xl overflow-hidden border border-border/50 shadow-lg bg-card mt-1 sm:mt-2">
                       <img
                         src={transactionForDetail.receiptUrl}
                         alt="Receipt"
@@ -685,8 +685,8 @@ export function TransactionList({
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
                         <Button
                           variant="secondary"
-                          size="lg"
-                          className="font-bold rounded-full shadow-2xl px-8 h-12 text-base"
+                          size="sm"
+                          className="font-bold rounded-full shadow-lg px-6"
                           onClick={() =>
                             window.open(transactionForDetail.receiptUrl!, "_blank")
                           }
@@ -696,15 +696,15 @@ export function TransactionList({
                       </div>
                     </div>
                   ) : (
-                    <div className="w-full flex-1 min-h-[300px] rounded-3xl border-2 border-dashed border-border/60 bg-background/50 flex flex-col items-center justify-center text-muted-foreground p-8 text-center gap-5 transition-colors hover:bg-muted/30 hover:border-border mt-2">
-                      <div className="p-5 bg-muted/50 rounded-full shadow-inner">
-                        <Paperclip className="h-10 w-10 opacity-50 rotate-15" />
+                    <div className="w-full flex-1 min-h-[180px] sm:min-h-[300px] rounded-xl sm:rounded-2xl border border-dashed border-border/50 bg-background/50 flex flex-col items-center justify-center text-muted-foreground p-6 sm:p-8 text-center gap-3 sm:gap-4 transition-colors hover:bg-muted/30 mt-1 sm:mt-2">
+                      <div className="p-3 sm:p-4 bg-muted/50 rounded-full shadow-inner">
+                        <Paperclip className="h-6 w-6 sm:h-8 sm:w-8 opacity-40 rotate-15" />
                       </div>
-                      <div className="space-y-1.5">
-                        <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
+                      <div className="space-y-0.5 sm:space-y-1">
+                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-foreground/70">
                           No Receipt
                         </p>
-                        <p className="text-sm font-medium text-muted-foreground max-w-[220px]">
+                        <p className="text-[10px] sm:text-xs font-medium text-muted-foreground max-w-[180px]">
                           There is no digital receipt attached to this transaction.
                         </p>
                       </div>
