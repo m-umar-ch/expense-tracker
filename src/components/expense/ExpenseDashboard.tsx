@@ -224,26 +224,29 @@ export function ExpenseDashboard() {
         />
 
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="flex w-full mb-8">
-            <TabsTrigger value="transactions" className="flex-1">
+          <TabsList className="mb-8 grid w-full grid-cols-3 bg-muted/20 p-1">
+            <TabsTrigger value="transactions" className="rounded-lg transition-all duration-300 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm">
               Transaction Log
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex-1">
-              Analytics & Budgets
+            <TabsTrigger value="analytics" className="rounded-lg transition-all duration-300 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm">
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="budget" className="rounded-lg transition-all duration-300 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm">
+              Budget
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="transactions">
-            <Card className="gap-5 border-none shadow-none sm:border sm:shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 px-0 sm:px-6">
-                <CardTitle className="text-xl sm:text-2xl font-bold">
+            <div className="rounded-2xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+                <h3 className="text-2xl font-black tracking-tight">
                   Transactions Table
-                </CardTitle>
+                </h3>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     onClick={() => handleAddTransaction("expense")}
-                    className="gap-2"
+                    className="gap-2 font-bold"
                   >
                     <Plus className="h-4 w-4" />
                     Add Expense
@@ -251,81 +254,97 @@ export function ExpenseDashboard() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="gap-2 border-green-500/50 text-green-600 hover:text-green-600 hover:border-green-500/50 hover:bg-transparent"
+                    className="gap-2 border-green-500/50 text-green-600 hover:text-green-600 hover:border-green-500/50 hover:bg-green-500/5 font-bold"
                     onClick={() => handleAddTransaction("income")}
                   >
                     <Plus className="h-4 w-4" />
                     Add Income
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent className="px-0 sm:px-6">
-                <TransactionList
-                  transactions={transactions}
-                  onEditTransaction={handleEditTransaction}
-                  isLoading={transactions === undefined}
-                />
-              </CardContent>
-            </Card>
+              </div>
+              <TransactionList
+                transactions={transactions}
+                onEditTransaction={handleEditTransaction}
+                isLoading={transactions === undefined}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-8">
-            <StatisticsOverview
-              expenses={expenses}
-              categorySpending={categorySpending}
-              incomeCategorySpending={incomeCategorySpending}
-              financialSummary={financialSummary}
-              daysCount={effectiveDaysCount}
-              evolution={evolution}
-            />
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-bold">Budget Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BudgetOverview categorySpending={categorySpending} />
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm border-border">
-              <CardHeader className="border-b bg-muted/10">
-                <CardTitle className="text-xl font-bold flex items-center gap-2">
-                  <PieChart className="w-5 h-5 text-primary" />
-                  Financial Distribution
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6 sm:p-10 space-y-12">
-                <section className="animate-in fade-in duration-500">
-                  <CategorySummary categorySpending={categorySpending} />
-                </section>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-dashed border-border" />
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-background px-4 text-xs font-black uppercase tracking-[0.2em] text-primary/70">
-                      Income Sources Breakdown
-                    </span>
-                  </div>
+            <div className="rounded-2xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <TrendingUp className="h-5 w-5 text-primary" />
                 </div>
+                <h3 className="text-2xl font-black tracking-tight">
+                  Financial Analytics
+                </h3>
+              </div>
+              
+              <div className="space-y-12">
+                <StatisticsOverview
+                  expenses={expenses}
+                  categorySpending={categorySpending}
+                  incomeCategorySpending={incomeCategorySpending}
+                  financialSummary={financialSummary}
+                  daysCount={effectiveDaysCount}
+                  evolution={evolution}
+                />
 
-                <section className="animate-in fade-in duration-500 delay-150">
-                  <CategorySummary
-                    categorySpending={incomeCategorySpending}
-                    isIncome={true}
-                  />
-                </section>
-              </CardContent>
-            </Card>
+                <Card className="shadow-none border-border/50 bg-background/50">
+                  <CardHeader className="border-b border-border/50 bg-muted/10">
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                      <PieChart className="w-5 h-5 text-primary" />
+                      Financial Distribution
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6 sm:p-10 space-y-12">
+                    <section className="animate-in fade-in duration-500">
+                      <CategorySummary categorySpending={categorySpending} />
+                    </section>
 
-            <FinancialCharts
-              expenses={expenses}
-              incomes={incomes}
-              startDate={startDate}
-              endDate={endDate}
-            />
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-dashed border-border" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-background px-4 text-xs font-black uppercase tracking-[0.2em] text-primary/70">
+                          Income Sources Breakdown
+                        </span>
+                      </div>
+                    </div>
+
+                    <section className="animate-in fade-in duration-500 delay-150">
+                      <CategorySummary
+                        categorySpending={incomeCategorySpending}
+                        isIncome={true}
+                      />
+                    </section>
+                  </CardContent>
+                </Card>
+
+                <FinancialCharts
+                  expenses={expenses}
+                  incomes={incomes}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="budget">
+            <div className="rounded-2xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <PieChart className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="text-2xl font-black tracking-tight">
+                  Budget Tracking
+                </h3>
+              </div>
+              <BudgetOverview categorySpending={categorySpending} />
+            </div>
           </TabsContent>
         </Tabs>
       </main>

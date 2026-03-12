@@ -117,7 +117,7 @@ export function StatisticsOverview({
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="shadow-none border-border/50">
+          <Card key={index} className="shadow-none border-border/50 bg-background/50">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {stat.label}

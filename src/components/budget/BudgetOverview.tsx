@@ -42,7 +42,7 @@ export function BudgetOverview({ categorySpending }: BudgetOverviewProps) {
           return (
             <Card
               key={item.category._id}
-              className="shadow-none border-border/50"
+              className="shadow-none border-border/50 bg-background/50"
             >
               <CardHeader className="p-4 pb-2">
                 <div className="flex items-center justify-between">

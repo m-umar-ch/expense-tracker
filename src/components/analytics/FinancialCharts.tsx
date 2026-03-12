@@ -155,7 +155,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <Card>
+      <Card className="lg:col-span-1 shadow-none border-border/50 bg-background/50">
         <CardHeader>
           <CardTitle className="text-lg font-bold flex items-center justify-between">
             {isMonthly ? "Monthly Spending Trend" : "Daily Spending Trend"}
@@ -200,7 +200,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="lg:col-span-1 shadow-none border-border/50 bg-background/50">
         <CardHeader>
           <CardTitle className="text-lg font-bold">
             Income vs Expenses
