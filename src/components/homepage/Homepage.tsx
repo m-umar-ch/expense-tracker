@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import Header from "./Header";
 import HeroSection from "./HeroSection";
 import FeaturesSection from "./FeaturesSection";
+import PrivacySection from "./PrivacySection";
 import FreeForeverSection from "./FreeForeverSection";
 import DonationSection from "./DonationSection";
 import CTASection from "./CTASection";
@@ -39,7 +40,8 @@ const Homepage: React.FC = () => {
 
       <main className="relative z-10">
         <HeroSection onGetStarted={handleGetStarted} />
-        <FeaturesSection />
+        {/* <FeaturesSection /> */}
+        <PrivacySection />
         <FreeForeverSection />
         <DonationSection onGetStarted={handleGetStarted} />
         <CTASection

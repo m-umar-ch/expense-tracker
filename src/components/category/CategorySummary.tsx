@@ -15,7 +15,11 @@ export function CategorySummary({
   categorySpending,
   isIncome = false,
 }: CategorySummaryProps) {
-  const { formatCurrency, formatCurrencyCompact } = useSettings();
+  const { settings, formatCurrency, formatCurrencyCompact } = useSettings();
+  const blurClass = settings.privacyMode
+    ? "blur-[8px] select-none pointer-events-none transition-all duration-300"
+    : "transition-all duration-300";
+
   const totalAmount = categorySpending.reduce(
     (sum, item) => sum + item.totalSpent,
     0,
@@ -62,7 +66,8 @@ export function CategorySummary({
             variant="outline"
             className={cn(
               "text-xs font-bold border-muted transition-colors",
-              isIncome ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-destructive/10 text-destructive"
+              isIncome ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-destructive/10 text-destructive",
+              blurClass
             )}
           >
             ~{formatCurrencyCompact(totalAmount)}
@@ -89,7 +94,7 @@ export function CategorySummary({
                   <CardTitle className="text-sm font-bold truncate">
                     {item.category.name}
                   </CardTitle>
-                  <Badge variant="secondary" className="text-xs h-5 px-1.5 font-black">
+                  <Badge variant="secondary" className={cn("text-xs h-5 px-1.5 font-black", blurClass)}>
                     {percentage.toFixed(0)}%
                   </Badge>
                 </div>
@@ -100,7 +105,7 @@ export function CategorySummary({
                     <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
                       {isIncome ? "Revenue" : "Spent"}
                     </div>
-                    <div className="text-lg font-black leading-none">
+                    <div className={cn("text-lg font-black leading-none", blurClass)}>
                       {formatCurrency(item.totalSpent)}
                     </div>
                   </div>
@@ -154,7 +159,8 @@ export function CategorySummary({
           {isIncome ? "Combined Income: " : "Combined Spending: "}
           <span className={cn(
             "text-sm font-black transition-colors",
-            isIncome ? "text-green-600 dark:text-green-400" : "text-destructive"
+            isIncome ? "text-green-600 dark:text-green-400" : "text-destructive",
+            blurClass
           )}>
             {formatCurrency(totalAmount)}
           </span>

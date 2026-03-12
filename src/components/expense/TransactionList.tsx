@@ -79,6 +79,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Id } from "@convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -96,7 +97,10 @@ export function TransactionList({
   const deleteTransaction = useMutation(
     api.functions.transactions.deleteTransaction,
   );
-  const { formatCurrency } = useSettings();
+  const { settings, formatCurrency } = useSettings();
+  const blurClass = settings.privacyMode
+    ? "blur-[8px] select-none pointer-events-none transition-all duration-300"
+    : "transition-all duration-300";
   const [searchParams, setSearchParams] = useSearchParams();
   const [transactionToDelete, setTransactionToDelete] =
     useState<Transaction | null>(null);
@@ -254,7 +258,7 @@ export function TransactionList({
         </Button>
       ),
       cell: ({ row }) => (
-        <span className="font-bold text-base">{row.original.name}</span>
+        <span className={cn("font-bold text-base", blurClass)}>{row.original.name}</span>
       ),
     },
     {
@@ -335,7 +339,7 @@ export function TransactionList({
         const isExpense = row.original.type === "expense";
         return (
           <div
-            className={`text-right font-black text-lg ${isExpense ? "text-destructive" : "text-green-600 dark:text-green-400"}`}
+            className={`text-right font-black text-lg ${isExpense ? "text-destructive" : "text-green-600 dark:text-green-400"} ${blurClass}`}
           >
             {isExpense ? "-" : "+"}
             {formatCurrency(amount)}
@@ -722,7 +726,7 @@ export function TransactionList({
                   >
                     {transactionForDetail.type}
                   </Badge>
-                  <DialogTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground line-clamp-1">
+                  <DialogTitle className={cn("text-2xl sm:text-3xl font-bold tracking-tight text-foreground line-clamp-1", blurClass)}>
                     {transactionForDetail.name}
                   </DialogTitle>
                   <DialogDescription className="sr-only">
@@ -744,7 +748,7 @@ export function TransactionList({
                           transactionForDetail.type === "expense"
                             ? "text-destructive"
                             : "text-green-600 dark:text-green-400"
-                        }`}
+                        } ${blurClass}`}
                       >
                         {transactionForDetail.type === "expense" ? "-" : "+"}
                         {formatCurrency(transactionForDetail.amount)}
@@ -805,7 +809,7 @@ export function TransactionList({
                           Notes
                         </p>
                         <div className="bg-muted/10 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-border/50">
-                          <p className="text-sm sm:text-base text-foreground/80 leading-relaxed font-medium line-clamp-4 sm:line-clamp-none">
+                          <p className={cn("text-sm sm:text-base text-foreground/80 leading-relaxed font-medium line-clamp-4 sm:line-clamp-none", blurClass)}>
                             {transactionForDetail.notes}
                           </p>
                         </div>
@@ -830,7 +834,7 @@ export function TransactionList({
                       <img
                         src={transactionForDetail.receiptUrl}
                         alt="Receipt"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className={cn("w-full h-full object-cover transition-transform duration-700 group-hover:scale-105", blurClass)}
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
                         <Button

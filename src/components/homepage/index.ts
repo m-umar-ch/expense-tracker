@@ -6,3 +6,4 @@ export { default as FreeForeverSection } from "./FreeForeverSection";
 export { default as DonationSection } from "./DonationSection";
 export { default as CTASection } from "./CTASection";
 export { default as Footer } from "./Footer";
+export { default as PrivacySection } from "./PrivacySection";
