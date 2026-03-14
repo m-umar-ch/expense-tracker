@@ -70,7 +70,11 @@ const AuthPage: React.FC = () => {
         );
         navigate("/dashboard");
       } catch (error: any) {
-        toast.error(error.message || "Authentication failed");
+        toast.error(
+          activeTab === "login" 
+            ? "Invalid email or password" 
+            : "Registration failed. Please try again."
+        );
       } finally {
         setIsSubmitting(false);
       }

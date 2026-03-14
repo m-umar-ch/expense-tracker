@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useTheme, AVAILABLE_THEMES } from "../shared/ThemeProvider";
-import { useSettings, CustomCurrency } from "../../contexts/SettingsContext";
-import { Monitor, Sun, Moon, EyeOff, Palette, Plus } from "lucide-react";
+import { useSettings, CURRENCIES } from "../../contexts/SettingsContext";
+import { Monitor, Sun, Moon, EyeOff, Palette, RotateCcw } from "lucide-react";
 import { Switch } from "../ui/switch";
 
 interface SettingsModalProps {
@@ -30,6 +30,27 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { theme, setTheme } = useTheme();
   const { settings, updateSetting, allCurrencies } = useSettings();
+
+  const activeCurrency = allCurrencies.find(c => c.value === settings.currency) || CURRENCIES[0];
+  const baseCurrency = CURRENCIES.find(bc => bc.value === activeCurrency.value);
+  const isModified = !!baseCurrency && baseCurrency.symbol !== activeCurrency.symbol;
+
+  const handleUpdateSymbol = (newSymbol: string) => {
+    const newCustoms = [...(settings.customCurrencies || [])];
+    const idx = newCustoms.findIndex(c => c.value === activeCurrency.value);
+
+    if (idx > -1) {
+      newCustoms[idx] = { ...newCustoms[idx], symbol: newSymbol };
+    } else {
+      newCustoms.push({ ...activeCurrency, symbol: newSymbol });
+    }
+    updateSetting("customCurrencies", newCustoms);
+  };
+
+  const handleResetSymbol = () => {
+    const newCustoms = (settings.customCurrencies || []).filter(c => c.value !== activeCurrency.value);
+    updateSetting("customCurrencies", newCustoms);
+  };
 
   const getThemeIcon = (themeValue: string) => {
     switch (themeValue) {
@@ -60,10 +81,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         </DialogHeader>
 
         <Tabs defaultValue="theme" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="theme">Appearance</TabsTrigger>
             <TabsTrigger value="currency">Currency</TabsTrigger>
-            <TabsTrigger value="localization">Local</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
           </TabsList>
 
@@ -112,174 +132,35 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
               </Select>
             </div>
 
-            <div className="space-y-4 pt-4 border-t">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                    Currency Management
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    Add custom currencies or update existing symbols
-                  </p>
-                </div>
+            <div className="space-y-4 pt-6 mt-6 border-t">
+              <div className="flex flex-col space-y-1">
+                <h4 className="text-sm font-bold tracking-tight">Active Currency Symbol</h4>
+                <p className="text-xs text-muted-foreground">Customize the symbol for {activeCurrency.label}.</p>
               </div>
 
-              <div className="space-y-3">
-                <div className="grid grid-cols-3 gap-2 text-[10px] font-bold uppercase text-muted-foreground px-1">
-                  <div>Code (e.g. USD)</div>
-                  <div>Label</div>
-                  <div>Symbol</div>
-                </div>
-
-                {/* New Currency Form */}
-                <div className="grid grid-cols-3 gap-2">
-                  <Input
-                    placeholder="PKR"
-                    className="h-8 text-xs"
-                    id="new-curr-code"
-                  />
-                  <Input
-                    placeholder="Rupee"
-                    className="h-8 text-xs"
-                    id="new-curr-label"
-                  />
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Rs"
-                      className="h-8 text-xs"
-                      id="new-curr-symbol"
-                    />
-                    <Button
-                      size="sm"
-                      className="h-8 px-2"
-                      onClick={() => {
-                        const code = (
-                          document.getElementById(
-                            "new-curr-code",
-                          ) as HTMLInputElement
-                        ).value.toUpperCase();
-                        const label = (
-                          document.getElementById(
-                            "new-curr-label",
-                          ) as HTMLInputElement
-                        ).value;
-                        const symbol = (
-                          document.getElementById(
-                            "new-curr-symbol",
-                          ) as HTMLInputElement
-                        ).value;
-
-                        if (!code || !label || !symbol) return;
-
-                        const newCustoms = [
-                          ...(settings.customCurrencies || []),
-                        ];
-                        newCustoms.push({ value: code, label, symbol });
-                        updateSetting("customCurrencies", newCustoms);
-
-                        // Clear inputs
-                        (
-                          document.getElementById(
-                            "new-curr-code",
-                          ) as HTMLInputElement
-                        ).value = "";
-                        (
-                          document.getElementById(
-                            "new-curr-label",
-                          ) as HTMLInputElement
-                        ).value = "";
-                        (
-                          document.getElementById(
-                            "new-curr-symbol",
-                          ) as HTMLInputElement
-                        ).value = "";
-                      }}
-                    >
-                      <Plus className="w-4 h-4" /> Add
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2">
-                  {allCurrencies.map((curr: CustomCurrency) => (
-                    <div
-                      key={curr.value}
-                      className="grid grid-cols-3 gap-2 items-center p-2 rounded-lg bg-muted/20 border"
-                    >
-                      <div className="text-xs font-bold">{curr.value}</div>
-                      <div className="text-xs truncate">{curr.label}</div>
-                      <Input
-                        value={curr.symbol}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          const newSymbol = e.target.value;
-                          const newCustoms = [
-                            ...(settings.customCurrencies || []),
-                          ];
-                          const idx = newCustoms.findIndex(
-                            (c) => c.value === curr.value,
-                          );
-
-                          if (idx > -1) {
-                            newCustoms[idx] = {
-                              ...newCustoms[idx],
-                              symbol: newSymbol,
-                            };
-                          } else {
-                            // If it was a base currency, we add it to customs to override
-                            newCustoms.push({ ...curr, symbol: newSymbol });
-                          }
-                          updateSetting("customCurrencies", newCustoms);
-                        }}
-                        className="h-7 text-xs px-2 w-16"
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div className="flex items-center gap-3">
+                <Input
+                  value={activeCurrency.symbol}
+                  onChange={(e) => handleUpdateSymbol(e.target.value)}
+                  className="h-10 w-24 text-center text-base font-bold"
+                  placeholder="Symbol"
+                />
+                
+                {isModified && (
+                  <Button
+                    variant="outline"
+                    onClick={handleResetSymbol}
+                    className="h-10 text-xs font-semibold gap-2"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Reset to Default ({baseCurrency?.symbol})
+                  </Button>
+                )}
               </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="localization" className="space-y-4 py-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Date Format</Label>
-                <Select
-                  value={settings.dateFormat}
-                  onValueChange={(value) => updateSetting("dateFormat", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MM/dd/yyyy">MM/DD/YYYY (US)</SelectItem>
-                    <SelectItem value="dd/MM/yyyy">DD/MM/YYYY (EU)</SelectItem>
-                    <SelectItem value="yyyy-MM-dd">YYYY-MM-DD (ISO)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div className="space-y-2">
-                <Label>Preferred Language</Label>
-                <Select
-                  value={settings.language}
-                  onValueChange={(value) => updateSetting("language", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="fr">Français</SelectItem>
-                    <SelectItem value="de">Deutsch</SelectItem>
-                    <SelectItem value="it">Italiano</SelectItem>
-                    <SelectItem value="zh">中文</SelectItem>
-                    <SelectItem value="ja">日本語</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </TabsContent>
 
           <TabsContent value="privacy" className="space-y-4 py-4">
             <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">

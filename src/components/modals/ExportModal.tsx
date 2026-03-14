@@ -60,7 +60,7 @@ export function ExportModal({
       "Income",
       new Date(item.date).toLocaleDateString("en-US"),
       `${item.name.replace(/"/g, '\\"')}`,
-      "N/A",
+      `${item.category?.name || "Unknown"}`,
       item.amount.toString(),
       `${(item.notes || "").replace(/"/g, '\\"')}`,
     ]);
@@ -83,6 +83,7 @@ export function ExportModal({
       incomes: incomeData.map((i) => ({
         date: new Date(i.date).toISOString(),
         name: i.name,
+        category: i.category?.name || "Unknown",
         amount: i.amount,
         notes: i.notes || "",
       })),
