@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 type Theme =
   | "light"
@@ -37,9 +39,25 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
+  const backendSettings = useQuery(api.functions.settings.getSettings);
+  const updateBackendSettings = useMutation(api.functions.settings.updateSettings);
+
+  const [theme, setLocalTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
+
+  useEffect(() => {
+    if (backendSettings !== undefined && backendSettings !== null) {
+      if (backendSettings.theme && backendSettings.theme !== localStorage.getItem(storageKey)) {
+        // Backend has a theme and it differs from local, sync DOWN
+        setLocalTheme(backendSettings.theme as Theme);
+        localStorage.setItem(storageKey, backendSettings.theme);
+      } else if (!backendSettings.theme && theme) {
+        // Backend DOES NOT have a theme, but we do locally. Sync UP
+        updateBackendSettings({ theme }).catch(err => console.error("Failed to sync initial theme:", err));
+      }
+    }
+  }, [backendSettings]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -65,9 +83,12 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setLocalTheme(newTheme);
+      if (updateBackendSettings) {
+        updateBackendSettings({ theme: newTheme }).catch(err => console.error("Failed to sync theme:", err));
+      }
     },
   };
 

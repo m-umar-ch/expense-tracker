@@ -5,6 +5,8 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export type Currency = string;
 
@@ -63,6 +65,9 @@ export const CURRENCIES: CustomCurrency[] = [
 ];
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
+  const backendSettings = useQuery(api.functions.settings.getSettings);
+  const updateBackendSettings = useMutation(api.functions.settings.updateSettings);
+
   const [settings, setSettings] = useState<AppSettings>(() => {
     try {
       const saved = localStorage.getItem("app-settings");
@@ -74,6 +79,22 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
   });
 
+  // Sync from backend to local state when backend data loads
+  useEffect(() => {
+    if (backendSettings) {
+      setSettings((prev) => ({
+        ...prev,
+        currency: backendSettings.currency || prev.currency,
+        language: backendSettings.language || prev.language,
+        dateFormat: backendSettings.dateFormat || prev.dateFormat,
+        numberFormat: backendSettings.numberFormat || prev.numberFormat,
+        privacyMode: backendSettings.privacyMode !== undefined ? backendSettings.privacyMode : prev.privacyMode,
+        customCurrencies: backendSettings.customCurrencies || prev.customCurrencies,
+      }));
+    }
+  }, [backendSettings]);
+
+  // Keep local storage as a fallback for guest users or initial load
   useEffect(() => {
     localStorage.setItem("app-settings", JSON.stringify(settings));
   }, [settings]);
@@ -82,7 +103,20 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     key: K,
     value: AppSettings[K],
   ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    const nextSettings = { ...settings, [key]: value };
+    setSettings(nextSettings);
+    
+    // Sync to backend
+    if (updateBackendSettings) {
+      updateBackendSettings({
+        currency: nextSettings.currency,
+        language: nextSettings.language,
+        dateFormat: nextSettings.dateFormat,
+        numberFormat: nextSettings.numberFormat,
+        privacyMode: nextSettings.privacyMode,
+        customCurrencies: nextSettings.customCurrencies,
+      }).catch(err => console.error("Failed to sync settings:", err));
+    }
   };
 
   const allCurrencies = useMemo(() => {

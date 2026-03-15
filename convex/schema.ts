@@ -29,4 +29,23 @@ export default defineSchema({
     .index("by_user_and_date", ["userId", "date"])
     .index("by_user_and_type", ["userId", "type"])
     .index("by_user_and_category", ["userId", "categoryId"]),
+
+  settings: defineTable({
+    userId: v.id("users"),
+    theme: v.optional(v.string()),
+    currency: v.optional(v.string()),
+    language: v.optional(v.string()),
+    dateFormat: v.optional(v.string()),
+    numberFormat: v.optional(v.string()),
+    privacyMode: v.optional(v.boolean()),
+    customCurrencies: v.optional(
+      v.array(
+        v.object({
+          value: v.string(),
+          label: v.string(),
+          symbol: v.string(),
+        })
+      )
+    ),
+  }).index("by_user", ["userId"]),
 });

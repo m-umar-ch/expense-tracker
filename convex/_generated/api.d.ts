@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as functions_categories from "../functions/categories.js";
+import type * as functions_settings from "../functions/settings.js";
 import type * as functions_transactions from "../functions/transactions.js";
 import type * as http from "../http.js";
 import type * as router from "../router.js";
@@ -24,6 +25,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   "functions/categories": typeof functions_categories;
+  "functions/settings": typeof functions_settings;
   "functions/transactions": typeof functions_transactions;
   http: typeof http;
   router: typeof router;
