@@ -29,8 +29,8 @@ We use the **Official Convex Auth** system with the `Password` provider.
 ### 3. Data Architecture (Convex Schema)
 
 - **Users**: Managed by Convex Auth (Email, Password hash, Name).
-- **Categories**: Linked to `userId`. Includes `name`, `color`, and `budgetLimit`.
-- **Expenses**: Core transactional data. Linked to `userId` and `categoryId`. Supports `receiptImageId` (pointing to Convex Storage).
+- **Categories**: Linked to `userId`. Includes `name`, `type` (income/expense), `color`, and `budgetLimit`.
+- **Transactions**: Core financial data tracking either `expense` or `income`. Linked to `userId` and `categoryId`. Supports `receiptImageId` (pointing to Convex Storage).
 
 ---
 
@@ -56,9 +56,10 @@ We use the **Official Convex Auth** system with the `Password` provider.
 
 ### 💰 Financial Management
 
-- **Expense Tracking**: Full CRUD operations for daily transactions.
-- **Category System**: Initialize default categories or create custom ones with color-coding.
+- **Expense & Income Tracking**: Full CRUD operations for daily transactions (both money in and out).
+- **Category System**: Initialize default or custom categories for either incomes or expenses with color-coding.
 - **Budget Control**: Set monthly spending limits per category with real-time utilization tracking.
+- **Data Export**: Export your financial records to CSV or JSON formats based on the active time period.
 - **Receipt Storage**: Upload images/PDFs directly to Convex Storage for auditing.
 
 ### 📊 Analytics & Insights
@@ -69,9 +70,10 @@ We use the **Official Convex Auth** system with the `Password` provider.
 
 ### ⚙️ User Settings
 
-- **Multi-Currency**: Support for 10+ major global currencies with proper localization.
-- **Compact Formatting**: Option for abbreviated currency views (e.g., $1.2k).
-- **Theme Engine**: Persistence of user preferences (Brutalist landing, Dark/Light dashboard).
+- **Advanced Currency Management**: Support for base global currencies, editing their symbols, and creating entirely new custom currencies.
+- **Privacy Mode**: A toggleable visual blur for all financial numbers natively designed to protect data during screenshares or in public.
+- **Localization**: Customizable Date Formats and active preferred Language.
+- **Theme Engine**: Persistence of user preferences with support for multiple nuanced themes (Light, Dark, Amber, Neon, Midnight, etc).
 
 ---
 
